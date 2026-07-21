@@ -502,6 +502,10 @@ body.lang-en .t-en { display: inline; }
       <span class="filter-group-label">Crashes</span>
       <span class="cat-pill" id="crashToggle"><span class="t-zh">🔴 A1 事故點</span><span class="t-en">🔴 A1 crash points</span></span>
     </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Schools</span>
+      <span class="cat-pill" id="schoolToggle"><span class="t-zh">🏫 學校範圍</span><span class="t-en">🏫 School zones</span></span>
+    </div>
     <div class="filter-group" style="margin-left:auto">
       <span class="filter-group-label" id="segCount">—</span>
     </div>
@@ -532,6 +536,7 @@ body.lang-en .t-en { display: inline; }
     <p style="font-size:12px"><span class="t-zh">2026 年 6 月路網（實際多邊形範圍，幾何經 ±0.3 公尺簡化）。放大後滑過任一段可看路名、寬度、淨寬與斜坡數；<strong>點擊路段即開啟街景比對</strong>：街景為主畫面、地圖縮至右上角，小地圖上的<strong>小人與視角錐</strong>標示實際全景位置與朝向：在全景內拖轉、前進時會<strong>即時跟動</strong>；「↻ 旋轉 90°」可快速換邊看。資訊列顯示<strong>影像拍攝日期</strong>；街景取該點最新一輪官方拍攝（若 Google 服務無法載入，會自動退回精簡嵌入模式，該模式下視角錐僅跟隨旋轉鈕）。資料依縣市按需載入（0.03–6.2 MB／縣市）。</span><span class="t-en">June 2026 network (actual polygon extents, geometry simplified within ±0.3 m). Zoom in and hover a segment for road name, width, clear width and ramp count; <strong>click a segment to open Street View comparison</strong> — the panorama takes the stage and the map docks top-right, with a <strong>pegman + view cone</strong> marking the true panorama position and facing — they <strong>follow live</strong> as you drag or walk inside the panorama; "↻ Rotate 90°" flips sides quickly. The info bar shows the <strong>imagery capture date</strong>, and the panorama uses the newest official pass at that spot (if Google's service fails to load, a lightweight embed takes over, where the cone follows the rotate button only). Data loads on demand per county (0.03–6.2 MB each).</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🔴 A1 事故點圖層</strong>：內政部警政署 A1（當場或 24 小時內死亡）交通事故（2018–2025 有座標者，全國 13,708 點，按縣市過濾顯示），點色依受害者運具（黑=機車、藍=汽/貨車、紅=行人、金=慢車）、點徑依死亡人數。把死亡事故疊在淨寬著色上，可直接檢視「行人死亡點位周邊的人行道是否存在、是否過得去」：紅點（行人）落在紅色路段（淨寬 &lt;1.5 公尺）或根本沒有人行道的路口，就是最需優先改善的證據。滑過任一點可看日期、區、運具與死傷數。</span><span class="t-en"><strong>🔴 A1 crash layer</strong>: National Police Agency A1 fatal crashes (death on scene or within 24 h; 2018–2025 geocoded records, 13,708 points nationwide, filtered to the selected county). Dot colour = victim mode (black motorcycle, blue car/truck, red pedestrian, gold bicycle), dot size = deaths. Overlaying fatalities on the clear-width colours shows directly whether the sidewalks around each death exist and are passable — a red (pedestrian) dot on a red segment (&lt;1.5 m clear) or on a corner with no sidewalk at all is priority-one evidence. Hover a dot for date, district, mode and casualties.</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>⚡ 電線桿圖層</strong>：台電桿籍資料（全國約 273 萬支，TWD97 座標轉換；本島 121 分帶、離島 119 分帶），開啟後放大至街區尺度（zoom ≥ 16）顯示視窗內桿位。電線桿常立於人行道上，是輪椅與嬰兒車的實體障礙：與淨寬著色對照可看出「帳面有人行道、實際過不去」的路段。注意：屏東縣桿籍近乎缺漏（僅 88 筆）；桿位為台電登記位置，可能與現地略有出入。</span><span class="t-en"><strong>⚡ Utility-pole layer</strong>: Taipower pole registry (~2.73M poles nationwide, TWD97→WGS84; 121°E zone for the main island, 119°E for offshore counties). When on, poles in the viewport render at zoom ≥ 16. Poles standing on sidewalks are physical barriers for wheelchairs and strollers — overlay them on the clear-width colours to spot segments that exist on paper but cannot be passed. Note: Pingtung's registry is nearly empty (88 records); positions are as registered and may differ slightly on site.</span></p>
+    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。以淡紫色範圍帶疊在人行道路網下方，可看出哪些人行道落在學校周邊——也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名與資料年月。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). Rendered as a light-violet band beneath the sidewalk network to show which pavements sit within a school catchment — the streets children actually walk to and from school on. Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name and data month.</span></p>
   </div>
 </div>
 
@@ -952,17 +957,20 @@ document.addEventListener('DOMContentLoaded', () => {
         cd('#1A1A1A', '機車', 'motorcycle') + cd('#3A7CC3', '汽/貨車', 'car/truck') +
         cd('#D94F3D', '行人', 'pedestrian') + cd('#E8A825', '慢車', 'bicycle')
       : '';
+    const school = (typeof schoolOn !== 'undefined' && schoolOn)
+      ? `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px;margin-left:8px"><span style="width:11px;height:11px;background:rgba(124,58,237,0.16);border:1.5px solid #7C3AED"></span><span class="t-zh">🏫 學校範圍</span><span class="t-en">🏫 School zones</span></span>`
+      : '';
     if (segState.color === 'ramp') {
       return `<span class="legend-title">Curb ramps</span>` +
         sw('#D94F3D', '該設而未設', 'needed · missing') +
         sw('#A8B200', '已設置', 'installed') +
-        sw('#B9B9B9', '無須設置', 'not needed') + pole + crash;
+        sw('#B9B9B9', '無須設置', 'not needed') + pole + crash + school;
     }
     return `<span class="legend-title">Clear width</span>` +
       sw('#D94F3D', '淨寬 < 1.5 m', '< 1.5 m') +
       sw('#E8A825', '1.5 – 2.5 m', '1.5 – 2.5 m') +
       sw('#A8B200', '≥ 2.5 m', '≥ 2.5 m') +
-      sw('#B9B9B9', '無資料', 'no data') + pole + crash;
+      sw('#B9B9B9', '無資料', 'no data') + pole + crash + school;
   }
 
   // ── Utility-pole obstacle overlay (Taipower registry, per county) ──
@@ -1396,6 +1404,49 @@ document.addEventListener('DOMContentLoaded', () => {
       renderSegLayer();   // restores the count text (and re-draws crashes on top)
     }
     renderCrashes();
+  });
+
+  // ── School-zone overlay (各級學校範圍圖 121, national, lazy) ─────────
+  // NLSC school-boundary polygons (~4,300 nationwide, one file). Drawn as a
+  // light violet background band beneath the sidewalk segments and crash
+  // dots, so you can see which pavements fall inside a school catchment —
+  // the streets kids actually walk to school on.
+  let schoolOn = false, schoolLayer = null, schoolData = null, schoolLoad = null;
+  function ensureSchoolData() {
+    if (schoolData) return Promise.resolve(schoolData);
+    if (schoolLoad) return schoolLoad;
+    schoolLoad = fetch('data/school_zones.geojson').then(r => r.json())
+      .then(j => { schoolData = j; return j; })
+      .catch(() => { schoolLoad = null; return null; });
+    return schoolLoad;
+  }
+  function renderSchools() {
+    if (schoolLayer) { segMap.removeLayer(schoolLayer); schoolLayer = null; }
+    document.getElementById('segLegend').innerHTML = segLegendHTML();
+    if (!schoolOn || !schoolData) return;
+    schoolLayer = L.geoJSON(schoolData, {
+      renderer: segRenderer,
+      style: { stroke: true, color: '#7C3AED', weight: 1, fillColor: '#7C3AED', fillOpacity: 0.16 },
+      onEachFeature: (f, lyr) => {
+        const p = f.properties;
+        const ym = p.ym ? ` · ${p.ym.slice(0, 4)}.${p.ym.slice(4, 6)}` : '';
+        lyr.bindTooltip(
+          `<strong>🏫 ${p.name || TT('（未命名）', '(unnamed)')}</strong>` +
+          `<span class="t-zh">${ym}</span><span class="t-en">${ym}</span>`,
+          { sticky: true, direction: 'top', offset: [0, -4] });
+      },
+    }).addTo(segMap);
+    schoolLayer.bringToBack();   // keep it a background band under segments/dots
+  }
+  document.getElementById('schoolToggle').addEventListener('click', async () => {
+    schoolOn = !schoolOn;
+    document.getElementById('schoolToggle').classList.toggle('active', schoolOn);
+    if (schoolOn && !schoolData) {
+      document.getElementById('segCount').textContent = TT('載入學校範圍…', 'loading school zones…');
+      await ensureSchoolData();
+      renderSegLayer();   // restore the count text
+    }
+    renderSchools();
   });
 
   window.__rerender = () => { renderHero(); recompute(); buildSegSelect(); renderSegLayer(); };
