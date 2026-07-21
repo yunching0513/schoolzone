@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全國人行道資料 2023 → 2026｜Taiwan National Sidewalk Inventory</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1A1A1A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="還路於民">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+  <script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="台灣街道願景計畫 Taiwan Street Vision Project">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:url" content="https://yunching0513.github.io/taiwan-mobility-atlas/sidewalk.html">
+  <meta property="og:title" content="全國人行道健檢｜台灣街道願景計畫">
+  <meta property="og:description" content="2023 vs 2026 全國人行道普查：92,326 段逐路段實景疊圖、電線桿障礙物、街景比對。人行道變長了，卻沒有變好走。">
+  <meta property="og:image" content="https://yunching0513.github.io/taiwan-mobility-atlas/assets/og.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="台灣街道願景計畫：還路於民">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="全國人行道健檢｜台灣街道願景計畫">
+  <meta name="twitter:description" content="2023 vs 2026 全國人行道普查：92,326 段逐路段實景疊圖、電線桿障礙物、街景比對。人行道變長了，卻沒有變好走。">
+  <meta name="twitter:image" content="https://yunching0513.github.io/taiwan-mobility-atlas/assets/og.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+@keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
+body { animation: pageFadeIn 0.45s ease-out; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --lime:   #C8D400;
+  --lime-dk:#A8B200;
+  --lime-lt:#E8F000;
+  --black:  #1A1A1A;
+  --grey-1: #4A4A4A;
+  --grey-2: #888888;
+  --grey-3: #D0D0D0;
+  --grey-4: #F2F2F2;
+  --white:  #FFFFFF;
+  --red:    #D94F3D;
+  --blue:   #3A7CC3;
+  --gold:   #E8A825;
+  --font-zh: 'Noto Sans TC', sans-serif;
+  --font-en: 'Space Grotesk', sans-serif;
+}
+body { font-family: var(--font-zh); background: var(--grey-4); color: var(--black); line-height: 1.6; }
+.shell { max-width: 1440px; margin: 0 auto; padding: 48px 40px 80px; }
+
+/* Header */
+.page-header {
+  display: flex; align-items: flex-end; gap: 24px;
+  margin-bottom: 56px; padding-bottom: 24px;
+  border-bottom: 2px solid var(--black);
+}
+.page-header .logo-mark {
+  font-family: var(--font-en); font-size: 9px; font-weight: 600;
+  letter-spacing: 0.18em; border: 1.5px solid var(--black);
+  padding: 5px 10px; text-transform: uppercase; line-height: 1.5;
+  white-space: nowrap;
+}
+.page-header .title-block { flex: 1; }
+.page-header h1 {
+  font-family: var(--font-en); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--grey-2); line-height: 1.6;
+}
+.page-header .title-zh {
+  font-family: var(--font-zh); font-weight: 700; font-size: 26px;
+  letter-spacing: 0.04em; color: var(--black); margin-top: 4px;
+}
+.page-header .meta {
+  font-family: var(--font-en); font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--grey-2);
+  text-align: right; line-height: 1.6;
+}
+.page-header .meta strong { color: var(--black); font-weight: 600; }
+.disclaimer {
+  margin-top: 8px; font-family: var(--font-en); font-size: 10px;
+  letter-spacing: 0.04em; color: var(--grey-2); line-height: 1.5;
+}
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: 18px;
+  font-family: var(--font-en); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; color: var(--grey-1); text-decoration: none;
+}
+.back-link:hover { color: var(--black); }
+
+.section { margin-bottom: 48px; }
+.section-label {
+  font-family: var(--font-en); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--grey-2); margin-bottom: 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--grey-3); }
+
+/* Overview cover */
+.cover {
+  background: var(--white); padding: 36px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px;
+}
+.cover .big-num {
+  font-family: var(--font-en); font-size: 92px; font-weight: 300;
+  line-height: 0.95; letter-spacing: -0.02em; color: var(--black);
+}
+.cover .big-num sup {
+  font-size: 14px; font-weight: 500; letter-spacing: 0.2em;
+  color: var(--grey-2); vertical-align: top; margin-left: 12px;
+}
+.cover .growth-badge {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+  font-family: var(--font-en); font-size: 13px; font-weight: 700;
+  padding: 5px 11px; background: var(--lime); color: var(--black);
+}
+.cover .big-label-zh { font-weight: 100; font-size: 18px; letter-spacing: 0.08em; margin-top: 14px; }
+.cover .big-label-en {
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--grey-2); margin-top: 6px;
+}
+.cover .span-meta { margin-top: 10px; font-size: 12px; font-weight: 300; color: var(--grey-1); letter-spacing: 0.04em; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-content: center; }
+.kpi { border-top: 1px solid var(--grey-3); padding-top: 14px; }
+.kpi .kpi-label {
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--grey-2); margin-bottom: 4px;
+}
+.kpi .kpi-zh { font-size: 11px; color: var(--grey-1); font-weight: 300; margin-bottom: 6px; }
+.kpi .kpi-num { font-family: var(--font-en); font-size: 32px; font-weight: 300; line-height: 1; }
+.kpi .kpi-num small { font-size: 12px; color: var(--grey-2); letter-spacing: 0.05em; margin-left: 4px; }
+.kpi .kpi-delta { font-family: var(--font-en); font-size: 12px; font-weight: 600; margin-top: 4px; }
+.kpi .kpi-delta.up { color: var(--lime-dk); }
+.kpi .kpi-delta.down { color: var(--red); }
+
+/* Filter bar */
+.filter-bar {
+  display: flex; flex-wrap: wrap; gap: 18px 24px;
+  align-items: center; padding: 18px 24px;
+  background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  margin-bottom: 24px;
+}
+.filter-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-group-label {
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--grey-2); font-weight: 600;
+}
+.cat-pill {
+  font-size: 11px; font-weight: 400; padding: 6px 11px;
+  border: 1px solid var(--grey-3); cursor: pointer;
+  letter-spacing: 0.03em; background: var(--white);
+  user-select: none; transition: background .12s, border-color .12s;
+}
+.cat-pill.en { font-family: var(--font-en); letter-spacing: 0.05em; font-weight: 500; }
+.cat-pill:hover { border-color: var(--black); }
+.cat-pill.active { background: var(--lime); border-color: var(--lime); font-weight: 700; }
+
+/* Map area */
+.map-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; }
+.map-wrap { background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 16px; }
+#map { height: 720px; background: var(--grey-4); border: 1px solid var(--grey-3); }
+
+/* ── Street View comparison mode (§03) ── */
+#svStage { display: none; }
+#svStage .sv-bar {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--black); color: var(--white); padding: 10px 14px;
+}
+#svStage .sv-info { flex: 1; min-width: 0; font-size: 13px; font-weight: 400; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#svStage .sv-info strong { color: var(--lime); font-weight: 700; }
+#svStage .sv-ext { font-size: 11.5px; font-weight: 700; color: var(--lime); text-decoration: none; white-space: nowrap; }
+#svStage .sv-ext:hover { text-decoration: underline; }
+#svStage .sv-close {
+  font-family: var(--font-zh); font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em;
+  background: var(--lime); color: var(--black); border: none; padding: 7px 12px; cursor: pointer; white-space: nowrap;
+}
+#svStage .sv-close:hover { background: var(--lime-dk); }
+#svStage .sv-rotate {
+  font-family: var(--font-zh); font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em;
+  background: transparent; color: var(--white); border: 1px solid var(--grey-2);
+  padding: 6px 11px; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+}
+#svStage .sv-rotate:hover { border-color: var(--lime); color: var(--lime); }
+#svStage .sv-rotate .sv-dir {
+  font-family: var(--font-en); font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  background: var(--lime); color: var(--black); padding: 1px 5px; border-radius: 2px; min-width: 20px; text-align: center;
+}
+#svStage .sv-date {
+  font-family: var(--font-en); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--grey-3); border: 1px solid var(--grey-1); padding: 3px 8px; white-space: nowrap;
+}
+
+/* pegman marker: fixed person glyph over a rotating view-cone */
+.pegman-wrap { pointer-events: none; }
+.pegman-wrap .peg-cone {
+  position: absolute; inset: 0; transform-origin: 50% 50%;
+  transition: transform .3s ease;
+}
+.pegman-wrap .peg-man {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 22px; height: 22px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.45));
+}
+#svStage .sv-body { position: relative; height: 620px; background: #2A2A2A; }
+#svStage .sv-body iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  opacity: 0; transition: opacity .28s ease; pointer-events: none;
+}
+#svStage .sv-body iframe.sv-active { opacity: 1; pointer-events: auto; }
+#svPano { position: absolute; inset: 0; display: none; z-index: 200; }
+#svPano.on { display: block; }
+#svStage .sv-loading {
+  position: absolute; inset: 0; display: none; z-index: 300;
+  align-items: center; justify-content: center; gap: 12px; pointer-events: none;
+  color: var(--grey-3); font-size: 13px; letter-spacing: 0.06em;
+  background: rgba(26,26,26,0.25);
+}
+#svStage .sv-loading.on { display: flex; }
+#svStage .sv-loading .spin {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.25); border-top-color: var(--lime);
+  animation: svspin 0.8s linear infinite;
+}
+@keyframes svspin { to { transform: rotate(360deg); } }
+#svDock {
+  position: absolute; top: 14px; right: 14px; z-index: 500;
+  width: min(380px, 44%); height: 264px;
+  border: 2px solid var(--white); box-shadow: 0 6px 22px rgba(0,0,0,0.4);
+  background: var(--grey-4);
+}
+#svDock #segmap { height: 100% !important; border: none !important; }
+@media (max-width: 640px) {
+  #svStage .sv-body { height: 460px; }
+  #svDock { width: 58%; height: 180px; top: 10px; right: 10px; }
+}
+.map-legend {
+  display: flex; flex-wrap: wrap; gap: 4px 10px; padding: 12px 4px 4px;
+  align-items: center; font-family: var(--font-en); font-size: 10px;
+  color: var(--grey-1); letter-spacing: 0.05em;
+}
+.legend-swatch { width: 24px; height: 12px; border: 1px solid var(--black); }
+.legend-tick { color: var(--grey-2); margin: 0 2px; font-size: 10px; }
+.legend-title {
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--grey-2); margin-right: 8px;
+}
+
+/* Side panel */
+.side-panel {
+  background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  padding: 28px; display: flex; flex-direction: column;
+  gap: 20px; max-height: 720px; overflow: auto;
+}
+.side-panel h3 {
+  font-family: var(--font-en); font-size: 10px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--grey-2); font-weight: 600;
+  margin-bottom: 8px;
+}
+.detail-empty {
+  font-size: 13px; color: var(--grey-2); font-weight: 300;
+  line-height: 1.8; padding: 24px 0; text-align: center;
+  border-top: 1px dashed var(--grey-3); border-bottom: 1px dashed var(--grey-3);
+}
+.detail-empty .en {
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--grey-3); margin-top: 8px; display: block;
+}
+.detail-name { font-size: 20px; font-weight: 300; letter-spacing: 0.08em; margin-bottom: 4px; }
+.detail-county {
+  font-family: var(--font-en); font-size: 11px; letter-spacing: 0.15em;
+  color: var(--grey-2); margin-bottom: 16px; text-transform: uppercase;
+}
+.detail-stat { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--grey-3); }
+.detail-stat .stat-label {
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--grey-2); margin-bottom: 4px;
+}
+.detail-stat .stat-val { font-family: var(--font-en); font-size: 24px; font-weight: 300; line-height: 1; }
+.detail-stat .stat-val small { font-size: 11px; color: var(--grey-2); margin-left: 4px; }
+
+/* Counties bar */
+.county-card { background: var(--white); padding: 28px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.county-card h4 {
+  font-family: var(--font-en); font-size: 10px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--grey-2); font-weight: 600; margin-bottom: 4px;
+}
+.county-card .card-zh { font-size: 13px; color: var(--black); margin-bottom: 18px; letter-spacing: 0.05em; }
+.county-row {
+  display: grid; grid-template-columns: 80px 1fr 70px;
+  gap: 12px; align-items: center; padding: 7px 0;
+  border-top: 1px solid var(--grey-4); font-size: 11px;
+}
+.county-row:first-child { border-top: none; }
+.county-row .c-name { color: var(--grey-1); font-weight: 400; }
+.county-row .c-track { display: block; height: 10px; background: var(--grey-4); overflow: hidden; }
+.county-row .c-fill { display: block; height: 100%; background: var(--black); transition: width .2s; }
+.county-row .c-val { font-family: var(--font-en); font-weight: 600; font-size: 11px; text-align: right; }
+
+/* Method notes */
+.notes-card { background: var(--white); padding: 28px 32px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.notes-card p { font-size: 13px; font-weight: 300; line-height: 1.85; color: var(--grey-1); max-width: 820px; margin-top: 10px; }
+.notes-card p:first-of-type { margin-top: 0; }
+.notes-card strong { color: var(--black); font-weight: 600; }
+
+.partner-logos {
+  background: var(--white); padding: 36px 24px; text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-top: 56px;
+}
+.partner-logos .pl-label {
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--grey-2); margin-bottom: 18px;
+}
+.partner-logos img { max-width: 560px; width: 100%; height: auto; }
+.partner-logos .pl-visit {
+  display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
+  font-family: var(--font-zh); font-weight: 700; font-size: 13px; letter-spacing: 0.04em;
+  color: var(--black); text-decoration: none; border: 1.5px solid var(--black);
+  border-radius: 999px; padding: 8px 18px; transition: background .16s ease, color .16s ease;
+}
+.partner-logos .pl-visit:hover { background: var(--black); color: var(--lime); }
+.partner-logos .pl-visit .pl-url { font-family: var(--font-en); font-weight: 600; font-size: 11.5px; letter-spacing: 0.06em; color: var(--lime-dk); }
+.partner-logos .pl-visit:hover .pl-url { color: var(--lime); }
+.partner-logos .pl-visit > span { flex: none; white-space: nowrap; }
+
+footer {
+  border-top: 2px solid var(--black);
+  padding-top: 20px; margin-top: 56px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.2em;
+  color: var(--grey-2); text-transform: uppercase;
+}
+footer .tags { display: flex; gap: 6px; }
+footer .tag { padding: 3px 10px; font-weight: 600; background: var(--white); border: 1px solid var(--grey-3); }
+footer .tag.lime { background: var(--lime); border-color: var(--lime); color: var(--black); }
+footer .tag.black { background: var(--black); color: var(--white); border-color: var(--black); }
+
+.district-feature { cursor: pointer; transition: fill-opacity .15s; }
+.district-feature.selected { stroke: var(--black) !important; stroke-width: 2 !important; }
+
+@media (max-width: 1024px) {
+  .map-grid, .cover { grid-template-columns: 1fr; }
+  #map { height: 540px; }
+  .side-panel { max-height: none; }
+}
+@media (max-width: 768px) {
+  .shell { padding: 32px 18px 56px; }
+  .page-header { flex-wrap: wrap; gap: 14px; margin-bottom: 36px; padding-bottom: 18px; }
+  .page-header .logo-mark { order: 1; }
+  .page-header .title-block { flex: 1 1 100%; order: 2; }
+  .page-header .meta { order: 3; text-align: left; width: 100%; }
+  .page-header .title-zh { font-size: 21px; line-height: 1.3; }
+  .cover { padding: 24px; gap: 24px; }
+  .cover .big-num { font-size: 64px; }
+  #map { height: 440px; }
+}
+@media (max-width: 480px) {
+  .kpi .kpi-num { font-size: 26px; }
+  #map { height: 380px; }
+  .filter-bar { padding: 14px 14px; gap: 10px 14px; }
+  .filter-group { width: 100%; }
+  .filter-group-label { width: 100%; }
+}
+
+/* i18n + logo */
+.t-en { display: none; }
+body.lang-en .t-zh { display: none; }
+body.lang-en .t-en { display: inline; }
+.lang-toggle {
+  position: fixed; top: 14px; right: 14px; z-index: 2000;
+  display: flex; border: 1.5px solid var(--black); background: var(--white);
+  font-family: var(--font-en); font-size: 11px; font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+.lang-toggle .lt-opt { padding: 6px 12px; cursor: pointer; letter-spacing: 0.08em; color: var(--grey-2); }
+.lang-toggle .lt-opt.active { background: var(--black); color: var(--white); }
+</style>
+</head>
+<body>
+<style>
+</style>
+<div class="lang-toggle" id="langToggle"><span class="lt-opt" data-lang="zh">中</span><span class="lt-opt" data-lang="en">EN</span></div>
+<div class="shell">
+
+<a class="back-link" href="index.html">← <span class="t-zh">回總覽</span><span class="t-en">Back to Atlas</span></a>
+
+<div class="page-header">
+  <div class="logo-mark">Taiwan<br>Mobility<br>Atlas</div>
+  <div class="title-block">
+    <h1>National Sidewalk Inventory · 2023 → 2026</h1>
+    <div class="title-zh"><span class="t-zh">全國人行道資料｜三年進度追蹤</span><span class="t-en">Taiwan National Sidewalk Data · 3-Year Progress Check</span></div>
+    <div class="disclaimer">
+      <span class="t-zh">交通部人行道整體區位資料 · 非官方專案 · 2023 年 6 月 vs. 2026 年 6 月兩次全國普查快照</span>
+      <span class="t-en">MOTC national sidewalk inventory · unofficial project · June 2023 vs. June 2026 nationwide snapshots</span>
+    </div>
+  </div>
+  <div class="meta">MOTC Open Data · 22 counties<br><strong id="hMetaN">— segments · — km</strong></div>
+</div>
+
+<!-- 01 — Overview -->
+<div class="section">
+  <div class="section-label"><span class="t-zh">01 — 三年總覽</span><span class="t-en">01 — 3-Year Overview</span></div>
+  <div class="cover">
+    <div>
+      <div class="big-num" id="hLength">—<sup><span class="t-zh">公里</span><span class="t-en">km</span></sup></div>
+      <div class="growth-badge" id="hGrowthBadge">—</div>
+      <div class="big-label-zh"><span class="t-zh">2026 年 6 月全台人行道總長度</span><span class="t-en">Total sidewalk length nationwide, June 2026</span></div>
+      <div class="big-label-en">MOTC national sidewalk inventory · 22 counties</div>
+      <div class="span-meta" id="hSegMeta">—</div>
+    </div>
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi-label">Total Length</div>
+        <div class="kpi-zh"><span class="t-zh">2023 → 2026 總長度</span><span class="t-en">2023 → 2026 total length</span></div>
+        <div class="kpi-num" id="kLen2023">—<small>km</small></div>
+        <div class="kpi-delta" id="kLenDelta">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg. Net Width</div>
+        <div class="kpi-zh"><span class="t-zh">平均淨寬（可通行寬度）</span><span class="t-en">Avg. clear walkable width</span></div>
+        <div class="kpi-num" id="kNet2023">—<small>m</small></div>
+        <div class="kpi-delta" id="kNetDelta">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Ramp Coverage</div>
+        <div class="kpi-zh"><span class="t-zh">路緣斜坡缺口率</span><span class="t-en">Curb-ramp gap rate</span></div>
+        <div class="kpi-num" id="kRamp2023">—<small>%</small></div>
+        <div class="kpi-delta" id="kRampDelta">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Segments</div>
+        <div class="kpi-zh"><span class="t-zh">人行道路段數</span><span class="t-en">Sidewalk segments</span></div>
+        <div class="kpi-num" id="kSeg2023">—</div>
+        <div class="kpi-delta" id="kSegDelta">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="notes-card" style="margin-top:16px;border-top:3px solid var(--lime)">
+    <p><span class="t-zh"><strong>怎麼解讀</strong>：三年間全台人行道總長度成長，但<strong>路緣斜坡的缺口率不減反增</strong>：代表新增或重新盤點的人行道路段，斜坡設置速度沒有跟上路網擴張的速度。「有沒有人行道」和「這條人行道能不能讓輪椅、嬰兒車、視障者安全通過」，是兩個不同的問題。</span><span class="t-en"><strong>How to read this</strong>: total sidewalk length grew over three years, but the <strong>curb-ramp gap rate rose, not fell</strong> — ramp installation hasn't kept pace with the expanding network. "Is there a sidewalk" and "can a wheelchair, stroller, or visually-impaired pedestrian actually cross safely" are two different questions.</span></p>
+  </div>
+</div>
+
+<!-- 02 — Choropleth -->
+<div class="section">
+  <div class="section-label"><span class="t-zh">02 — 行政區面量圖</span><span class="t-en">02 — District Choropleth</span></div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-group-label">Year</span>
+      <span class="cat-pill en" data-year="2023">2023</span>
+      <span class="cat-pill en active" data-year="2026">2026</span>
+      <span class="cat-pill" data-year="growth"><span class="t-zh">成長</span><span class="t-en">Growth</span></span>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Metric</span>
+      <span class="cat-pill active" data-metric="length"><span class="t-zh">總長度</span><span class="t-en">Total length</span></span>
+      <span class="cat-pill" data-metric="percap"><span class="t-zh">每千人長度</span><span class="t-en">Per 1,000 residents</span></span>
+      <span class="cat-pill" data-metric="wth"><span class="t-zh">平均寬度</span><span class="t-en">Avg. width</span></span>
+      <span class="cat-pill" data-metric="net"><span class="t-zh">平均淨寬</span><span class="t-en">Avg. clear width</span></span>
+      <span class="cat-pill" data-metric="ramp"><span class="t-zh">斜坡缺口率</span><span class="t-en">Ramp gap rate</span></span>
+    </div>
+    <div class="filter-group" style="margin-left:auto">
+      <span class="filter-group-label" id="filterCount">—</span>
+    </div>
+  </div>
+
+  <div class="map-grid">
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-legend">
+        <span class="legend-title" id="legendTitle">Quintile</span>
+        <span id="legendBins" style="display:flex;align-items:center;gap:1px"></span>
+      </div>
+    </div>
+    <div class="side-panel">
+      <h3>District Detail<span class="t-zh"> — 行政區明細</span></h3>
+      <div class="detail-empty" id="detailEmpty">
+        <span class="t-zh">點選任一行政區（區、鄉、鎮、市）以查看數據</span>
+        <span class="en t-en">Click a district on the map to inspect</span>
+      </div>
+      <div id="detailCard" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 03 — Segment-level map -->
+<div class="section">
+  <div class="section-label"><span class="t-zh">03 — 逐路段地圖</span><span class="t-en">03 — Segment-Level Map</span></div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-group-label">County</span>
+      <select id="segCounty" style="font-family:var(--font-zh);font-size:12px;padding:6px 10px;border:1px solid var(--grey-3);background:var(--white);cursor:pointer"></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Colour by</span>
+      <span class="cat-pill active" data-segcolor="net"><span class="t-zh">淨寬</span><span class="t-en">Clear width</span></span>
+      <span class="cat-pill" data-segcolor="ramp"><span class="t-zh">路緣斜坡</span><span class="t-en">Curb ramps</span></span>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Obstacles</span>
+      <span class="cat-pill" id="polesToggle"><span class="t-zh">⚡ 電線桿</span><span class="t-en">⚡ Utility poles</span></span>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Crashes</span>
+      <span class="cat-pill" id="crashToggle"><span class="t-zh">🔴 A1 事故點</span><span class="t-en">🔴 A1 crash points</span></span>
+    </div>
+    <div class="filter-group" style="margin-left:auto">
+      <span class="filter-group-label" id="segCount">—</span>
+    </div>
+  </div>
+
+  <div class="map-wrap">
+    <div id="segmap" style="height:640px;background:var(--grey-4);border:1px solid var(--grey-3)"></div>
+    <!-- Street View comparison mode: iframe stage + the Leaflet map docked top-right -->
+    <div id="svStage">
+      <div class="sv-bar">
+        <span class="sv-info" id="svInfo">—</span>
+        <span class="sv-date" id="svDate" style="display:none"></span>
+        <button class="sv-rotate" id="svRotate" title="旋轉視角 / rotate view">↻ <span class="t-zh">旋轉 90°</span><span class="t-en">Rotate 90°</span><span class="sv-dir" id="svDir">N</span></button>
+        <a class="sv-ext" id="svExt" href="#" target="_blank" rel="noopener">↗ <span class="t-zh">看最新街景（Google Maps）</span><span class="t-en">Latest imagery (Google Maps)</span></a>
+        <button class="sv-close" id="svClose">✕ <span class="t-zh">關閉街景</span><span class="t-en">Close</span></button>
+      </div>
+      <div class="sv-body">
+        <iframe id="svFrameA" title="Google Street View" allow="accelerometer; gyroscope" aria-hidden="true" tabindex="-1"></iframe>
+        <iframe id="svFrameB" title="Google Street View" allow="accelerometer; gyroscope" aria-hidden="true" tabindex="-1"></iframe>
+        <div id="svPano" role="application" aria-label="Google Street View"></div>
+        <div class="sv-loading" id="svLoading"><span class="spin"></span><span class="t-zh">載入街景中…</span><span class="t-en">Loading Street View…</span></div>
+        <div id="svDock"></div>
+      </div>
+    </div>
+    <div class="map-legend" id="segLegend"></div>
+  </div>
+  <div class="notes-card" style="margin-top:16px">
+    <p style="font-size:12px"><span class="t-zh">2026 年 6 月路網（實際多邊形範圍，幾何經 ±0.3 公尺簡化）。放大後滑過任一段可看路名、寬度、淨寬與斜坡數；<strong>點擊路段即開啟街景比對</strong>：街景為主畫面、地圖縮至右上角，小地圖上的<strong>小人與視角錐</strong>標示實際全景位置與朝向：在全景內拖轉、前進時會<strong>即時跟動</strong>；「↻ 旋轉 90°」可快速換邊看。資訊列顯示<strong>影像拍攝日期</strong>；街景取該點最新一輪官方拍攝（若 Google 服務無法載入，會自動退回精簡嵌入模式，該模式下視角錐僅跟隨旋轉鈕）。資料依縣市按需載入（0.03–6.2 MB／縣市）。</span><span class="t-en">June 2026 network (actual polygon extents, geometry simplified within ±0.3 m). Zoom in and hover a segment for road name, width, clear width and ramp count; <strong>click a segment to open Street View comparison</strong> — the panorama takes the stage and the map docks top-right, with a <strong>pegman + view cone</strong> marking the true panorama position and facing — they <strong>follow live</strong> as you drag or walk inside the panorama; "↻ Rotate 90°" flips sides quickly. The info bar shows the <strong>imagery capture date</strong>, and the panorama uses the newest official pass at that spot (if Google's service fails to load, a lightweight embed takes over, where the cone follows the rotate button only). Data loads on demand per county (0.03–6.2 MB each).</span></p>
+    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🔴 A1 事故點圖層</strong>：內政部警政署 A1（當場或 24 小時內死亡）交通事故（2018–2025 有座標者，全國 13,708 點，按縣市過濾顯示），點色依受害者運具（黑=機車、藍=汽/貨車、紅=行人、金=慢車）、點徑依死亡人數。把死亡事故疊在淨寬著色上，可直接檢視「行人死亡點位周邊的人行道是否存在、是否過得去」：紅點（行人）落在紅色路段（淨寬 &lt;1.5 公尺）或根本沒有人行道的路口，就是最需優先改善的證據。滑過任一點可看日期、區、運具與死傷數。</span><span class="t-en"><strong>🔴 A1 crash layer</strong>: National Police Agency A1 fatal crashes (death on scene or within 24 h; 2018–2025 geocoded records, 13,708 points nationwide, filtered to the selected county). Dot colour = victim mode (black motorcycle, blue car/truck, red pedestrian, gold bicycle), dot size = deaths. Overlaying fatalities on the clear-width colours shows directly whether the sidewalks around each death exist and are passable — a red (pedestrian) dot on a red segment (&lt;1.5 m clear) or on a corner with no sidewalk at all is priority-one evidence. Hover a dot for date, district, mode and casualties.</span></p>
+    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>⚡ 電線桿圖層</strong>：台電桿籍資料（全國約 273 萬支，TWD97 座標轉換；本島 121 分帶、離島 119 分帶），開啟後放大至街區尺度（zoom ≥ 16）顯示視窗內桿位。電線桿常立於人行道上，是輪椅與嬰兒車的實體障礙：與淨寬著色對照可看出「帳面有人行道、實際過不去」的路段。注意：屏東縣桿籍近乎缺漏（僅 88 筆）；桿位為台電登記位置，可能與現地略有出入。</span><span class="t-en"><strong>⚡ Utility-pole layer</strong>: Taipower pole registry (~2.73M poles nationwide, TWD97→WGS84; 121°E zone for the main island, 119°E for offshore counties). When on, poles in the viewport render at zoom ≥ 16. Poles standing on sidewalks are physical barriers for wheelchairs and strollers — overlay them on the clear-width colours to spot segments that exist on paper but cannot be passed. Note: Pingtung's registry is nearly empty (88 records); positions are as registered and may differ slightly on site.</span></p>
+  </div>
+</div>
+
+<!-- 04 — County ranking -->
+<div class="section">
+  <div class="section-label"><span class="t-zh">04 — 縣市排行</span><span class="t-en">04 — County Ranking</span></div>
+  <div class="county-card">
+    <h4>Ranking<span class="t-zh"> · 全 22 縣市</span><span class="t-en"> · all 22 counties</span></h4>
+    <div class="card-zh"><span class="t-zh">依當前指標排序，點選縣市可在上方地圖定位</span><span class="t-en">Ranked by the current metric · tap a county to locate it on the map above</span></div>
+    <div id="byCounty"></div>
+  </div>
+</div>
+
+<!-- 05 — Notes -->
+<div class="section">
+  <div class="section-label"><span class="t-zh">05 — 資料說明</span><span class="t-en">05 — Data Notes</span></div>
+  <div class="notes-card">
+    <p><span class="t-zh"><strong>資料來源</strong>：交通部「全國人行道整體區位」開放資料，兩次全國普查快照：2023 年 6 月（83,301 個路段，全國 10,167 公里）、2026 年 6 月（92,326 個路段，全國 10,939 公里）。逐路段欄位包含道路名稱、路段長度、人行道寬度、淨寬（扣除路燈、招牌等障礙物後的可通行寬度）、路緣斜坡設置數量、所在縣市與鄉鎮市區。</span><span class="t-en"><strong>Source</strong>: MOTC's national sidewalk-location open dataset, two nationwide snapshots — June 2023 (83,301 segments, 10,167 km total) and June 2026 (92,326 segments, 10,939 km total). Per-segment fields include road name, segment length, sidewalk width, clear width (net of obstructions such as poles and signage), curb-ramp count, and county/district.</span></p>
+    <p><span class="t-zh"><strong>路緣斜坡缺口率怎麼算</strong>：原始欄位 SW_RAMP 是「已設置之路緣斜坡數量」，但若此處本來就不需要斜坡（例如路段中段、無側向通行需求），會標記為「N」（2023）或留空（2026）。我們只在「需要斜坡」的路段中，計算 SW_RAMP 為 0（該裝而未裝）的比例，作為缺口率：這是一個保守、只算「真正缺口」的指標。</span><span class="t-en"><strong>How the ramp gap rate is computed</strong>: the source field SW_RAMP counts installed curb ramps, but is marked "N" (2023) or left blank (2026) where no ramp is needed at all. We compute the gap rate only among segments that DO need a ramp, as the share where SW_RAMP = 0 (needed but not installed) — a conservative measure of genuine gaps only.</span></p>
+    <p><span class="t-zh"><strong>已知限制</strong>：2023 年原始資料為 TWD97 二度分帶座標系統（EPSG:3826），2026 年官方已提供 WGS84 版本；本頁的行政區面量圖僅使用逐路段的「縣市／鄉鎮市區」欄位聚合統計，未使用逐路段座標，故不受座標系統差異影響。高雄市那瑪夏區與連江縣東引鄉的人行道資料存在於原始資料中，但因本站既有行政區界圖資（districts.geojson）缺少這兩區的邊界多邊形（與车禍地圖的既有限制相同），故無法在面量圖上著色，僅計入縣市總計與排行榜。嘉義縣資料中有 2 筆路段的縣市欄位誤植（應屬嘉義市西區），已於彙整時更正；苗栗縣「頭份市」與彰化縣「員林市」在原始資料中仍使用 2015 年改制前的舊名（頭份鎮／員林鎮），已於彙整時對應至現行名稱。</span><span class="t-en"><strong>Known limitations</strong>: the 2023 source used the TWD97 TM2 coordinate system (EPSG:3826); the 2026 release already ships a WGS84 version. This page's choropleth aggregates only the per-segment county/district fields, never per-segment coordinates, so it is unaffected by the coordinate-system difference. Sidewalk records exist for 那瑪夏 (Kaohsiung) and 東引鄉 (Lienchiang), but this repo's district-boundary file (districts.geojson) lacks polygons for these two districts (the same pre-existing gap as the crash maps), so they can't be shaded on the map — they're still counted in county totals and the ranking. Two segments in the Chiayi County file were mistagged (they belong to Chiayi City's West District) and were corrected during aggregation; 頭份/員林 (upgraded from 鎮 to 市 in 2015) are mapped to their current names.</span></p>
+    <p style="font-size:11px;color:var(--grey-2);font-weight:300;line-height:1.8;margin-top:14px;font-family:var(--font-en);letter-spacing:0.05em">
+      Sources · MOTC 全國人行道整體區位資料 (data.gov.tw) · MOI Household Registration dataset 8410 (population) · g0v/twgeojson district boundaries
+    </p>
+  </div>
+</div>
+
+<div class="partner-logos">
+  <div class="pl-label t-zh">資料夥伴 · 合作單位</div>
+  <div class="pl-label t-en">In partnership with</div>
+  <img src="assets/tcan_vzt_logo.png" alt="TCAN 台灣氣候行動網路 · Vision Zero Taiwan 還路於民行人路權促進會">
+  <div><a class="pl-visit" href="https://www.visionzero.tw/" target="_blank" rel="noopener noreferrer"><span class="t-zh">還路於民 Vision Zero Taiwan · 官方網站</span><span class="t-en">Vision Zero Taiwan · Official site</span><span class="pl-url">visionzero.tw ↗</span></a></div>
+</div>
+
+<footer>
+  <div>Taiwan Mobility Atlas · Sidewalk Inventory · Designed by 吳昀慶</div>
+  <div class="tags">
+    <span class="tag lime"><span class="t-zh">面量圖</span><span class="t-en">Choropleth</span></span>
+    <span class="tag">2023 → 2026</span>
+    <span class="tag black">22 counties</span>
+  </div>
+</footer>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="data/cities.js"></script>
+<script src="data/townships_en.js"></script>
+<script src="data/sidewalk_national.js"></script>
+<script src="data/gmaps_key.js"></script>
+<script>
+// ── i18n core ──
+window.__LANG = (function(){ try { return localStorage.getItem('lang') || 'zh'; } catch(e){ return 'zh'; } })();
+function TT(zh, en) { return window.__LANG === 'en' ? en : zh; }
+window.__COUNTY2EN = {}; window.__COUNTY2SLUG = {};
+(window.CITIES || []).forEach(c => { window.__COUNTY2EN[c.zh] = c.en; window.__COUNTY2SLUG[c.zh] = c.slug; });
+function enCounty(c) { return (window.__COUNTY2EN && window.__COUNTY2EN[c]) || c; }
+function enTown(t) { return TT(t, (window.TOWN_EN && window.TOWN_EN[t]) || t); }
+
+function setLang(l) {
+  window.__LANG = l;
+  document.body.classList.toggle('lang-en', l === 'en');
+  document.documentElement.lang = l === 'en' ? 'en' : 'zh-TW';
+  try { localStorage.setItem('lang', l); } catch(e) {}
+  document.querySelectorAll('#langToggle .lt-opt').forEach(o => o.classList.toggle('active', o.dataset.lang === l));
+  if (window.__rerender) window.__rerender();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#langToggle .lt-opt').forEach(o =>
+    o.addEventListener('click', () => setLang(o.dataset.lang)));
+  setLang(window.__LANG);
+});
+</script>
+<script>
+(async () => {
+  const SW = window.SIDEWALK_NATIONAL;
+  const [districts, populations] = await Promise.all([
+    fetch('districts.geojson').then(r => r.json()),
+    fetch('populations.json').then(r => r.json()),
+  ]);
+  const norm = s => (s || '').replace(/臺/g, '台');
+
+  function popOf(county, district) {
+    const c = populations[county]; if (!c) return null;
+    return c[district] || null;
+  }
+
+  // ── national hero ──
+  const nat23 = SW.national['2023'], nat26 = SW.national['2026'];
+  const lenGrowthPct = ((nat26.length_km - nat23.length_km) / nat23.length_km * 100).toFixed(1);
+
+  // county-level national ramp/net rollups (weighted)
+  function natWeighted(yr, field, weightField) {
+    let wsum = 0, vsum = 0;
+    for (const c in SW.by_county[yr]) {
+      const r = SW.by_county[yr][c];
+      const w = r[weightField] || 0;
+      vsum += (r[field] || 0) * w; wsum += w;
+    }
+    return wsum ? vsum / wsum : 0;
+  }
+  function natRampGapRate(yr) {
+    let need = 0, gap = 0;
+    for (const c in SW.by_county[yr]) { need += SW.by_county[yr][c].ramp_need; gap += SW.by_county[yr][c].ramp_gap; }
+    return need ? gap / need * 100 : 0;
+  }
+  const net23 = natWeighted('2023', 'avg_net_wth', 'length_km'), net26 = natWeighted('2026', 'avg_net_wth', 'length_km');
+  const ramp23 = natRampGapRate('2023'), ramp26 = natRampGapRate('2026');
+
+  function deltaEl(id, v0, v1, unit, higherIsBetter, decimals) {
+    const el = document.getElementById(id);
+    const d = v1 - v0;
+    const good = higherIsBetter ? d >= 0 : d <= 0;
+    const sign = d > 0 ? '+' : '';
+    el.textContent = `${sign}${d.toFixed(decimals)} ${unit} ${TT('（2023→2026）', '(2023→2026)')}`;
+    el.className = 'kpi-delta ' + (Math.abs(d) < 1e-9 ? '' : (good ? 'up' : 'down'));
+  }
+
+  function renderHero() {
+    document.getElementById('hMetaN').innerHTML = `${nat26.n.toLocaleString()} ${TT('段', 'segments')} · ${nat26.length_km.toLocaleString()} km`;
+    document.getElementById('hLength').innerHTML = `${nat26.length_km.toLocaleString()}<sup><span class="t-zh">公里</span><span class="t-en">km</span></sup>`;
+    document.getElementById('hGrowthBadge').innerHTML = `▲ +${lenGrowthPct}% <span style="font-weight:400">${TT('自 2023 年 6 月', 'since June 2023')}</span>`;
+    document.getElementById('hSegMeta').innerHTML = TT(
+      `全國 ${nat26.n.toLocaleString()} 個路段 · 22 個縣市 · 2023 年基準 ${nat23.length_km.toLocaleString()} 公里`,
+      `${nat26.n.toLocaleString()} segments nationwide · 22 counties · 2023 baseline ${nat23.length_km.toLocaleString()} km`
+    );
+    document.getElementById('kLen2023').innerHTML = `${nat23.length_km.toLocaleString()}<small>km</small>`;
+    deltaEl('kLenDelta', nat23.length_km, nat26.length_km, 'km', true, 0);
+    document.getElementById('kNet2023').innerHTML = `${net23.toFixed(2)}<small>m</small>`;
+    deltaEl('kNetDelta', net23, net26, 'm', true, 2);
+    document.getElementById('kRamp2023').innerHTML = `${ramp23.toFixed(1)}<small>%</small>`;
+    deltaEl('kRampDelta', ramp23, ramp26, 'pp', false, 1);
+    document.getElementById('kSeg2023').innerHTML = `${nat23.n.toLocaleString()}`;
+    deltaEl('kSegDelta', nat23.n, nat26.n, TT('段', 'segs'), true, 0);
+  }
+  renderHero();
+
+  // ── choropleth state ──
+  const state = { year: '2026', metric: 'length', selectedKey: null };
+
+  function districtRec(year, county, district) {
+    const c = SW.by_district[year] && SW.by_district[year][county];
+    return (c && c[district]) || null;
+  }
+  function metricFromRec(rec, county, district, metric) {
+    if (!rec) return null;
+    if (metric === 'length') return rec.length_km;
+    if (metric === 'wth') return rec.avg_wth;
+    if (metric === 'net') return rec.avg_net_wth;
+    if (metric === 'ramp') return rec.ramp_gap_rate;
+    if (metric === 'percap') {
+      const pop = popOf(county, district);
+      if (!pop) return null;
+      return rec.length_km * 1000 / pop * 1000; // metres per 1,000 residents
+    }
+    return null;
+  }
+  function valueFor(county, district) {
+    const r23 = districtRec('2023', county, district), r26 = districtRec('2026', county, district);
+    const v23 = metricFromRec(r23, county, district, state.metric);
+    const v26 = metricFromRec(r26, county, district, state.metric);
+    if (state.year === '2023') return v23;
+    if (state.year === '2026') return v26;
+    // growth
+    if (v23 == null && v26 == null) return null;
+    return (v26 || 0) - (v23 || 0);
+  }
+  const HIGHER_IS_BETTER = { length: true, percap: true, wth: true, net: true, ramp: false };
+  const METRIC_UNIT = { length: 'km', percap: 'm/1k', wth: 'm', net: 'm', ramp: '%' };
+  const METRIC_LABEL_ZH = { length: '總長度', percap: '每千人長度', wth: '平均寬度', net: '平均淨寬', ramp: '斜坡缺口率' };
+  const METRIC_LABEL_EN = { length: 'Total length', percap: 'Per 1,000 residents', wth: 'Avg. width', net: 'Avg. clear width', ramp: 'Ramp gap rate' };
+
+  const COLOR_BINS = ['#F2F2F2', '#E8F000', '#C8D400', '#E8A825', '#D94F3D'];
+  function quantileBreaks(values) {
+    const non0 = values.filter(v => v != null && v > 0).sort((a, b) => a - b);
+    if (!non0.length) return [0, 0, 0, 0];
+    const q = p => non0[Math.min(non0.length - 1, Math.floor(non0.length * p))];
+    return [q(0.2), q(0.4), q(0.6), q(0.8)];
+  }
+  function colorFor(v, breaks) {
+    if (v == null) return '#FAFAFA';
+    if (v <= 0) return COLOR_BINS[0];
+    if (v <= breaks[0]) return COLOR_BINS[1];
+    if (v <= breaks[1]) return COLOR_BINS[2];
+    if (v <= breaks[2]) return COLOR_BINS[3];
+    return COLOR_BINS[4];
+  }
+  // diverging scale for Growth mode
+  function colorForGrowth(v, maxAbs, higherIsBetter) {
+    if (v == null) return '#FAFAFA';
+    if (!maxAbs || Math.abs(v) < maxAbs * 0.03) return '#F2F2F2';
+    const t = Math.min(1, Math.abs(v) / maxAbs);
+    const good = higherIsBetter ? v > 0 : v < 0;
+    if (good) return t > 0.6 ? '#A8B200' : (t > 0.3 ? '#C8D400' : '#E8F000');
+    return t > 0.6 ? '#D94F3D' : (t > 0.3 ? '#E8A825' : '#F2C99A');
+  }
+
+  const map = L.map('map', {
+    center: [23.7, 121.0], zoom: 7,
+    zoomControl: true, scrollWheelZoom: true,
+    minZoom: 6, maxZoom: 14,
+    attributionControl: true,
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19,
+  }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd', maxZoom: 19, pane: 'shadowPane',
+  }).addTo(map);
+
+  let breaks = [0, 0, 0, 0], maxAbsGrowth = 0;
+  const layer = L.geoJSON(districts, {
+    style: f => {
+      const v = valueFor(norm(f.properties.COUNTYNAME), norm(f.properties.TOWNNAME));
+      const fill = state.year === 'growth' ? colorForGrowth(v, maxAbsGrowth, HIGHER_IS_BETTER[state.metric]) : colorFor(v, breaks);
+      return { fillColor: fill, fillOpacity: v == null ? 0.15 : 0.78, color: '#888', weight: 0.5, className: 'district-feature' };
+    },
+    onEachFeature: (f, lyr) => {
+      const p = f.properties;
+      const county = norm(p.COUNTYNAME), district = norm(p.TOWNNAME);
+      lyr.on({
+        mouseover: e => { e.target.setStyle({ weight: 1.5, color: '#1A1A1A' }); e.target.bringToFront(); },
+        mouseout: e => { if (state.selectedKey !== `${county}|${district}`) layer.resetStyle(e.target); },
+        click: e => selectDistrict(county, district, e.target),
+      });
+      const updateTooltip = () => {
+        const v = valueFor(county, district);
+        const label = v == null ? TT('無資料', 'no data') : `${v.toFixed(v >= 100 ? 0 : 2)} ${METRIC_UNIT[state.metric]}`;
+        lyr.bindTooltip(`<strong>${TT(county, enCounty(county))} ${enTown(district)}</strong><br>${TT(METRIC_LABEL_ZH[state.metric], METRIC_LABEL_EN[state.metric])}: ${label}`,
+          { sticky: true, direction: 'top', offset: [0, -4] });
+      };
+      lyr._updateTooltip = updateTooltip;
+      updateTooltip();
+    },
+  }).addTo(map);
+
+  let selectedLayer = null;
+  function selectDistrict(county, district, lyr) {
+    if (selectedLayer) layer.resetStyle(selectedLayer);
+    state.selectedKey = `${county}|${district}`;
+    lyr.setStyle({ weight: 2, color: '#1A1A1A' });
+    lyr.bringToFront();
+    selectedLayer = lyr;
+    renderDetail(county, district);
+  }
+
+  function renderDetail(county, district) {
+    document.getElementById('detailEmpty').style.display = 'none';
+    const card = document.getElementById('detailCard');
+    card.style.display = 'block';
+    const r23 = districtRec('2023', county, district), r26 = districtRec('2026', county, district);
+    function row(labelZh, labelEn, v23, v26, unit, decimals) {
+      if (v23 == null && v26 == null) return '';
+      const d = (v26 || 0) - (v23 || 0);
+      const sign = d > 0 ? '+' : '';
+      return `<div class="detail-stat">
+        <div><div class="stat-label">${labelEn}</div><div class="stat-val">${v26 != null ? v26.toFixed(decimals) : '—'}<small>${unit}</small></div></div>
+        <div><div class="stat-label">Δ 2023→2026</div><div class="stat-val" style="font-size:16px;color:var(--grey-1)">${sign}${d.toFixed(decimals)}<small>${unit}</small></div></div>
+      </div>`;
+    }
+    card.innerHTML = `
+      <div class="detail-name">${TT(county, enCounty(county))} ${enTown(district)}</div>
+      <div class="detail-county">${TT('2026 年資料', '2026 data')}</div>
+      ${row('總長度', 'Length (km)', r23 && r23.length_km, r26 && r26.length_km, 'km', 2)}
+      ${row('平均寬度', 'Width (m)', r23 && r23.avg_wth, r26 && r26.avg_wth, 'm', 2)}
+      ${row('平均淨寬', 'Net width (m)', r23 && r23.avg_net_wth, r26 && r26.avg_net_wth, 'm', 2)}
+      ${row('斜坡缺口率', 'Ramp gap rate (%)', r23 && r23.ramp_gap_rate, r26 && r26.ramp_gap_rate, '%', 1)}
+      <div class="detail-stat" style="border-top:1px solid var(--grey-3)">
+        <div><div class="stat-label">Segments 2023</div><div class="stat-val" style="font-size:16px">${r23 ? r23.n.toLocaleString() : '—'}</div></div>
+        <div><div class="stat-label">Segments 2026</div><div class="stat-val" style="font-size:16px">${r26 ? r26.n.toLocaleString() : '—'}</div></div>
+      </div>
+    `;
+  }
+
+  function renderLegend() {
+    const en = window.__LANG === 'en';
+    const titleEl = document.getElementById('legendTitle');
+    titleEl.textContent = `${TT(METRIC_LABEL_ZH[state.metric], METRIC_LABEL_EN[state.metric])} (${state.year === 'growth' ? TT('成長', 'growth') : state.year})`;
+    const bins = document.getElementById('legendBins');
+    if (state.year === 'growth') {
+      bins.innerHTML = [
+        `<span class="legend-tick">${TT('惡化', 'worse')}</span>`,
+        `<span class="legend-swatch" style="background:#D94F3D"></span>`,
+        `<span class="legend-swatch" style="background:#E8A825"></span>`,
+        `<span class="legend-swatch" style="background:#F2F2F2"></span>`,
+        `<span class="legend-swatch" style="background:#C8D400"></span>`,
+        `<span class="legend-swatch" style="background:#A8B200"></span>`,
+        `<span class="legend-tick">${TT('改善', 'better')}</span>`,
+      ].join('');
+    } else {
+      const fmt = v => v >= 100 ? Math.round(v) : v.toFixed(1);
+      bins.innerHTML = [
+        `<span class="legend-tick">0</span>`,
+        ...COLOR_BINS.flatMap((c, i) => [`<span class="legend-swatch" style="background:${c}"></span>`,
+          i < 4 ? `<span class="legend-tick">${fmt(breaks[i])}</span>` : `<span class="legend-tick">+</span>`]),
+      ].join('');
+    }
+  }
+
+  function recompute() {
+    // recompute breaks / maxAbsGrowth over all districts for current metric+year
+    const vals = [];
+    for (const county in SW.by_district['2026']) {
+      for (const district in SW.by_district['2026'][county]) vals.push(valueFor(county, district));
+    }
+    for (const county in SW.by_district['2023']) {
+      for (const district in SW.by_district['2023'][county]) {
+        if (!(SW.by_district['2026'][county] && SW.by_district['2026'][county][district])) vals.push(valueFor(county, district));
+      }
+    }
+    const nonNull = vals.filter(v => v != null);
+    breaks = quantileBreaks(nonNull);
+    maxAbsGrowth = nonNull.length ? Math.max(...nonNull.map(v => Math.abs(v))) : 0;
+    layer.eachLayer(lyr => { lyr._updateTooltip && lyr._updateTooltip(); });
+    layer.setStyle(f => {
+      const v = valueFor(norm(f.properties.COUNTYNAME), norm(f.properties.TOWNNAME));
+      const fill = state.year === 'growth' ? colorForGrowth(v, maxAbsGrowth, HIGHER_IS_BETTER[state.metric]) : colorFor(v, breaks);
+      return { fillColor: fill, fillOpacity: v == null ? 0.15 : 0.78 };
+    });
+    renderLegend();
+    document.getElementById('filterCount').textContent =
+      `${TT(METRIC_LABEL_ZH[state.metric], METRIC_LABEL_EN[state.metric])} · ${state.year === 'growth' ? TT('2023→2026 成長', '2023→2026 growth') : state.year}`;
+    renderCountyRanking();
+    if (state.selectedKey) {
+      const [c, d] = state.selectedKey.split('|');
+      renderDetail(c, d);
+    }
+  }
+
+  function renderCountyRanking() {
+    const rows = Object.keys(SW.by_county['2026']).map(county => {
+      const r23 = SW.by_county['2023'][county], r26 = SW.by_county['2026'][county];
+      let v;
+      if (state.metric === 'percap') {
+        // county-level population = sum of district populations
+        const popMap = populations[county] || {};
+        const pop = Object.values(popMap).reduce((s, x) => s + x, 0);
+        const l23 = r23 ? r23.length_km : 0, l26 = r26 ? r26.length_km : 0;
+        const p23 = pop ? l23 * 1000 / pop * 1000 : null, p26 = pop ? l26 * 1000 / pop * 1000 : null;
+        v = state.year === '2023' ? p23 : state.year === '2026' ? p26 : (p26 != null && p23 != null ? p26 - p23 : null);
+      } else {
+        const field = { length: 'length_km', wth: 'avg_wth', net: 'avg_net_wth', ramp: 'ramp_gap_rate' }[state.metric];
+        const v23 = r23 ? r23[field] : null, v26 = r26 ? r26[field] : null;
+        v = state.year === '2023' ? v23 : state.year === '2026' ? v26 : (v26 != null && v23 != null ? v26 - v23 : null);
+      }
+      return { county, v };
+    }).filter(r => r.v != null);
+    // Best performer first: descending when a higher value is better (length/width/etc.),
+    // ascending when a lower value is better (ramp gap rate) — same rule for growth deltas.
+    const desc = HIGHER_IS_BETTER[state.metric] ? -1 : 1;
+    rows.sort((a, b) => desc * (a.v - b.v));
+    const maxAbs = Math.max(...rows.map(r => Math.abs(r.v)), 1e-9);
+    document.getElementById('byCounty').innerHTML = rows.map(r => {
+      const slug = window.__COUNTY2SLUG[r.county];
+      const pct = Math.min(100, Math.abs(r.v) / maxAbs * 100);
+      const sign = state.year === 'growth' && r.v > 0 ? '+' : '';
+      const valStr = `${sign}${r.v.toFixed(r.v >= 100 || Math.abs(r.v) >= 100 ? 0 : 2)}`;
+      return `<div class="county-row${slug ? ' clickable' : ''}" ${slug ? `data-slug="${slug}"` : ''} style="${slug ? 'cursor:pointer' : ''}">
+        <span class="c-name">${TT(r.county, enCounty(r.county))}</span>
+        <span class="c-track"><span class="c-fill" style="width:${pct}%"></span></span>
+        <span class="c-val">${valStr}<small style="color:var(--grey-2);font-size:9px"> ${METRIC_UNIT[state.metric]}</small></span>
+      </div>`;
+    }).join('');
+    document.querySelectorAll('#byCounty .county-row.clickable').forEach(row => {
+      row.addEventListener('click', () => window.open('city.html?c=' + row.dataset.slug, '_blank'));
+    });
+  }
+
+  document.querySelectorAll('.cat-pill[data-year]').forEach(p => p.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill[data-year]').forEach(x => x.classList.remove('active'));
+    p.classList.add('active'); state.year = p.dataset.year; recompute();
+  }));
+  document.querySelectorAll('.cat-pill[data-metric]').forEach(p => p.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill[data-metric]').forEach(x => x.classList.remove('active'));
+    p.classList.add('active'); state.metric = p.dataset.metric; recompute();
+  }));
+
+  // ── §03 segment-level map (per-county, on-demand) ────────────────────
+  const segMap = L.map('segmap', {
+    center: [25.04, 121.53], zoom: 13, minZoom: 8, maxZoom: 19,
+    zoomControl: true, scrollWheelZoom: true, preferCanvas: true,
+    attributionControl: true,
+  });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19,
+  }).addTo(segMap);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd', maxZoom: 19, pane: 'shadowPane',
+  }).addTo(segMap);
+  const segRenderer = L.canvas({ padding: 0.3 });
+
+  const segState = { slug: 'taipei', color: 'net' };
+  const segCache = {};       // slug -> geojson
+  let segLayer = null;
+
+  // colour scales
+  function segColor(p) {
+    if (segState.color === 'ramp') {
+      if (p.r == null) return '#B9B9B9';          // no ramp needed here
+      return p.r === 0 ? '#D94F3D' : '#A8B200';   // needed-but-missing vs installed
+    }
+    const c = p.c;
+    if (c == null) return '#B9B9B9';
+    if (c < 1.5) return '#D94F3D';
+    if (c < 2.5) return '#E8A825';
+    return '#A8B200';
+  }
+
+  function segLegendHTML() {
+    const sw = (color, zh, en) =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px"><span class="legend-swatch" style="background:${color}"></span><span class="t-zh">${zh}</span><span class="t-en">${en}</span></span>`;
+    const pole = polesOn
+      ? `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px;margin-left:8px"><span style="width:9px;height:9px;border-radius:50%;background:#1A1A1A;border:2px solid #FFF;box-shadow:0 0 0 1px #1A1A1A"></span><span class="t-zh">電線桿${segMap.getZoom() < 16 ? '（放大後顯示）' : ''}</span><span class="t-en">utility poles${segMap.getZoom() < 16 ? ' (zoom in)' : ''}</span></span>`
+      : '';
+    const cd = (color, zh, en) =>
+      `<span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="width:9px;height:9px;border-radius:50%;background:${color};border:1.5px solid #FFF;box-shadow:0 0 0 1px ${color}"></span><span class="t-zh">${zh}</span><span class="t-en">${en}</span></span>`;
+    const crash = (typeof crashOn !== 'undefined' && crashOn)
+      ? `<span class="legend-title" style="margin-left:10px">A1 · 死亡事故</span>` +
+        cd('#1A1A1A', '機車', 'motorcycle') + cd('#3A7CC3', '汽/貨車', 'car/truck') +
+        cd('#D94F3D', '行人', 'pedestrian') + cd('#E8A825', '慢車', 'bicycle')
+      : '';
+    if (segState.color === 'ramp') {
+      return `<span class="legend-title">Curb ramps</span>` +
+        sw('#D94F3D', '該設而未設', 'needed · missing') +
+        sw('#A8B200', '已設置', 'installed') +
+        sw('#B9B9B9', '無須設置', 'not needed') + pole + crash;
+    }
+    return `<span class="legend-title">Clear width</span>` +
+      sw('#D94F3D', '淨寬 < 1.5 m', '< 1.5 m') +
+      sw('#E8A825', '1.5 – 2.5 m', '1.5 – 2.5 m') +
+      sw('#A8B200', '≥ 2.5 m', '≥ 2.5 m') +
+      sw('#B9B9B9', '無資料', 'no data') + pole + crash;
+  }
+
+  // ── Utility-pole obstacle overlay (Taipower registry, per county) ──
+  // 2.7M poles nationally → per-county JSON fetched on demand; only the
+  // poles inside the current viewport are drawn, and only at zoom ≥ 16.
+  let polesOn = false;
+  const poleCache = {};          // slug -> [[lat,lng],...]
+  let poleGroup = null;
+  const POLE_MIN_ZOOM = 16, POLE_CAP = 4000;
+
+  async function ensurePoles(slug) {
+    if (poleCache[slug]) return poleCache[slug];
+    try {
+      poleCache[slug] = await fetch(`data/poles/${slug}.json`).then(r => r.json());
+    } catch (e) { poleCache[slug] = []; }
+    return poleCache[slug];
+  }
+
+  function renderPoles() {
+    if (poleGroup) { segMap.removeLayer(poleGroup); poleGroup = null; }
+    document.getElementById('segLegend').innerHTML = segLegendHTML();
+    if (!polesOn || segMap.getZoom() < POLE_MIN_ZOOM) return;
+    const pts = poleCache[segState.slug];
+    if (!pts) return;
+    const b = segMap.getBounds().pad(0.1);
+    const layers = [];
+    for (const p of pts) {
+      if (p[0] < b.getSouth() || p[0] > b.getNorth() || p[1] < b.getWest() || p[1] > b.getEast()) continue;
+      layers.push(L.circleMarker([p[0], p[1]], {
+        renderer: segRenderer, radius: 3.2,
+        color: '#FFFFFF', weight: 1.4, fillColor: '#1A1A1A', fillOpacity: 1,
+      }).bindTooltip(TT('⚡ 電線桿', '⚡ Utility pole'), { direction: 'top', offset: [0, -4] }));
+      if (layers.length >= POLE_CAP) break;
+    }
+    poleGroup = L.layerGroup(layers).addTo(segMap);
+  }
+
+  function renderSegLayer() {
+    if (segLayer) { segMap.removeLayer(segLayer); segLayer = null; }
+    const geo = segCache[segState.slug];
+    if (!geo) return;
+    segLayer = L.geoJSON(geo, {
+      renderer: segRenderer,
+      // At city-wide zoom the black outline would swamp the tiny fills — only
+      // stroke when zoomed in enough for segments to be readable.
+      style: f => ({ stroke: segMap.getZoom() >= 15, color: '#1A1A1A', weight: 0.4, fillColor: segColor(f.properties), fillOpacity: 0.9 }),
+      onEachFeature: (f, lyr) => {
+        const p = f.properties;
+        lyr.bindTooltip(
+          `<strong>${p.n || TT('（未命名）', '(unnamed)')}</strong> · ${enTown(p.v)}<br>` +
+          `${TT('寬', 'width')} ${p.w != null ? p.w + ' m' : '—'} · ${TT('淨寬', 'clear')} ${p.c != null ? p.c + ' m' : '—'} · ` +
+          `${TT('斜坡', 'ramps')} ${p.r == null ? TT('無須設置', 'n/a') : p.r}`,
+          { sticky: true, direction: 'top', offset: [0, -4] });
+        lyr.on('click', () => enterSV(lyr));
+      },
+    }).addTo(segMap);
+    document.getElementById('segLegend').innerHTML = segLegendHTML();
+    const n = geo.features.length;
+    document.getElementById('segCount').textContent =
+      `${TT(bySlugZh[segState.slug] || '', enCounty(bySlugZh[segState.slug] || ''))} · ${n.toLocaleString()} ${TT('段', 'segments')}`;
+    renderCrashes();   // keep A1 dots refiltered + drawn above the segments
+  }
+
+  const bySlugZh = {};
+  (window.CITIES || []).forEach(c => { bySlugZh[c.slug] = c.zh; });
+
+  // ── Street View comparison mode ──────────────────────────────────
+  // Click a segment → keyless Google SV embed takes the stage, and the live
+  // Leaflet map is re-parented into a top-right dock for side-by-side checks.
+  const segmapEl = document.getElementById('segmap');
+  const svStage = document.getElementById('svStage');
+  const svDock = document.getElementById('svDock');
+  let svSelLayer = null;
+  let svPoint = null, svHeading = 0, pegman = null;
+
+  // Double-buffered panorama: load the next view in the hidden iframe and
+  // fade-swap once it's ready — no white flash on rotate / segment switch.
+  const svFrames = [document.getElementById('svFrameA'), document.getElementById('svFrameB')];
+  const svLoading = document.getElementById('svLoading');
+  let svActive = 0, svPending = null, svSwapTimer = null;
+  const svAssignedAt = [0, 0];                 // per-frame src-assignment timestamp
+  function svSwapTo(idx) {
+    const out = svFrames[svActive], inn = svFrames[idx];
+    out.classList.remove('sv-active');
+    out.setAttribute('aria-hidden', 'true');
+    out.setAttribute('tabindex', '-1');
+    inn.classList.add('sv-active');
+    inn.removeAttribute('aria-hidden');        // the visible pano is the one AT sees
+    inn.removeAttribute('tabindex');
+    svActive = idx;
+    svPending = null;
+    svLoading.classList.remove('on');
+    clearTimeout(svSwapTimer);
+  }
+  svFrames.forEach((f, i) => f.addEventListener('load', () => {
+    // Ignore load events that arrive within 60 ms of this frame's last src
+    // assignment: those are stale queued events from a superseded navigation
+    // (a real cross-origin pano load always takes longer than that). Without
+    // this, a rapid second rotate could swap in the OLD document and disarm
+    // the 7 s watchdog.
+    if (svPending && f.src === svPending && performance.now() - svAssignedAt[i] > 60) svSwapTo(i);
+  }));
+  function loadPano(url) {
+    const bufIdx = 1 - svActive;
+    svPending = url;
+    svLoading.classList.add('on');
+    svAssignedAt[bufIdx] = performance.now();
+    svFrames[bufIdx].src = url;
+    clearTimeout(svSwapTimer);
+    svSwapTimer = setTimeout(() => {           // safety net if load never fires
+      if (svPending === url) svSwapTo(bufIdx);
+    }, 7000);
+  }
+
+  // Pegman: a fixed person glyph over a rotating view-cone, marking the
+  // panorama viewpoint + facing on the docked map (Google-style).
+  const PEG_CONE_SVG =
+    `<svg viewBox="0 0 64 64" width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="pegg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#C8D400" stop-opacity="0.85"/>
+        <stop offset="1" stop-color="#C8D400" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="M32 32 L14 3 A34 34 0 0 1 50 3 Z" fill="url(#pegg)" stroke="#A8B200" stroke-width="0.8" stroke-opacity="0.5"/>
+    </svg>`;
+  const PEG_MAN_SVG =
+    `<svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="5.4" r="3.4" fill="#1A1A1A" stroke="#FFFFFF" stroke-width="1.4"/>
+      <path d="M12 9.6 C8.6 9.6 7 11.6 7 14.6 L7 16.2 L9.4 16.2 L9.6 22.4 L14.4 22.4 L14.6 16.2 L17 16.2 L17 14.6 C17 11.6 15.4 9.6 12 9.6 Z"
+            fill="#1A1A1A" stroke="#FFFFFF" stroke-width="1.4" stroke-linejoin="round"/>
+    </svg>`;
+  function pegmanIcon() {
+    return L.divIcon({
+      className: 'pegman-wrap', iconSize: [64, 64], iconAnchor: [32, 32],
+      html: `<div class="peg-cone" style="transform:rotate(${svHeading}deg)">${PEG_CONE_SVG}</div><div class="peg-man">${PEG_MAN_SVG}</div>`,
+    });
+  }
+  function dirLabel(h) {
+    return ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(((h % 360) + 360) % 360 / 45) % 8];
+  }
+  // Rough initial facing: along the segment's long axis (sidewalk strips are
+  // elongated; facing along the road keeps the sidewalk in frame).
+  function segBearing(lyr) {
+    const b = lyr.getBounds();
+    const dLat = b.getNorth() - b.getSouth();
+    const dLng = (b.getEast() - b.getWest()) * Math.cos(b.getCenter().lat * Math.PI / 180);
+    const deg = Math.atan2(dLng, dLat) * 180 / Math.PI;   // 0 = north, cw
+    return (deg + 360) % 360;
+  }
+  function svFrameSrc() {
+    return `https://www.google.com/maps/embed?pb=!4v1700000000000!6m8!1m7!1s0!2m2!1d${svPoint.lat.toFixed(6)}!2d${svPoint.lng.toFixed(6)}!3f${svHeading.toFixed(0)}!4f0!5f0.7820865974627469&hl=${TT('zh-TW', 'en')}`;
+  }
+  function updatePegman() {
+    if (!svPoint) return;
+    if (!pegman) {
+      pegman = L.marker(svPoint, { icon: pegmanIcon(), interactive: false, keyboard: false, zIndexOffset: 1200 }).addTo(segMap);
+    } else {
+      pegman.setLatLng(svPoint);
+      const cone = pegman.getElement() && pegman.getElement().querySelector('.peg-cone');
+      if (cone) cone.style.transform = `rotate(${svHeading}deg)`;
+    }
+    document.getElementById('svDir').textContent = dirLabel(svHeading);
+  }
+
+  let segSwitching = false;   // true while a county's geojson is being fetched
+
+  // ── Official Maps JS API path (when data/gmaps_key.js provides a key) ──
+  // Upgrades the panorama to the newest official imagery (+ capture date)
+  // and, crucially, live-syncs the pegman: position_changed / pov_changed
+  // fire as the user walks or drags inside the panorama, so the cone and
+  // the true pano location always match. Any failure falls back to the
+  // keyless double-buffered embed.
+  const svPanoDiv = document.getElementById('svPano');
+  const svDateEl = document.getElementById('svDate');
+  let gmapsPromise = null, svPanoObj = null, svSvc = null;
+  let svMode = 'iframe';           // 'js' | 'iframe' — which backend is active
+  let svPanoApplying = false;      // true while WE set pov/pano (skip echo events)
+
+  function loadGmapsApi() {
+    if (!window.GMAPS_KEY) return Promise.reject(new Error('no key'));
+    if (gmapsPromise) return gmapsPromise;
+    gmapsPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      window.__gmapsReady = () => resolve();
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(window.GMAPS_KEY)}&v=weekly&loading=async&callback=__gmapsReady&language=${TT('zh-TW', 'en')}`;
+      s.onerror = () => { gmapsPromise = null; reject(new Error('gmaps load failed')); };
+      document.head.appendChild(s);
+      setTimeout(() => reject(new Error('gmaps timeout')), 10000);
+    }).then(() => google.maps.importLibrary('streetView'));
+    return gmapsPromise;
+  }
+
+  function setSvDate(dateStr) {
+    if (dateStr) {
+      svDateEl.textContent = `${TT('影像', 'imagery')} ${dateStr}`;
+      svDateEl.style.display = '';
+    } else {
+      svDateEl.style.display = 'none';
+    }
+  }
+
+  function ensurePanoObj(lib) {
+    if (svPanoObj) return;
+    svSvc = new lib.StreetViewService();
+    svPanoObj = new lib.StreetViewPanorama(svPanoDiv, {
+      pov: { heading: svHeading, pitch: 0 },
+      addressControl: true, imageDateControl: true, motionTracking: false,
+      fullscreenControl: true, enableCloseButton: false,
+    });
+    svPanoObj.addListener('pov_changed', () => {
+      if (svMode !== 'js' || svPanoApplying) return;
+      svHeading = ((svPanoObj.getPov().heading % 360) + 360) % 360;
+      updatePegman();               // cone follows drags inside the pano, live
+    });
+    svPanoObj.addListener('position_changed', () => {
+      if (svMode !== 'js' || svPanoApplying) return;
+      const pos = svPanoObj.getPosition();
+      if (!pos) return;
+      svPoint = L.latLng(pos.lat(), pos.lng());
+      updatePegman();               // pegman walks with the user
+      if (!segMap.getBounds().contains(svPoint)) segMap.panTo(svPoint);
+    });
+    svPanoObj.addListener('pano_changed', () => {
+      if (svMode !== 'js') return;
+      const id = svPanoObj.getPano();
+      if (id && svSvc) svSvc.getPanorama({ pano: id }).then(({ data }) => {
+        if (svMode === 'js' && svPanoObj.getPano() === id) setSvDate(data.imageDate || null);
+      }).catch(() => {});
+    });
+  }
+
+  async function jsApiEnter(c) {
+    const lib = await loadGmapsApi();
+    ensurePanoObj(lib);
+    // Nearest OUTDOOR official pano within 120 m (skips user photospheres,
+    // which are the usual source of ancient/odd imagery).
+    const { data } = await svSvc.getPanorama({
+      location: { lat: c.lat, lng: c.lng }, radius: 120,
+      source: google.maps.StreetViewSource.OUTDOOR,
+      preference: google.maps.StreetViewPreference.NEAREST,
+    });
+    svPanoApplying = true;
+    svPanoObj.setPano(data.location.pano);
+    svPanoObj.setPov({ heading: svHeading, pitch: 0 });
+    svPanoApplying = false;
+    svMode = 'js';
+    svPanoDiv.classList.add('on');
+    svLoading.classList.remove('on');
+    setSvDate(data.imageDate || null);
+    // Pegman at the TRUE pano position (may sit tens of metres from the
+    // requested segment centre — this is the map↔pano sync fix).
+    if (data.location.latLng) {
+      svPoint = L.latLng(data.location.latLng.lat(), data.location.latLng.lng());
+      updatePegman();
+    }
+  }
+
+  function enterSV(lyr) {
+    if (segSwitching) return;  // old layer is being torn down — ignore clicks
+    const c = lyr.getBounds().getCenter();
+    const p = lyr.feature.properties;
+    svPoint = c;
+    svHeading = Math.round(segBearing(lyr));
+    setSvDate(null);
+    svLoading.classList.add('on');
+    if (window.GMAPS_KEY) {
+      jsApiEnter(c).catch(() => {           // no pano nearby / API failure
+        svMode = 'iframe';
+        svPanoDiv.classList.remove('on');
+        loadPano(svFrameSrc());
+      });
+    } else {
+      svMode = 'iframe';
+      // Keyless Google SV embed (the official share-embed "pb" format).
+      // !1s0 = no fixed pano id → Google resolves the nearest panorama.
+      loadPano(svFrameSrc());
+    }
+    document.getElementById('svInfo').innerHTML =
+      `<strong>${p.n || TT('（未命名）', '(unnamed)')}</strong> · ${enTown(p.v)} · ` +
+      `${TT('寬', 'width')} ${p.w != null ? p.w + ' m' : '—'} · ${TT('淨寬', 'clear')} ${p.c != null ? p.c + ' m' : '—'} · ` +
+      `${TT('斜坡', 'ramps')} ${p.r == null ? TT('無須設置', 'n/a') : p.r}`;
+    document.getElementById('svExt').href =
+      `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${c.lat.toFixed(6)},${c.lng.toFixed(6)}`;
+    if (svStage.style.display !== 'block') {
+      svStage.style.display = 'block';
+      svDock.appendChild(segmapEl);
+    }
+    if (svSelLayer && segLayer) { try { segLayer.resetStyle(svSelLayer); } catch (e) {} }
+    svSelLayer = lyr;
+    lyr.setStyle({ stroke: true, color: '#C8D400', weight: 3 });
+    updatePegman();
+    setTimeout(() => {
+      segMap.invalidateSize();
+      segMap.setView(c, Math.max(segMap.getZoom(), 17));
+    }, 80);
+    svStage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function exitSV() {
+    if (svStage.style.display !== 'block') return;
+    svStage.style.display = 'none';
+    svStage.parentElement.insertBefore(segmapEl, svStage);   // back to full width
+    svPending = null; svLoading.classList.remove('on'); clearTimeout(svSwapTimer);
+    svFrames.forEach(f => {
+      f.src = 'about:blank';
+      f.classList.remove('sv-active');
+      f.setAttribute('aria-hidden', 'true');   // nothing meaningful in either frame now
+      f.setAttribute('tabindex', '-1');
+    });
+    svActive = 0;
+    svPanoDiv.classList.remove('on');          // JS-API pano off (instance kept for reuse)
+    svMode = 'iframe';
+    setSvDate(null);
+    if (svSelLayer && segLayer) { try { segLayer.resetStyle(svSelLayer); } catch (e) {} }
+    svSelLayer = null;
+    if (pegman) { segMap.removeLayer(pegman); pegman = null; }
+    svPoint = null;
+    setTimeout(() => segMap.invalidateSize(), 80);
+  }
+  document.getElementById('svClose').addEventListener('click', exitSV);
+  document.getElementById('svRotate').addEventListener('click', () => {
+    if (!svPoint) return;
+    svHeading = (svHeading + 90) % 360;
+    if (svMode === 'js' && svPanoObj) {
+      svPanoApplying = true;
+      svPanoObj.setPov({ heading: svHeading, pitch: svPanoObj.getPov().pitch });
+      svPanoApplying = false;        // instant — no reload with the JS API
+    } else {
+      loadPano(svFrameSrc());        // keyless: panorama and cone rotate together
+    }
+    updatePegman();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') exitSV(); });
+
+  async function loadSegCounty(slug) {
+    exitSV();                       // county switch resets the comparison
+    svSelLayer = null;              // old layer is destroyed below
+    segSwitching = true;            // block enterSV on the outgoing layer mid-fetch
+    segState.slug = slug;
+    document.getElementById('segCount').textContent = TT('載入中…', 'loading…');
+    if (!segCache[slug]) {
+      try {
+        segCache[slug] = await fetch(`data/sidewalks26/${slug}.geojson`).then(r => r.json());
+      } catch (e) {
+        document.getElementById('segCount').textContent = TT('載入失敗', 'failed to load');
+        segSwitching = false;
+        return;
+      }
+    }
+    segSwitching = false;
+    renderSegLayer();
+    if (segLayer && segLayer.getBounds().isValid()) segMap.fitBounds(segLayer.getBounds(), { padding: [16, 16] });
+    if (polesOn) { await ensurePoles(slug); renderPoles(); }
+  }
+
+  // county selector (ordered by 2026 sidewalk length, longest first)
+  const sel = document.getElementById('segCounty');
+  function buildSegSelect() {
+    const order = Object.keys(SW.by_county['2026'])
+      .sort((a, b) => SW.by_county['2026'][b].length_km - SW.by_county['2026'][a].length_km);
+    sel.innerHTML = order.map(zh => {
+      const slug = window.__COUNTY2SLUG[zh];
+      return slug ? `<option value="${slug}" ${slug === segState.slug ? 'selected' : ''}>${TT(zh, enCounty(zh))}</option>` : '';
+    }).join('');
+  }
+  buildSegSelect();
+  sel.addEventListener('change', () => loadSegCounty(sel.value));
+  segMap.on('zoomend', () => {
+    if (segLayer) segLayer.setStyle({ stroke: segMap.getZoom() >= 15 });
+  });
+  segMap.on('moveend', renderPoles);   // covers zoom changes too (zoom ends with a move)
+  document.querySelectorAll('.cat-pill[data-segcolor]').forEach(p => p.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill[data-segcolor]').forEach(x => x.classList.remove('active'));
+    p.classList.add('active'); segState.color = p.dataset.segcolor; renderSegLayer();
+  }));
+  document.getElementById('polesToggle').addEventListener('click', async () => {
+    polesOn = !polesOn;
+    document.getElementById('polesToggle').classList.toggle('active', polesOn);
+    if (polesOn && !poleCache[segState.slug]) {
+      document.getElementById('segCount').textContent = TT('載入電線桿…', 'loading poles…');
+      await ensurePoles(segState.slug);
+      renderSegLayer();   // restore the count text
+    }
+    renderPoles();
+  });
+
+  // ── A1 crash-point overlay (data/national_points.js, lazy) ──────────
+  // Same per-victim palette as the county crash maps; radius ∝ deaths.
+  // Overlaying fatal crashes on the clear-width colours shows where
+  // people die alongside sidewalks that exist on paper but can't be used.
+  const CRASH_COLOR = ['#1A1A1A', '#3A7CC3', '#D94F3D', '#E8A825', '#888888'];  // by modeIdx
+  let crashOn = false, crashGroup = null, crashLoad = null;
+  function ensureCrashData() {
+    if (window.NATIONAL_POINTS) return Promise.resolve();
+    if (crashLoad) return crashLoad;
+    crashLoad = new Promise(resolve => {
+      const s = document.createElement('script');
+      s.src = 'data/national_points.js';
+      s.onload = () => resolve();
+      s.onerror = () => { crashLoad = null; resolve(); };
+      document.head.appendChild(s);
+    });
+    return crashLoad;
+  }
+  function renderCrashes() {
+    if (crashGroup) { segMap.removeLayer(crashGroup); crashGroup = null; }
+    document.getElementById('segLegend').innerHTML = segLegendHTML();
+    if (!crashOn || !window.NATIONAL_POINTS) return;
+    const NP = window.NATIONAL_POINTS;
+    const ci = NP.counties.findIndex(c => c.slug === segState.slug);
+    if (ci < 0) return;
+    const layers = [];
+    for (const p of NP.pts) {
+      if (p[5] !== ci) continue;
+      const dd = p[7] ? `${p[7].slice(0, 4)}.${p[7].slice(4, 6)}.${p[7].slice(6, 8)}` : `${p[3]}`;
+      layers.push(L.circleMarker([p[0], p[1]], {
+        renderer: segRenderer, radius: 3 + Math.min((p[4] || 1) - 1, 3),
+        color: '#FFFFFF', weight: 1.1, fillColor: CRASH_COLOR[p[2]] || '#888', fillOpacity: 0.95,
+      }).bindTooltip(
+        `<strong>${dd}</strong> · ${enTown(p[6])}<br>` +
+        `${TT(NP.modes[p[2]], NP.modes_en[p[2]])} · ${p[4]} ${TT('死', 'dead')} / ${p[9]} ${TT('傷', 'injured')}`,
+        { direction: 'top', offset: [0, -4] }));
+    }
+    crashGroup = L.layerGroup(layers).addTo(segMap);
+  }
+  document.getElementById('crashToggle').addEventListener('click', async () => {
+    crashOn = !crashOn;
+    document.getElementById('crashToggle').classList.toggle('active', crashOn);
+    if (crashOn && !window.NATIONAL_POINTS) {
+      document.getElementById('segCount').textContent = TT('載入事故點…', 'loading crashes…');
+      await ensureCrashData();
+      renderSegLayer();   // restores the count text (and re-draws crashes on top)
+    }
+    renderCrashes();
+  });
+
+  window.__rerender = () => { renderHero(); recompute(); buildSegSelect(); renderSegLayer(); };
+  recompute();
+  loadSegCounty(segState.slug);
+  setTimeout(() => segMap.invalidateSize(), 300);
+})();
+</script>
+</body>
+</html>

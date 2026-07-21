@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --black:#1A1A1A; --lime:#C8D400; --lime-dk:#A8B200; --lime-lt:#E8F000; --red:#D94F3D; --blue:#3A7CC3; --gold:#E8A825; --grey-1:#B8B8B8; --grey-2:#7c7c7c; --grey-3:#4a4a4a; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; }
+  body {
+    background: #141414; color: #fff; position: relative;
+    font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif; -webkit-font-smoothing: antialiased;
+  }
+  /* faint scattered crash-point motif, right half */
+  .dots { position: absolute; inset: 0; z-index: 0; }
+  .dots i { position: absolute; border-radius: 50%; }
+  /* left lime spine */
+  .spine { position: absolute; left: 0; top: 0; bottom: 0; width: 20px; background: var(--lime); z-index: 3; }
+  .wrap { position: absolute; inset: 0; z-index: 4; padding: 96px 110px; display: flex; flex-direction: column; }
+
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .kick { font-size: 22px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--lime); font-weight: 600; }
+  .badge { width: 108px; height: 108px; border-radius: 22px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.5); flex: none; }
+  .badge img { width: 100%; height: 100%; display: block; }
+
+  .mid { margin-top: auto; margin-bottom: auto; max-width: 1180px; }
+  .huge { font-size: 300px; font-weight: 700; line-height: 0.86; letter-spacing: -0.02em; color: var(--red); }
+  .huge small { font-size: 66px; font-weight: 500; color: var(--grey-1); letter-spacing: 0.02em; vertical-align: super; }
+  .hl { font-size: 84px; font-weight: 700; line-height: 1.05; letter-spacing: 0.01em; margin-top: 6px; }
+  .hl b { color: var(--lime); }
+  .sub { font-size: 30px; font-weight: 300; line-height: 1.55; color: var(--grey-1); margin-top: 30px; max-width: 1120px; }
+  .sub strong { color: #fff; font-weight: 600; }
+
+  .chips { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
+  .chip { font-size: 24px; font-weight: 600; letter-spacing: 0.02em; color: #fff; border: 1.5px solid var(--grey-3); border-radius: 999px; padding: 12px 24px; }
+  .chip b { color: var(--lime); font-weight: 700; }
+
+  .foot { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; max-width: 1180px; }
+  .foot .brand { font-family: 'Noto Sans TC', sans-serif; font-size: 26px; letter-spacing: 0.04em; color: var(--grey-1); font-weight: 400; }
+  .foot .brand b { color: #fff; font-weight: 700; }
+  .foot .url { font-size: 22px; letter-spacing: 0.06em; color: var(--grey-2); }
+
+  /* play button — video cue */
+  .play { position: absolute; right: 150px; top: 50%; transform: translateY(-50%); z-index: 5; width: 240px; height: 240px; }
+  .play .ring { position: absolute; inset: 0; border-radius: 50%; background: var(--lime); box-shadow: 0 20px 60px rgba(200,212,0,0.35); }
+  .play .halo { position: absolute; inset: -26px; border-radius: 50%; border: 3px solid rgba(200,212,0,0.35); }
+  .play .tri { position: absolute; top: 50%; left: 54%; transform: translate(-50%,-50%); width: 0; height: 0; border-style: solid; border-width: 52px 0 52px 86px; border-color: transparent transparent transparent #141414; }
+  .play .lbl { position: absolute; top: calc(100% + 26px); left: 50%; transform: translateX(-50%); font-size: 20px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--lime); font-weight: 600; white-space: nowrap; }
+
+  /* mascot signature, bottom-right */
+  .mascot { position: absolute; right: 64px; bottom: 0; z-index: 4; width: 236px; }
+  .mascot img { width: 100%; display: block; filter: drop-shadow(0 6px 18px rgba(0,0,0,0.45)); }
+</style>
+</head>
+<body>
+  <div class="dots" id="dots"></div>
+  <div class="spine"></div>
+
+  <div class="play">
+    <div class="halo"></div>
+    <div class="ring"></div>
+    <div class="tri"></div>
+    <div class="lbl">Watch · 60s</div>
+  </div>
+
+  <div class="wrap">
+    <div class="top">
+      <div class="kick">Taiwan · A1 fatal crashes · 2016–2025</div>
+      <div class="badge"><img src="icon-512.png" alt=""></div>
+    </div>
+
+    <div class="mid">
+      <div class="huge">17,175<small>&nbsp;lives</small></div>
+      <div class="hl">A decade of road deaths,<br><b>turned into an open map.</b></div>
+      <div class="sub">Every fatal crash in Taiwan — county by county, street by street — built from <strong>government open data</strong> anyone can explore. For <strong>Vision Zero</strong>.</div>
+      <div class="chips">
+        <span class="chip"><b>364</b> districts</span>
+        <span class="chip"><b>92,326</b> sidewalk segments</span>
+        <span class="chip">Installable as an app</span>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="brand">Taiwan Street Vision Project · <b>還路於民 Vision Zero Taiwan</b> × TCAN</div>
+      <div class="url">yunching0513.github.io/taiwan-mobility-atlas</div>
+    </div>
+  </div>
+
+  <div class="mascot"><img src="vzt_mascot.png" alt=""></div>
+
+  <script>
+    // deterministic scattered crash-point dots (mode colours), right 45%
+    const el = document.getElementById('dots');
+    let seed = 20260709;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    for (let i = 0; i < 150; i++) {
+      const d = document.createElement('i');
+      const x = 1020 + rnd() * 900, y = 40 + rnd() * 1000, s = 4 + rnd() * 11;
+      const c = i % 5 === 0 ? '#D94F3D' : (i % 3 === 0 ? '#3A7CC3' : (i % 7 === 0 ? '#E8A825' : '#5a5a5a'));
+      d.style.cssText = `left:${x}px;top:${y}px;width:${s}px;height:${s}px;background:${c};opacity:${0.22 + rnd() * 0.5}`;
+      el.appendChild(d);
+    }
+  </script>
+</body>
+</html>

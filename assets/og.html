@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { --black:#1A1A1A; --lime:#C8D400; --lime-dk:#A8B200; --red:#D94F3D; --blue:#3A7CC3; --gold:#E8A825; --grey-1:#4A4A4A; --grey-2:#8a8a8a; --grey-3:#C8C8C8; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: #FFFFFF; color: var(--black); position: relative;
+    font-family: 'Noto Sans TC', sans-serif; -webkit-font-smoothing: antialiased;
+  }
+  /* scattered crash-point motif, right side, faint */
+  .dots { position: absolute; inset: 0; z-index: 0; }
+  .dots i { position: absolute; border-radius: 50%; }
+  .edge { position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: var(--lime); z-index: 2; }
+  .wrap { position: absolute; inset: 0; z-index: 3; padding: 66px 72px; display: flex; flex-direction: column; }
+  .top { display: flex; align-items: center; gap: 16px; }
+  .mark { width: 46px; height: 46px; background: var(--black); color: var(--lime); font-weight: 900; font-size: 26px; display: flex; align-items: center; justify-content: center; }
+  .kick { font-family: 'Space Grotesk', sans-serif; font-size: 15px; letter-spacing: 0.34em; text-transform: uppercase; color: var(--grey-2); font-weight: 600; }
+  .mid { margin-top: auto; margin-bottom: auto; }
+  .hero { font-size: 150px; font-weight: 900; letter-spacing: 0.06em; line-height: 1; color: var(--black); }
+  .hero::after { content: ''; display: block; width: 220px; height: 14px; background: var(--lime); margin-top: 14px; }
+  .name { font-size: 40px; font-weight: 900; letter-spacing: 0.12em; margin-top: 26px; color: var(--black); }
+  .sub { font-size: 22px; font-weight: 300; letter-spacing: 0.04em; color: var(--grey-1); margin-top: 18px; }
+  .sub b { color: var(--black); font-weight: 700; }
+  .stats { display: flex; gap: 40px; margin-top: 30px; }
+  .stat .n { font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 700; line-height: 1; color: var(--black); }
+  .stat .n.r { color: var(--red); }
+  .stat .l { font-size: 13px; color: var(--grey-2); letter-spacing: 0.06em; margin-top: 7px; }
+  .foot { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #EAEAEA; padding-top: 20px; }
+  .foot .partner { font-size: 15px; letter-spacing: 0.05em; color: var(--grey-1); font-weight: 400; }
+  .foot .partner b { color: var(--lime-dk); font-weight: 700; }
+  .foot .url { font-family: 'Space Grotesk', sans-serif; font-size: 14px; letter-spacing: 0.08em; color: var(--grey-2); }
+  .en { font-family: 'Space Grotesk', sans-serif; font-size: 13px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--grey-3); margin-top: 6px; }
+</style>
+</head>
+<body>
+  <div class="dots" id="dots"></div>
+  <div class="edge"></div>
+  <div class="wrap">
+    <div class="top">
+      <div class="kick">Vision Zero Taiwan Project</div>
+    </div>
+
+    <div class="mid">
+      <div class="hero">還路於民</div>
+      <div class="name">台灣街道願景計畫</div>
+      <div class="sub">用<b>開放資料</b>，還給行人一條安全的路。</div>
+      <div class="stats">
+        <div class="stat"><div class="n r">17,175</div><div class="l">十年 A1 死亡（24h 內）</div></div>
+        <div class="stat"><div class="n">22</div><div class="l">縣市逐案地圖</div></div>
+        <div class="stat"><div class="n">92,326</div><div class="l">段人行道健檢</div></div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div>
+        <div class="partner">發起：<b>還路於民 Vision Zero Taiwan</b> × TCAN 台灣氣候行動網絡</div>
+        <div class="en">Reclaim the Streets · Open-data road-safety atlas</div>
+      </div>
+      <div class="url">yunching0513.github.io/taiwan-mobility-atlas</div>
+    </div>
+  </div>
+
+  <script>
+    // deterministic scattered dots (mode colours), right 45% of the card
+    const colors = ['#1A1A1A','#3A7CC3','#D94F3D','#E8A825'];
+    const el = document.getElementById('dots');
+    let seed = 20260708;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    for (let i = 0; i < 90; i++) {
+      const d = document.createElement('i');
+      const x = 620 + rnd() * 560, y = 40 + rnd() * 560, s = 3 + rnd() * 7;
+      const c = i % 5 === 0 ? '#D94F3D' : (i % 3 === 0 ? '#3A7CC3' : (i % 7 === 0 ? '#E8A825' : '#555'));
+      d.style.cssText = `left:${x}px;top:${y}px;width:${s}px;height:${s}px;background:${c};opacity:${0.25 + rnd() * 0.5}`;
+      el.appendChild(d);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__/
+*.pyc
+資料/
+資料.zip
+node_modules/
+_*.html
+
+# Claude Code local preview config
+.claude/launch.json
