@@ -155,6 +155,19 @@ body { font-family: var(--font-zh); background: var(--grey-4); color: var(--blac
 .cat-pill:hover { border-color: var(--black); }
 .cat-pill.active { background: var(--lime); border-color: var(--lime); font-weight: 700; }
 .lvdot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+.sw-sel { font-family: var(--font-zh); font-size: 12px; padding: 6px 10px; border: 1px solid var(--grey-3); background: var(--white); cursor: pointer; }
+.sw-stats { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 14px 0 4px; }
+.sw-stat { border: 1px solid var(--grey-3); padding: 10px 14px; min-width: 128px; }
+.sw-stat .n { font-family: var(--font-en); font-size: 24px; font-weight: 700; line-height: 1.1; }
+.sw-stat .l { font-size: 11px; color: var(--grey-2); margin-top: 3px; }
+.sw-list { max-height: 460px; overflow-y: auto; border: 1px solid var(--grey-3); }
+.sw-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--grey-4); font-size: 12px; }
+.sw-row:last-child { border-bottom: none; }
+.sw-row .rank { width: 34px; color: var(--grey-2); font-family: var(--font-en); text-align: right; }
+.sw-badge { width: 40px; text-align: center; color: #fff; font-family: var(--font-en); font-weight: 700; font-size: 12px; padding: 3px 0; border-radius: 3px; flex: none; }
+.sw-name { flex: 1 1 auto; min-width: 0; }
+.sw-name b { font-weight: 600; }
+.sw-metrics { flex: none; color: var(--grey-1); font-family: var(--font-en); font-size: 11px; text-align: right; white-space: nowrap; }
 
 /* Map area */
 .map-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; }
@@ -511,6 +524,9 @@ body.lang-en .t-en { display: inline; }
       <span class="cat-pill school-lv" data-lv="tertiary"><span class="lvdot" style="background:#4338CA"></span><span class="t-zh">大專</span><span class="t-en">Tertiary</span></span>
       <span class="cat-pill school-lv" data-lv="special"><span class="lvdot" style="background:#EA580C"></span><span class="t-zh">特教</span><span class="t-en">Special ed.</span></span>
       <span class="cat-pill school-lv" data-lv="other"><span class="lvdot" style="background:#64748B"></span><span class="t-zh">其他</span><span class="t-en">Other</span></span>
+      <span style="width:1px;height:20px;background:var(--grey-3);margin:0 2px"></span>
+      <span class="cat-pill school-mode active" data-mode="level"><span class="t-zh">依層級</span><span class="t-en">by level</span></span>
+      <span class="cat-pill school-mode" data-mode="deficit"><span class="t-zh">依步行不足</span><span class="t-en">by walk-deficit</span></span>
     </div>
     <div class="filter-group" style="margin-left:auto">
       <span class="filter-group-label" id="segCount">—</span>
@@ -546,9 +562,44 @@ body.lang-en .t-en { display: inline; }
   </div>
 </div>
 
-<!-- 04 — County ranking -->
+<!-- 03.5 — School walkability audit -->
 <div class="section">
-  <div class="section-label"><span class="t-zh">04 — 縣市排行</span><span class="t-en">04 — County Ranking</span></div>
+  <div class="section-label"><span class="t-zh">04 — 學區步行環境健檢｜全國排行</span><span class="t-en">04 — School-Zone Walkability Audit · National Ranking</span></div>
+  <div class="county-card">
+    <h4>🏫 <span class="t-zh">15 分鐘沿人行道可達分析</span><span class="t-en">15-min sidewalk-network reach</span></h4>
+    <div class="card-zh"><span class="t-zh">以各校為起點，沿<strong>實際人行道網路</strong>計算 15 分鐘（步行約 1 km、單車約 3 km）可達範圍，量化人行道的<strong>斷裂與欠缺</strong>。不足分數越高＝步行環境越差；「連通率」為可達人行道 ÷ 直線範圍內人行道（越低代表越破碎）。</span><span class="t-en">From each school, 15-minute reach is traced along the <strong>real sidewalk network</strong> (~1 km walk / ~3 km bike), quantifying <strong>fragmentation and gaps</strong>. Higher deficit score = worse; "connectivity" = reachable ÷ straight-line sidewalk (lower = more broken).</span></div>
+    <div id="swStats" class="sw-stats"></div>
+    <div class="filter-bar" style="box-shadow:none;padding:14px 0;gap:10px 16px;background:transparent">
+      <div class="filter-group"><span class="filter-group-label">County</span>
+        <select id="swCounty" class="sw-sel"></select></div>
+      <div class="filter-group"><span class="filter-group-label">Level</span>
+        <select id="swLevel" class="sw-sel">
+          <option value="">全部層級 / All</option>
+          <option value="elementary">國小 Elementary</option>
+          <option value="junior">國中 Junior high</option>
+          <option value="senior">高中職 Senior/voc.</option>
+          <option value="tertiary">大專 Tertiary</option>
+          <option value="special">特教 Special ed.</option>
+          <option value="other">其他 Other</option>
+        </select></div>
+      <div class="filter-group"><span class="filter-group-label">Grade</span>
+        <select id="swGrade" class="sw-sel">
+          <option value="">全部等級 / All</option>
+          <option value="severe">嚴重不足 severe</option>
+          <option value="high">偏高 high</option>
+          <option value="moderate">中等 moderate</option>
+          <option value="low">較佳 better</option>
+        </select></div>
+      <div class="filter-group" style="margin-left:auto"><span class="filter-group-label" id="swCount">—</span></div>
+    </div>
+    <div id="swList" class="sw-list"></div>
+    <div class="card-zh" style="margin-top:10px;color:var(--grey-2)"><span class="t-zh">方法備註：人行道由「面」段以 15 公尺鄰近門檻接成步行網路（寬幹道視為需穿越的障礙而不連通）；長度以面積÷寬度估算。此為模型近似，用於相對比較與優先排序，非現地量測。離島（澎湖／金門／連江）不在本圖資範圍。</span><span class="t-en">Method: sidewalk polygons are linked into a walking graph with a 15 m proximity threshold (wide arterials act as uncrossable breaks); segment length ≈ area ÷ width. A modelled approximation for relative ranking, not field survey. Offshore counties are outside this dataset.</span></div>
+  </div>
+</div>
+
+<!-- 05 — County ranking -->
+<div class="section">
+  <div class="section-label"><span class="t-zh">05 — 縣市排行</span><span class="t-en">05 — County Ranking</span></div>
   <div class="county-card">
     <h4>Ranking<span class="t-zh"> · 全 22 縣市</span><span class="t-en"> · all 22 counties</span></h4>
     <div class="card-zh"><span class="t-zh">依當前指標排序，點選縣市可在上方地圖定位</span><span class="t-en">Ranked by the current metric · tap a county to locate it on the map above</span></div>
@@ -608,6 +659,7 @@ function setLang(l) {
   try { localStorage.setItem('lang', l); } catch(e) {}
   document.querySelectorAll('#langToggle .lt-opt').forEach(o => o.classList.toggle('active', o.dataset.lang === l));
   if (window.__rerender) window.__rerender();
+  if (window.__swRender) window.__swRender();
 }
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#langToggle .lt-opt').forEach(o =>
@@ -964,9 +1016,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cd('#D94F3D', '行人', 'pedestrian') + cd('#E8A825', '慢車', 'bicycle')
       : '';
     const school = (typeof schoolLevels !== 'undefined' && schoolLevels.size)
-      ? `<span class="legend-title" style="margin-left:10px">🏫 <span class="t-zh">學校</span><span class="t-en">Schools</span></span>` +
-        SCHOOL_ORDER.filter(g => schoolLevels.has(g)).map(g =>
-          `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:8px"><span style="width:10px;height:10px;background:${LV_COLOR[g]}2E;border:1.5px solid ${LV_COLOR[g]}"></span><span class="t-zh">${LV_ZH[g]}</span><span class="t-en">${LV_EN[g]}</span></span>`).join('')
+      ? (schoolColor === 'deficit'
+          ? `<span class="legend-title" style="margin-left:10px">🏫 <span class="t-zh">步行不足</span><span class="t-en">Walk-deficit</span></span>` +
+            GRADE_ORDER.map(g =>
+              `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:8px"><span style="width:10px;height:10px;background:${GRADE_COLOR[g]}3A;border:1.5px solid ${GRADE_COLOR[g]}"></span><span class="t-zh">${GRADE_ZH[g]}</span><span class="t-en">${GRADE_EN[g]}</span></span>`).join('')
+          : `<span class="legend-title" style="margin-left:10px">🏫 <span class="t-zh">學校</span><span class="t-en">Schools</span></span>` +
+            SCHOOL_ORDER.filter(g => schoolLevels.has(g)).map(g =>
+              `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:8px"><span style="width:10px;height:10px;background:${LV_COLOR[g]}2E;border:1.5px solid ${LV_COLOR[g]}"></span><span class="t-zh">${LV_ZH[g]}</span><span class="t-en">${LV_EN[g]}</span></span>`).join(''))
       : '';
     if (segState.color === 'ramp') {
       return `<span class="legend-title">Curb ramps</span>` +
@@ -1427,13 +1483,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // raw per-feature level → the six selectable pill groups
   const SCHOOL_GROUP = { elementary: 'elementary', junior: 'junior', elemjunior: 'junior', senior: 'senior', tertiary: 'tertiary', special: 'special', kinder: 'other', other: 'other' };
   const grpOf = lv => SCHOOL_GROUP[lv] || 'other';
+  // Walk-deficit grade colours (15-min sidewalk-network reach analysis)
+  const GRADE_COLOR = { severe: '#DC2626', high: '#F97316', moderate: '#FBBF24', low: '#16A34A' };
+  const GRADE_ZH = { severe: '嚴重不足', high: '偏高', moderate: '中等', low: '較佳' };
+  const GRADE_EN = { severe: 'severe', high: 'high', moderate: 'moderate', low: 'better' };
+  const GRADE_ORDER = ['severe', 'high', 'moderate', 'low'];
   const schoolLevels = new Set();       // active pill groups (multi-select)
+  let schoolColor = 'level';            // 'level' | 'deficit'
   let schoolLayer = null, schoolData = null, schoolLoad = null;
+  const schoolFillColor = p => schoolColor === 'deficit' ? (GRADE_COLOR[p.gr] || '#9CA3AF') : LV_COLOR[grpOf(p.lv)];
 
   function ensureSchoolData() {
     if (schoolData) return Promise.resolve(schoolData);
     if (schoolLoad) return schoolLoad;
-    schoolLoad = fetch('data/school_zones.geojson?v=2').then(r => r.json())
+    schoolLoad = fetch('data/school_zones.geojson?v=3').then(r => r.json())
       .then(j => { schoolData = j; return j; })
       .catch(() => { schoolLoad = null; return null; });
     return schoolLoad;
@@ -1445,13 +1508,17 @@ document.addEventListener('DOMContentLoaded', () => {
     schoolLayer = L.geoJSON(schoolData, {
       renderer: segRenderer,
       filter: f => schoolLevels.has(grpOf(f.properties.lv)),
-      style: f => { const c = LV_COLOR[grpOf(f.properties.lv)]; return { stroke: true, color: c, weight: 1, fillColor: c, fillOpacity: 0.18 }; },
+      style: f => { const c = schoolFillColor(f.properties); return { stroke: true, color: c, weight: 1, fillColor: c, fillOpacity: 0.22 }; },
       onEachFeature: (f, lyr) => {
         const p = f.properties, g = grpOf(p.lv);
         const ym = p.ym ? ` · ${p.ym.slice(0, 4)}.${p.ym.slice(4, 6)}` : '';
+        const deficit = p.gr
+          ? `<br><span class="t-zh">步行不足：<strong>${GRADE_ZH[p.gr]}</strong>（${p.sc}）· 15 分可達人行道 ${p.rk} km · 連通率 ${p.cn != null ? Math.round(Math.min(p.cn, 1) * 100) + '%' : '—'}${p.nw != null ? ' · 窄段 ' + Math.round(p.nw * 100) + '%' : ''}</span>` +
+            `<span class="t-en">Walk-deficit: <strong>${GRADE_EN[p.gr]}</strong> (${p.sc}) · reach ${p.rk} km · connectivity ${p.cn != null ? Math.round(Math.min(p.cn, 1) * 100) + '%' : '—'}${p.nw != null ? ' · narrow ' + Math.round(p.nw * 100) + '%' : ''}</span>`
+          : '';
         lyr.bindTooltip(
           `<strong>🏫 ${p.name || TT('（未命名）', '(unnamed)')}</strong><br>` +
-          `<span class="t-zh">${LV_ZH[g]}${ym}</span><span class="t-en">${LV_EN[g]}${ym}</span>`,
+          `<span class="t-zh">${LV_ZH[g]}${ym}</span><span class="t-en">${LV_EN[g]}${ym}</span>${deficit}`,
           { sticky: true, direction: 'top', offset: [0, -4] });
       },
     }).addTo(segMap);
@@ -1470,6 +1537,66 @@ document.addEventListener('DOMContentLoaded', () => {
       renderSchools();
     });
   });
+  document.querySelectorAll('.cat-pill.school-mode').forEach(pill => {
+    pill.addEventListener('click', () => {
+      schoolColor = pill.dataset.mode;
+      document.querySelectorAll('.cat-pill.school-mode').forEach(x => x.classList.toggle('active', x === pill));
+      renderSchools();
+    });
+  });
+
+  // ── School walkability ranking (national, precomputed walkshed) ───────
+  (() => {
+    const listEl = document.getElementById('swList');
+    const statsEl = document.getElementById('swStats');
+    const cSel = document.getElementById('swCounty');
+    const lSel = document.getElementById('swLevel');
+    const gSel = document.getElementById('swGrade');
+    const cntEl = document.getElementById('swCount');
+    const zhBy = {}; (window.CITIES || []).forEach(c => zhBy[c.slug] = c.zh);
+    cSel.innerHTML = `<option value="">${TT('全部縣市 / All', 'All counties')}</option>` +
+      (window.CITIES || []).map(c => `<option value="${c.slug}">${TT(c.zh, c.en)}</option>`).join('');
+    let SW = null, loading = false;
+    function render() {
+      if (!SW) return;
+      const cv = cSel.value, lv = lSel.value, gv = gSel.value;
+      const scope = SW.filter(x => x.grade && (!cv || x.slug === cv) && (!lv || grpOf(x.lv) === lv));
+      let rows = (gv ? scope.filter(x => x.grade === gv) : scope.slice())
+        .sort((a, b) => b.score - a.score || b.w_circle - a.w_circle);
+      const total = scope.length || 1;
+      const desert = scope.filter(x => x.no_sidewalk || x.w_reach < 50).length;
+      const reaches = scope.map(x => x.w_reach_km).sort((a, b) => a - b);
+      const medReach = reaches.length ? reaches[Math.floor(reaches.length / 2)] : 0;
+      const avg = Math.round(scope.reduce((s, x) => s + x.score, 0) / total);
+      const stat = (n, l) => `<div class="sw-stat"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+      statsEl.innerHTML =
+        stat(scope.length.toLocaleString(), TT('學校數（本島）', 'schools (main island)')) +
+        stat(`${Math.round(desert / total * 100)}%`, TT('走不到任何連通人行道', 'no connected sidewalk')) +
+        stat(`${medReach} km`, TT('步行 15 分・中位可達', 'median 15-min reach')) +
+        stat(avg, TT('平均不足分數 (0–100)', 'avg deficit score'));
+      cntEl.textContent = `${rows.length.toLocaleString()} ${TT('校', 'schools')}`;
+      listEl.innerHTML = rows.slice(0, 300).map((x, i) => {
+        const conn = x.conn != null ? Math.round(Math.min(x.conn, 1) * 100) : '—';
+        return `<div class="sw-row">` +
+          `<span class="rank">${i + 1}</span>` +
+          `<span class="sw-badge" style="background:${GRADE_COLOR[x.grade]}">${x.score}</span>` +
+          `<span class="sw-name"><b>${x.name}</b> · <span style="color:var(--grey-2)">${TT(LV_ZH[grpOf(x.lv)], LV_EN[grpOf(x.lv)])} · ${TT(zhBy[x.slug] || '', enCounty(zhBy[x.slug] || ''))}</span></span>` +
+          `<span class="sw-metrics">${TT('可達', 'reach')} ${x.w_reach_km}km · ${TT('連通', 'conn')} ${conn}%${x.narrow != null ? ' · ' + TT('窄', 'narrow') + ' ' + Math.round(x.narrow * 100) + '%' : ''}</span>` +
+          `</div>`;
+      }).join('') + (rows.length > 300 ? `<div class="sw-row" style="color:var(--grey-2)">… ${TT('僅顯示前 300 筆，可用上方篩選縮小範圍', 'showing top 300 — filter to narrow')}</div>` : '');
+    }
+    function load() {
+      if (SW || loading) return;
+      loading = true;
+      listEl.innerHTML = `<div class="sw-row">${TT('載入分析中…', 'loading analysis…')}</div>`;
+      fetch('data/school_walkshed.json?v=1').then(r => r.json()).then(j => { SW = j; render(); })
+        .catch(() => { listEl.innerHTML = `<div class="sw-row">${TT('載入失敗', 'failed to load')}</div>`; loading = false; });
+    }
+    [cSel, lSel, gSel].forEach(el => el.addEventListener('change', render));
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { load(); io.disconnect(); } }, { rootMargin: '250px' });
+    io.observe(listEl);
+    window.__swRender = () => { if (SW) render(); };
+  })();
 
   window.__rerender = () => { renderHero(); recompute(); buildSegSelect(); renderSegLayer(); };
   recompute();
