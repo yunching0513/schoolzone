@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>全國人行道資料 2023 → 2026｜Taiwan National Sidewalk Inventory</title>
+<title>打造夢想街道｜學區道路健檢、街道願景AI探索工具</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#1A1A1A">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,7 +18,7 @@
   <meta property="og:site_name" content="台灣街道願景計畫 Taiwan Street Vision Project">
   <meta property="og:locale" content="zh_TW">
   <meta property="og:url" content="https://yunching0513.github.io/taiwan-mobility-atlas/sidewalk.html">
-  <meta property="og:title" content="全國人行道健檢｜台灣街道願景計畫">
+  <meta property="og:title" content="打造夢想街道｜學區道路健檢、街道願景AI探索工具">
   <meta property="og:description" content="2023 vs 2026 全國人行道普查：92,326 段逐路段實景疊圖、電線桿障礙物、街景比對。人行道變長了，卻沒有變好走。">
   <meta property="og:image" content="https://yunching0513.github.io/taiwan-mobility-atlas/assets/og.png">
   <meta property="og:image:type" content="image/png">
@@ -26,7 +26,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="台灣街道願景計畫：還路於民">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="全國人行道健檢｜台灣街道願景計畫">
+  <meta name="twitter:title" content="打造夢想街道｜學區道路健檢、街道願景AI探索工具">
   <meta name="twitter:description" content="2023 vs 2026 全國人行道普查：92,326 段逐路段實景疊圖、電線桿障礙物、街景比對。人行道變長了，卻沒有變好走。">
   <meta name="twitter:image" content="https://yunching0513.github.io/taiwan-mobility-atlas/assets/og.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -385,8 +385,8 @@ body.lang-en .t-en { display: inline; }
 <div class="page-header">
   <div class="logo-mark">Taiwan<br>Mobility<br>Atlas</div>
   <div class="title-block">
-    <h1>National Sidewalk Inventory · 2023 → 2026</h1>
-    <div class="title-zh"><span class="t-zh">全國人行道資料｜三年進度追蹤</span><span class="t-en">Taiwan National Sidewalk Data · 3-Year Progress Check</span></div>
+    <h1>Build Dream Streets</h1>
+    <div class="title-zh"><span class="t-zh">打造夢想街道｜學區道路健檢、街道願景AI探索工具</span><span class="t-en">Build Dream Streets · School-Zone Road Audit &amp; Street-Vision AI Toolkit</span></div>
     <div class="disclaimer">
       <span class="t-zh">交通部人行道整體區位資料 · 非官方專案 · 2023 年 6 月 vs. 2026 年 6 月兩次全國普查快照</span>
       <span class="t-en">MOTC national sidewalk inventory · unofficial project · June 2023 vs. June 2026 nationwide snapshots</span>
@@ -1433,7 +1433,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function ensureSchoolData() {
     if (schoolData) return Promise.resolve(schoolData);
     if (schoolLoad) return schoolLoad;
-    schoolLoad = fetch('data/school_zones.geojson').then(r => r.json())
+    schoolLoad = fetch('data/school_zones.geojson?v=2').then(r => r.json())
       .then(j => { schoolData = j; return j; })
       .catch(() => { schoolLoad = null; return null; });
     return schoolLoad;
