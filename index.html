@@ -154,6 +154,7 @@ body { font-family: var(--font-zh); background: var(--grey-4); color: var(--blac
 .cat-pill.en { font-family: var(--font-en); letter-spacing: 0.05em; font-weight: 500; }
 .cat-pill:hover { border-color: var(--black); }
 .cat-pill.active { background: var(--lime); border-color: var(--lime); font-weight: 700; }
+.lvdot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
 
 /* Map area */
 .map-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; }
@@ -503,8 +504,13 @@ body.lang-en .t-en { display: inline; }
       <span class="cat-pill" id="crashToggle"><span class="t-zh">🔴 A1 事故點</span><span class="t-en">🔴 A1 crash points</span></span>
     </div>
     <div class="filter-group">
-      <span class="filter-group-label">Schools</span>
-      <span class="cat-pill" id="schoolToggle"><span class="t-zh">🏫 學校範圍</span><span class="t-en">🏫 School zones</span></span>
+      <span class="filter-group-label">🏫 School zones</span>
+      <span class="cat-pill school-lv" data-lv="elementary"><span class="lvdot" style="background:#7C3AED"></span><span class="t-zh">國小</span><span class="t-en">Elementary</span></span>
+      <span class="cat-pill school-lv" data-lv="junior"><span class="lvdot" style="background:#0D9488"></span><span class="t-zh">國中</span><span class="t-en">Junior high</span></span>
+      <span class="cat-pill school-lv" data-lv="senior"><span class="lvdot" style="background:#DB2777"></span><span class="t-zh">高中職</span><span class="t-en">Senior/voc.</span></span>
+      <span class="cat-pill school-lv" data-lv="tertiary"><span class="lvdot" style="background:#4338CA"></span><span class="t-zh">大專</span><span class="t-en">Tertiary</span></span>
+      <span class="cat-pill school-lv" data-lv="special"><span class="lvdot" style="background:#EA580C"></span><span class="t-zh">特教</span><span class="t-en">Special ed.</span></span>
+      <span class="cat-pill school-lv" data-lv="other"><span class="lvdot" style="background:#64748B"></span><span class="t-zh">其他</span><span class="t-en">Other</span></span>
     </div>
     <div class="filter-group" style="margin-left:auto">
       <span class="filter-group-label" id="segCount">—</span>
@@ -536,7 +542,7 @@ body.lang-en .t-en { display: inline; }
     <p style="font-size:12px"><span class="t-zh">2026 年 6 月路網（實際多邊形範圍，幾何經 ±0.3 公尺簡化）。放大後滑過任一段可看路名、寬度、淨寬與斜坡數；<strong>點擊路段即開啟街景比對</strong>：街景為主畫面、地圖縮至右上角，小地圖上的<strong>小人與視角錐</strong>標示實際全景位置與朝向：在全景內拖轉、前進時會<strong>即時跟動</strong>；「↻ 旋轉 90°」可快速換邊看。資訊列顯示<strong>影像拍攝日期</strong>；街景取該點最新一輪官方拍攝（若 Google 服務無法載入，會自動退回精簡嵌入模式，該模式下視角錐僅跟隨旋轉鈕）。資料依縣市按需載入（0.03–6.2 MB／縣市）。</span><span class="t-en">June 2026 network (actual polygon extents, geometry simplified within ±0.3 m). Zoom in and hover a segment for road name, width, clear width and ramp count; <strong>click a segment to open Street View comparison</strong> — the panorama takes the stage and the map docks top-right, with a <strong>pegman + view cone</strong> marking the true panorama position and facing — they <strong>follow live</strong> as you drag or walk inside the panorama; "↻ Rotate 90°" flips sides quickly. The info bar shows the <strong>imagery capture date</strong>, and the panorama uses the newest official pass at that spot (if Google's service fails to load, a lightweight embed takes over, where the cone follows the rotate button only). Data loads on demand per county (0.03–6.2 MB each).</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🔴 A1 事故點圖層</strong>：內政部警政署 A1（當場或 24 小時內死亡）交通事故（2018–2025 有座標者，全國 13,708 點，按縣市過濾顯示），點色依受害者運具（黑=機車、藍=汽/貨車、紅=行人、金=慢車）、點徑依死亡人數。把死亡事故疊在淨寬著色上，可直接檢視「行人死亡點位周邊的人行道是否存在、是否過得去」：紅點（行人）落在紅色路段（淨寬 &lt;1.5 公尺）或根本沒有人行道的路口，就是最需優先改善的證據。滑過任一點可看日期、區、運具與死傷數。</span><span class="t-en"><strong>🔴 A1 crash layer</strong>: National Police Agency A1 fatal crashes (death on scene or within 24 h; 2018–2025 geocoded records, 13,708 points nationwide, filtered to the selected county). Dot colour = victim mode (black motorcycle, blue car/truck, red pedestrian, gold bicycle), dot size = deaths. Overlaying fatalities on the clear-width colours shows directly whether the sidewalks around each death exist and are passable — a red (pedestrian) dot on a red segment (&lt;1.5 m clear) or on a corner with no sidewalk at all is priority-one evidence. Hover a dot for date, district, mode and casualties.</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>⚡ 電線桿圖層</strong>：台電桿籍資料（全國約 273 萬支，TWD97 座標轉換；本島 121 分帶、離島 119 分帶），開啟後放大至街區尺度（zoom ≥ 16）顯示視窗內桿位。電線桿常立於人行道上，是輪椅與嬰兒車的實體障礙：與淨寬著色對照可看出「帳面有人行道、實際過不去」的路段。注意：屏東縣桿籍近乎缺漏（僅 88 筆）；桿位為台電登記位置，可能與現地略有出入。</span><span class="t-en"><strong>⚡ Utility-pole layer</strong>: Taipower pole registry (~2.73M poles nationwide, TWD97→WGS84; 121°E zone for the main island, 119°E for offshore counties). When on, poles in the viewport render at zoom ≥ 16. Poles standing on sidewalks are physical barriers for wheelchairs and strollers — overlay them on the clear-width colours to spot segments that exist on paper but cannot be passed. Note: Pingtung's registry is nearly empty (88 records); positions are as registered and may differ slightly on site.</span></p>
-    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。以淡紫色範圍帶疊在人行道路網下方，可看出哪些人行道落在學校周邊——也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名與資料年月。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). Rendered as a light-violet band beneath the sidewalk network to show which pavements sit within a school catchment — the streets children actually walk to and from school on. Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name and data month.</span></p>
+    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。學校<strong>層級由校名判讀</strong>並分成國小、國中、高中職、大專、特教、其他六類，各為<strong>可複選的獨立圖層並以不同顏色</strong>標示，疊在人行道路網下方——可看出哪些人行道落在學校周邊，也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名、層級與資料年月。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). School <strong>level is parsed from each name</strong> into six classes — elementary, junior high, senior/vocational, tertiary, special education and other — each an <strong>independent multi-select layer with its own colour</strong>, drawn beneath the sidewalk network to show which pavements sit within a school catchment (the streets children walk to and from school on). Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name, level and data month.</span></p>
   </div>
 </div>
 
@@ -957,8 +963,10 @@ document.addEventListener('DOMContentLoaded', () => {
         cd('#1A1A1A', '機車', 'motorcycle') + cd('#3A7CC3', '汽/貨車', 'car/truck') +
         cd('#D94F3D', '行人', 'pedestrian') + cd('#E8A825', '慢車', 'bicycle')
       : '';
-    const school = (typeof schoolOn !== 'undefined' && schoolOn)
-      ? `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px;margin-left:8px"><span style="width:11px;height:11px;background:rgba(124,58,237,0.16);border:1.5px solid #7C3AED"></span><span class="t-zh">🏫 學校範圍</span><span class="t-en">🏫 School zones</span></span>`
+    const school = (typeof schoolLevels !== 'undefined' && schoolLevels.size)
+      ? `<span class="legend-title" style="margin-left:10px">🏫 <span class="t-zh">學校</span><span class="t-en">Schools</span></span>` +
+        SCHOOL_ORDER.filter(g => schoolLevels.has(g)).map(g =>
+          `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:8px"><span style="width:10px;height:10px;background:${LV_COLOR[g]}2E;border:1.5px solid ${LV_COLOR[g]}"></span><span class="t-zh">${LV_ZH[g]}</span><span class="t-en">${LV_EN[g]}</span></span>`).join('')
       : '';
     if (segState.color === 'ramp') {
       return `<span class="legend-title">Curb ramps</span>` +
@@ -1407,11 +1415,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ── School-zone overlay (各級學校範圍圖 121, national, lazy) ─────────
-  // NLSC school-boundary polygons (~4,300 nationwide, one file). Drawn as a
-  // light violet background band beneath the sidewalk segments and crash
-  // dots, so you can see which pavements fall inside a school catchment —
-  // the streets kids actually walk to school on.
-  let schoolOn = false, schoolLayer = null, schoolData = null, schoolLoad = null;
+  // NLSC school-boundary polygons (~4,300 nationwide, one file). Levels are
+  // parsed from each school's name (BLOCKTYPE is a constant in the source);
+  // each level is an independent multi-select pill and gets its own colour,
+  // drawn as a light band beneath the sidewalk segments and crash dots so you
+  // can see which pavements fall inside a school catchment.
+  const LV_COLOR = { elementary: '#7C3AED', junior: '#0D9488', senior: '#DB2777', tertiary: '#4338CA', special: '#EA580C', other: '#64748B' };
+  const LV_ZH = { elementary: '國小', junior: '國中', senior: '高中職', tertiary: '大專', special: '特教', other: '其他' };
+  const LV_EN = { elementary: 'Elementary', junior: 'Junior high', senior: 'Senior/voc.', tertiary: 'Tertiary', special: 'Special ed.', other: 'Other' };
+  const SCHOOL_ORDER = ['elementary', 'junior', 'senior', 'tertiary', 'special', 'other'];
+  // raw per-feature level → the six selectable pill groups
+  const SCHOOL_GROUP = { elementary: 'elementary', junior: 'junior', elemjunior: 'junior', senior: 'senior', tertiary: 'tertiary', special: 'special', kinder: 'other', other: 'other' };
+  const grpOf = lv => SCHOOL_GROUP[lv] || 'other';
+  const schoolLevels = new Set();       // active pill groups (multi-select)
+  let schoolLayer = null, schoolData = null, schoolLoad = null;
+
   function ensureSchoolData() {
     if (schoolData) return Promise.resolve(schoolData);
     if (schoolLoad) return schoolLoad;
@@ -1423,30 +1441,34 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderSchools() {
     if (schoolLayer) { segMap.removeLayer(schoolLayer); schoolLayer = null; }
     document.getElementById('segLegend').innerHTML = segLegendHTML();
-    if (!schoolOn || !schoolData) return;
+    if (!schoolLevels.size || !schoolData) return;
     schoolLayer = L.geoJSON(schoolData, {
       renderer: segRenderer,
-      style: { stroke: true, color: '#7C3AED', weight: 1, fillColor: '#7C3AED', fillOpacity: 0.16 },
+      filter: f => schoolLevels.has(grpOf(f.properties.lv)),
+      style: f => { const c = LV_COLOR[grpOf(f.properties.lv)]; return { stroke: true, color: c, weight: 1, fillColor: c, fillOpacity: 0.18 }; },
       onEachFeature: (f, lyr) => {
-        const p = f.properties;
+        const p = f.properties, g = grpOf(p.lv);
         const ym = p.ym ? ` · ${p.ym.slice(0, 4)}.${p.ym.slice(4, 6)}` : '';
         lyr.bindTooltip(
-          `<strong>🏫 ${p.name || TT('（未命名）', '(unnamed)')}</strong>` +
-          `<span class="t-zh">${ym}</span><span class="t-en">${ym}</span>`,
+          `<strong>🏫 ${p.name || TT('（未命名）', '(unnamed)')}</strong><br>` +
+          `<span class="t-zh">${LV_ZH[g]}${ym}</span><span class="t-en">${LV_EN[g]}${ym}</span>`,
           { sticky: true, direction: 'top', offset: [0, -4] });
       },
     }).addTo(segMap);
     schoolLayer.bringToBack();   // keep it a background band under segments/dots
   }
-  document.getElementById('schoolToggle').addEventListener('click', async () => {
-    schoolOn = !schoolOn;
-    document.getElementById('schoolToggle').classList.toggle('active', schoolOn);
-    if (schoolOn && !schoolData) {
-      document.getElementById('segCount').textContent = TT('載入學校範圍…', 'loading school zones…');
-      await ensureSchoolData();
-      renderSegLayer();   // restore the count text
-    }
-    renderSchools();
+  document.querySelectorAll('.cat-pill.school-lv').forEach(pill => {
+    pill.addEventListener('click', async () => {
+      const lv = pill.dataset.lv;
+      if (schoolLevels.has(lv)) schoolLevels.delete(lv); else schoolLevels.add(lv);
+      pill.classList.toggle('active', schoolLevels.has(lv));
+      if (schoolLevels.size && !schoolData) {
+        document.getElementById('segCount').textContent = TT('載入學校範圍…', 'loading school zones…');
+        await ensureSchoolData();
+        renderSegLayer();   // restore the count text
+      }
+      renderSchools();
+    });
   });
 
   window.__rerender = () => { renderHero(); recompute(); buildSegSelect(); renderSegLayer(); };
