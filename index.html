@@ -593,7 +593,7 @@ body.lang-en .t-en { display: inline; }
       <div class="filter-group" style="margin-left:auto"><span class="filter-group-label" id="swCount">—</span></div>
     </div>
     <div id="swList" class="sw-list"></div>
-    <div class="card-zh" style="margin-top:10px;color:var(--grey-2)"><span class="t-zh">方法備註：人行道由「面」段以 15 公尺鄰近門檻接成步行網路（寬幹道視為需穿越的障礙而不連通）；長度以面積÷寬度估算。此為模型近似，用於相對比較與優先排序，非現地量測。離島（澎湖／金門／連江）不在本圖資範圍。已有 OSM 街道路網的縣市（目前：嘉義縣）另以<strong>真實街道網路</strong>計算：紅字「街道覆蓋」＝步行圈內該有人行道的街道（主次要道路與巷弄，不含農路與私人通道）中，25 公尺內有人行道者的比例；「缺口」＝無人行道街道的公里數。</span><span class="t-en">Method: sidewalk polygons are linked into a walking graph with a 15 m proximity threshold (wide arterials act as uncrossable breaks); segment length ≈ area ÷ width. A modelled approximation for relative ranking, not field survey. Offshore counties are outside this dataset. Counties with OSM street data (currently: Chiayi County) additionally get a <strong>real street-network</strong> audit: "street cover" = share of sidewalk-worthy streets (arterials and lanes, excluding farm/private tracks) within the walk zone that have a sidewalk within 25 m; "gap" = km of streets without one.</span></div>
+    <div class="card-zh" style="margin-top:10px;color:var(--grey-2)"><span class="t-zh">方法備註：人行道由「面」段以 15 公尺鄰近門檻接成步行網路（寬幹道視為需穿越的障礙而不連通）；長度以面積÷寬度估算。此為模型近似，用於相對比較與優先排序，非現地量測。離島（澎湖／金門／連江）不在本圖資範圍。已有街道路網資料的縣市另以<strong>真實街道網路</strong>計算，紅字「街道覆蓋」＝步行圈內該有人行道的街道中有人行道者的長度比例、「缺口」＝無人行道街道的公里數。嘉義縣採 OSM 路網（主次要道路與巷弄，不含農路，以 25 公尺鄰近判定）；台北市採<strong>北市府官方 8 公尺以上道路圖資</strong>（含官方人行道面積欄位與路口拓撲，僅計 8 公尺以上道路）。兩者路網基準不同，跨縣市比較時請以量級為準。</span><span class="t-en">Method: sidewalk polygons are linked into a walking graph with a 15 m proximity threshold (wide arterials act as uncrossable breaks); segment length ≈ area ÷ width. A modelled approximation for relative ranking, not field survey. Offshore counties are outside this dataset. Counties with street-network data additionally get a <strong>real street-network</strong> audit — red "street cover" = share (by length) of sidewalk-worthy streets in the walk zone that have a sidewalk, "gap" = km without one. Chiayi uses the OSM network (arterials + lanes, no farm tracks, 25 m proximity test); Taipei uses the <strong>city government's official ≥8 m road inventory</strong> (official sidewalk-area field + junction topology; ≥8 m roads only). Baselines differ — compare across counties by magnitude.</span></div>
   </div>
 </div>
 
@@ -1557,7 +1557,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cSel.innerHTML = `<option value="">${TT('全部縣市 / All', 'All counties')}</option>` +
       (window.CITIES || []).map(c => `<option value="${c.slug}">${TT(c.zh, c.en)}</option>`).join('');
     // Counties with a real-street audit (OSM roads uploaded & processed)
-    const STREET_AUDIT_SLUGS = ['chiayi'];
+    const STREET_AUDIT_SLUGS = ['chiayi', 'taipei'];
     const streetAudit = {};   // slug -> { name@lon,lat -> metrics }
     function loadStreetAudit(slug) {
       if (!STREET_AUDIT_SLUGS.includes(slug) || streetAudit[slug]) return Promise.resolve();
@@ -1591,7 +1591,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cv = auditScope.filter(a => a.cover != null).map(a => a.cover).sort((a, b) => a - b);
             const medCov = cv.length ? Math.round(cv[Math.floor(cv.length / 2)] * 100) : 0;
             const zero = auditScope.filter(a => a.cover === 0).length;
-            return `<div class="sw-stat" style="border-color:#DC2626"><div class="n">${medCov}%</div><div class="l">${TT('街道人行道覆蓋率（中位，OSM 實測）', 'median street sidewalk coverage (OSM)')}</div></div>` +
+            return `<div class="sw-stat" style="border-color:#DC2626"><div class="n">${medCov}%</div><div class="l">${TT('街道人行道覆蓋率（中位，實際路網）', 'median street sidewalk coverage')}</div></div>` +
                    `<div class="sw-stat" style="border-color:#DC2626"><div class="n">${Math.round(zero / auditScope.length * 100)}%</div><div class="l">${TT('步行圈內完全零人行道的學校', 'schools with zero sidewalk coverage')}</div></div>`;
           })()
         : '';
