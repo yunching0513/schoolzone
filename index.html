@@ -452,6 +452,10 @@ body.lang-en .t-en { display: inline; }
       <span class="cat-pill ws-profile active" data-wsp="e">👦🧓 <span class="t-zh">孩童・長者</span><span class="t-en">Child &amp; elder</span></span>
       <span class="cat-pill ws-profile" data-wsp="w">♿ <span class="t-zh">輪椅</span><span class="t-en">Wheelchair</span></span>
     </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Advocacy</span>
+      <span class="cat-pill" id="lsToggle">🌳 <span class="t-zh">300m 生活街道圈</span><span class="t-en">300 m living streets</span></span>
+    </div>
     <div class="filter-group" style="margin-left:auto">
       <span class="filter-group-label" id="segCount">—</span>
     </div>
@@ -483,7 +487,7 @@ body.lang-en .t-en { display: inline; }
     <p style="font-size:12px"><span class="t-zh">2026 年 6 月路網（實際多邊形範圍，幾何經 ±0.3 公尺簡化）。放大後滑過任一段可看路名、寬度、淨寬與斜坡數；<strong>點擊路段即開啟街景比對</strong>；<strong>放大至街區尺度後，點擊任何沒有人行道資料的位置，也會直接開啟該點街景</strong>——用來檢查無人行道街道的實際路況；街景為主畫面、地圖縮至右上角，小地圖上的<strong>小人與視角錐</strong>標示實際全景位置與朝向：在全景內拖轉、前進時會<strong>即時跟動</strong>；「↻ 旋轉 90°」可快速換邊看。資訊列顯示<strong>影像拍攝日期</strong>；街景取該點最新一輪官方拍攝（若 Google 服務無法載入，會自動退回精簡嵌入模式，該模式下視角錐僅跟隨旋轉鈕）。資料依縣市按需載入（0.03–6.2 MB／縣市）。</span><span class="t-en">June 2026 network (actual polygon extents, geometry simplified within ±0.3 m). Zoom in and hover a segment for road name, width, clear width and ramp count; <strong>click a segment to open Street View comparison</strong>; <strong>at street zoom, clicking anywhere without a sidewalk segment opens Street View at that point</strong> — for inspecting roads that have no sidewalk — the panorama takes the stage and the map docks top-right, with a <strong>pegman + view cone</strong> marking the true panorama position and facing — they <strong>follow live</strong> as you drag or walk inside the panorama; "↻ Rotate 90°" flips sides quickly. The info bar shows the <strong>imagery capture date</strong>, and the panorama uses the newest official pass at that spot (if Google's service fails to load, a lightweight embed takes over, where the cone follows the rotate button only). Data loads on demand per county (0.03–6.2 MB each).</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🔴 A1 事故點圖層</strong>：內政部警政署 A1（當場或 24 小時內死亡）交通事故（2018–2025 有座標者，全國 13,708 點，按縣市過濾顯示），點色依受害者運具（黑=機車、藍=汽/貨車、紅=行人、金=慢車）、點徑依死亡人數。把死亡事故疊在淨寬著色上，可直接檢視「行人死亡點位周邊的人行道是否存在、是否過得去」：紅點（行人）落在紅色路段（淨寬 &lt;1.5 公尺）或根本沒有人行道的路口，就是最需優先改善的證據。滑過任一點可看日期、區、運具與死傷數。</span><span class="t-en"><strong>🔴 A1 crash layer</strong>: National Police Agency A1 fatal crashes (death on scene or within 24 h; 2018–2025 geocoded records, 13,708 points nationwide, filtered to the selected county). Dot colour = victim mode (black motorcycle, blue car/truck, red pedestrian, gold bicycle), dot size = deaths. Overlaying fatalities on the clear-width colours shows directly whether the sidewalks around each death exist and are passable — a red (pedestrian) dot on a red segment (&lt;1.5 m clear) or on a corner with no sidewalk at all is priority-one evidence. Hover a dot for date, district, mode and casualties.</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>⚡ 電線桿圖層</strong>：台電桿籍資料（全國約 273 萬支，TWD97 座標轉換；本島 121 分帶、離島 119 分帶），開啟後放大至街區尺度（zoom ≥ 16）顯示視窗內桿位。電線桿常立於人行道上，是輪椅與嬰兒車的實體障礙：與淨寬著色對照可看出「帳面有人行道、實際過不去」的路段。注意：屏東縣桿籍近乎缺漏（僅 88 筆）；桿位為台電登記位置，可能與現地略有出入。</span><span class="t-en"><strong>⚡ Utility-pole layer</strong>: Taipower pole registry (~2.73M poles nationwide, TWD97→WGS84; 121°E zone for the main island, 119°E for offshore counties). When on, poles in the viewport render at zoom ≥ 16. Poles standing on sidewalks are physical barriers for wheelchairs and strollers — overlay them on the clear-width colours to spot segments that exist on paper but cannot be passed. Note: Pingtung's registry is nearly empty (88 records); positions are as registered and may differ slightly on site.</span></p>
-    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。學校<strong>層級由校名判讀</strong>並分成國小、國中、高中職、大專、特教、其他六類，各為<strong>可複選的獨立圖層並以不同顏色</strong>標示，疊在人行道路網下方——可看出哪些人行道落在學校周邊，也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名、層級與資料年月；<strong>點擊任一學校即畫出 15 分鐘步行圈</strong>——虛線圓＝理想範圍、藍色斑塊＝沿人行道實際可達範圍，斑塊越破碎、越空，代表該學區人行道越斷裂欠缺。可切換三種步行者：<strong>🧑 青少年</strong>（約 4 km/h，1 公里）、<strong>👦🧓 孩童・長者</strong>（約 3 km/h，750 公尺——實證研究顯示學童揹書包、等紅綠燈的實際步速與長者相近，交通工程設計亦將兩者歸為同一設計速度群）、<strong>♿ 輪椅／行動不便</strong>（約 2.4 km/h，600 公尺，且<strong>排除淨寬不足 0.9 公尺與「該設而未設」路緣斜坡的路段</strong>——不只走得慢，很多路段根本過不去）。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). School <strong>level is parsed from each name</strong> into six classes — elementary, junior high, senior/vocational, tertiary, special education and other — each an <strong>independent multi-select layer with its own colour</strong>, drawn beneath the sidewalk network to show which pavements sit within a school catchment (the streets children walk to and from school on). Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name, level and data month; <strong>click a school to draw its 15-min walkshed</strong> — dashed circle = ideal range, blue patches = what's actually reachable along sidewalks; the emptier and more fragmented the patches, the more broken the network. Three mobility profiles: <strong>🧑 teen</strong> (~4 km/h, 1 km), <strong>👦🧓 child &amp; elder</strong> (~3 km/h, 750 m — studies show schoolchildren's effective walking speed, with backpacks and crossings, matches elders', and traffic engineering groups them at the same design speed), <strong>♿ wheelchair</strong> (~2.4 km/h, 600 m, additionally <strong>excluding segments under 0.9 m clear width or missing required curb ramps</strong> — not just slower, many segments are simply impassable).</span></p>
+    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。學校<strong>層級由校名判讀</strong>並分成國小、國中、高中職、大專、特教、其他六類，各為<strong>可複選的獨立圖層並以不同顏色</strong>標示，疊在人行道路網下方——可看出哪些人行道落在學校周邊，也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名、層級與資料年月；<strong>點擊任一學校即畫出 15 分鐘步行圈</strong>——虛線圓＝理想範圍、藍色斑塊＝沿人行道實際可達範圍，斑塊越破碎、越空，代表該學區人行道越斷裂欠缺。可切換三種步行者：<strong>🧑 青少年</strong>（約 4 km/h，1 公里）、<strong>👦🧓 孩童・長者</strong>（約 3 km/h，750 公尺——實證研究顯示學童揹書包、等紅綠燈的實際步速與長者相近，交通工程設計亦將兩者歸為同一設計速度群）、<strong>♿ 輪椅／行動不便</strong>（約 2.4 km/h，600 公尺，且<strong>排除淨寬不足 0.9 公尺與「該設而未設」路緣斜坡的路段</strong>——不只走得慢，很多路段根本過不去）。<strong>🌳 300m 生活街道圈（倡議圖層）</strong>：開啟後以每所學校為圓心畫出方圓 300 公尺綠色虛線圈——通學的最後一段路；點擊任一圈可放大並顯示倡議說明（行人優先、車速上限 20 km/h、穿越性車流退場），供簡報與政策倡議示意使用。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). School <strong>level is parsed from each name</strong> into six classes — elementary, junior high, senior/vocational, tertiary, special education and other — each an <strong>independent multi-select layer with its own colour</strong>, drawn beneath the sidewalk network to show which pavements sit within a school catchment (the streets children walk to and from school on). Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name, level and data month; <strong>click a school to draw its 15-min walkshed</strong> — dashed circle = ideal range, blue patches = what's actually reachable along sidewalks; the emptier and more fragmented the patches, the more broken the network. Three mobility profiles: <strong>🧑 teen</strong> (~4 km/h, 1 km), <strong>👦🧓 child &amp; elder</strong> (~3 km/h, 750 m — studies show schoolchildren's effective walking speed, with backpacks and crossings, matches elders', and traffic engineering groups them at the same design speed), <strong>♿ wheelchair</strong> (~2.4 km/h, 600 m, additionally <strong>excluding segments under 0.9 m clear width or missing required curb ramps</strong> — not just slower, many segments are simply impassable). <strong>🌳 300 m living-streets ring (advocacy layer)</strong>: draws a dashed green 300 m radius around every school — the last leg of the school run; click a ring to zoom in with an advocacy note (pedestrian priority, 20 km/h, no through-traffic) for presentations and policy work.</span></p>
   </div>
 </div>
 
@@ -646,17 +650,20 @@ document.addEventListener('DOMContentLoaded', () => {
             SCHOOL_ORDER.filter(g => schoolLevels.has(g)).map(g =>
               `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:8px"><span style="width:10px;height:10px;background:${LV_COLOR[g]}2E;border:1.5px solid ${LV_COLOR[g]}"></span><span class="t-zh">${LV_ZH[g]}</span><span class="t-en">${LV_EN[g]}</span></span>`).join(''))
       : '';
+    const ls = (typeof lsOn !== 'undefined' && lsOn)
+      ? `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px;margin-left:8px"><span style="width:11px;height:11px;border-radius:50%;background:rgba(34,197,94,0.12);border:1.5px dashed #15803D"></span><span class="t-zh">🌳 學校 300m・生活街道優先</span><span class="t-en">🌳 school 300 m · living streets</span></span>`
+      : '';
     if (segState.color === 'ramp') {
       return `<span class="legend-title">Curb ramps</span>` +
         sw('#D94F3D', '該設而未設', 'needed · missing') +
         sw('#A8B200', '已設置', 'installed') +
-        sw('#B9B9B9', '無須設置', 'not needed') + pole + crash + school;
+        sw('#B9B9B9', '無須設置', 'not needed') + pole + crash + school + ls;
     }
     return `<span class="legend-title">Clear width</span>` +
       sw('#D94F3D', '淨寬 < 1.5 m', '< 1.5 m') +
       sw('#E8A825', '1.5 – 2.5 m', '1.5 – 2.5 m') +
       sw('#A8B200', '≥ 2.5 m', '≥ 2.5 m') +
-      sw('#B9B9B9', '無資料', 'no data') + pole + crash + school;
+      sw('#B9B9B9', '無資料', 'no data') + pole + crash + school + ls;
   }
 
   // ── Utility-pole obstacle overlay (Taipower registry, per county) ──
@@ -1205,6 +1212,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
     }).addTo(segMap);
     schoolLayer.bringToBack();   // keep it a background band under segments/dots
+    if (typeof lsOn !== 'undefined' && lsOn) renderLivingStreets();   // level filter also scopes the rings
   }
 
   // ── per-school 15-min walkshed drawing (click a school zone) ─────────
@@ -1245,7 +1253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ensureWalksheds(p.sg).then(m => {
       const rec = m[p.name];
       if (!rec) return;
-      clearWalkshed();
+      clearWalkshed(); clearLsSel();
       wsKey = key; wsLast = { p, latlng };
       const prof = WS_PROFILES[wsProfile];
       const geom = rec.g && rec.g[wsProfile];
@@ -1292,7 +1300,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Priority: sidewalk segment (its own handler marks the event) → school
   // zone (point-in-polygon → walkshed) → any other spot at street zoom →
   // Street View there, so roads WITHOUT sidewalks can be inspected too.
-  let schoolBBoxes = null;
+  let schoolBBoxes = null, schoolCenters = null;
+  function ensureSchoolIndex() {
+    if (schoolBBoxes || !schoolData) return;
+    schoolBBoxes = schoolData.features.map(f => {
+      let x0 = 999, y0 = 999, x1 = -999, y1 = -999;
+      const scan = r => r.forEach(pt => { if (pt[0] < x0) x0 = pt[0]; if (pt[0] > x1) x1 = pt[0]; if (pt[1] < y0) y0 = pt[1]; if (pt[1] > y1) y1 = pt[1]; });
+      const g = f.geometry;
+      (g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [])
+        .forEach(poly => poly.forEach(scan));
+      return [x0, y0, x1, y1];
+    });
+    schoolCenters = schoolBBoxes.map(bb => L.latLng((bb[1] + bb[3]) / 2, (bb[0] + bb[2]) / 2));
+  }
   function pointInRing(lng, lat, ring) {
     let inside = false;
     for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -1314,16 +1334,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   function schoolAt(latlng) {
     if (!schoolData) return null;
-    if (!schoolBBoxes) {
-      schoolBBoxes = schoolData.features.map(f => {
-        let x0 = 999, y0 = 999, x1 = -999, y1 = -999;
-        const scan = r => r.forEach(pt => { if (pt[0] < x0) x0 = pt[0]; if (pt[0] > x1) x1 = pt[0]; if (pt[1] < y0) y0 = pt[1]; if (pt[1] > y1) y1 = pt[1]; });
-        const g = f.geometry;
-        (g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [])
-          .forEach(poly => poly.forEach(scan));
-        return [x0, y0, x1, y1];
-      });
-    }
+    ensureSchoolIndex();
     const lng = latlng.lng, lat = latlng.lat;
     for (let i = 0; i < schoolData.features.length; i++) {
       const f = schoolData.features[i];
@@ -1334,11 +1345,81 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return null;
   }
+
+  // ── 300 m living-street advocacy circles ────────────────────────────
+  // Advocacy layer: every school gets a 300 m radius ring — the "last leg"
+  // of the walk to school that should be rebuilt as a living street.
+  // Click a ring to highlight it for demonstrations.
+  let lsOn = false, lsGroup = null, lsSel = null, lsSelKey = null;
+  function clearLsSel() {
+    if (lsSel) { segMap.removeLayer(lsSel); lsSel = null; }
+    if (lsSelKey) { wsInfoEl.style.display = 'none'; lsSelKey = null; }
+  }
+  function lsVisible(f) { return !schoolLevels.size || schoolLevels.has(grpOf(f.properties.lv)); }
+  function renderLivingStreets() {
+    if (lsGroup) { segMap.removeLayer(lsGroup); lsGroup = null; }
+    document.getElementById('segLegend').innerHTML = segLegendHTML();
+    if (!lsOn || !schoolData) { clearLsSel(); return; }
+    ensureSchoolIndex();
+    const circles = [];
+    schoolData.features.forEach((f, i) => {
+      if (!lsVisible(f)) return;
+      circles.push(L.circle(schoolCenters[i], {
+        radius: 300, renderer: segRenderer, interactive: false,
+        color: '#15803D', weight: 1, dashArray: '4 3', fillColor: '#22C55E', fillOpacity: 0.10,
+      }));
+    });
+    lsGroup = L.layerGroup(circles).addTo(segMap);
+  }
+  function lsAt(latlng) {
+    if (!lsOn || !schoolData) return null;
+    ensureSchoolIndex();
+    let best = null, bestD = 300.0001;
+    for (let i = 0; i < schoolData.features.length; i++) {
+      if (!lsVisible(schoolData.features[i])) continue;
+      const d = latlng.distanceTo(schoolCenters[i]);
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best == null ? null : { f: schoolData.features[best], center: schoolCenters[best] };
+  }
+  function selectLs(hit) {
+    const name = hit.f.properties.name || '';
+    if (lsSelKey === name) { clearLsSel(); return; }
+    clearWalkshed(); clearLsSel();
+    lsSelKey = name;
+    lsSel = L.circle(hit.center, {
+      radius: 300, color: '#15803D', weight: 3, fillColor: '#22C55E', fillOpacity: 0.28, interactive: false,
+    }).addTo(segMap);
+    wsInfoEl.innerHTML =
+      `<span class="ws-close" title="${TT('關閉', 'close')}">✕</span>` +
+      `<strong>🌳 ${TT('生活街道優先區（示意）', 'Living-street priority zone (demo)')}</strong><br>` +
+      `<strong>${name}</strong><br>` +
+      TT('以校園為中心<strong>方圓 300 公尺</strong>——通學的最後一段路。倡議：此範圍內優先建置<strong>生活街道</strong>：行人優先、車速上限 20 km/h、穿越性車流退場、路口全面設置行人庇護與路緣斜坡。',
+         'A <strong>300 m radius</strong> around the campus — the last leg of every walk to school. Advocacy: rebuild these streets as <strong>living streets</strong> — pedestrian priority, 20 km/h, no through-traffic, full crossings and curb ramps.');
+    wsInfoEl.style.display = 'block';
+    wsInfoEl.querySelector('.ws-close').addEventListener('click', clearLsSel);
+    segMap.fitBounds(lsSel.getBounds().pad(0.3));
+  }
+  document.getElementById('lsToggle').addEventListener('click', async () => {
+    lsOn = !lsOn;
+    document.getElementById('lsToggle').classList.toggle('active', lsOn);
+    if (lsOn && !schoolData) {
+      document.getElementById('segCount').textContent = TT('載入學校範圍…', 'loading school zones…');
+      await ensureSchoolData();
+      renderSegLayer();
+    }
+    renderLivingStreets();
+  });
+
   segMap.on('click', e => {
     if (e.originalEvent === lastLayerClickEvt) return;   // a segment already took this click
     if (schoolLevels.size && schoolData) {
       const hit = schoolAt(e.latlng);
       if (hit) { showWalkshed(hit.properties, e.latlng); return; }
+    }
+    if (lsOn && schoolData) {
+      const hit = lsAt(e.latlng);
+      if (hit) { selectLs(hit); return; }
     }
     if (segMap.getZoom() >= 15) enterSVAt(e.latlng);     // street-scale only, so pan-clicks at county zoom don't open SV
   });
