@@ -888,16 +888,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  async function findPano(c) {
+    // Stepped search: prefer a close OUTDOOR official pano (skips user
+    // photospheres), but widen before giving up — falling back to the
+    // keyless embed desyncs the pegman (the embed resolves a pano at ANY
+    // distance while the pegman stays at the requested point).
+    const tries = [
+      { radius: 120, source: google.maps.StreetViewSource.OUTDOOR },
+      { radius: 400, source: google.maps.StreetViewSource.OUTDOOR },
+      { radius: 800 },
+    ];
+    let err = null;
+    for (const t of tries) {
+      try {
+        const { data } = await svSvc.getPanorama({
+          location: { lat: c.lat, lng: c.lng },
+          preference: google.maps.StreetViewPreference.NEAREST, ...t,
+        });
+        return data;
+      } catch (e) { err = e; }
+    }
+    throw err || new Error('no pano');
+  }
+
   async function jsApiEnter(c) {
     const lib = await loadGmapsApi();
     ensurePanoObj(lib);
-    // Nearest OUTDOOR official pano within 120 m (skips user photospheres,
-    // which are the usual source of ancient/odd imagery).
-    const { data } = await svSvc.getPanorama({
-      location: { lat: c.lat, lng: c.lng }, radius: 120,
-      source: google.maps.StreetViewSource.OUTDOOR,
-      preference: google.maps.StreetViewPreference.NEAREST,
-    });
+    const data = await findPano(c);
     svPanoApplying = true;
     svPanoObj.setPano(data.location.pano);
     svPanoObj.setPov({ heading: svHeading, pitch: 0 });
