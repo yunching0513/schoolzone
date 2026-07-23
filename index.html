@@ -441,6 +441,11 @@ body.lang-en .t-en { display: inline; }
       <span style="width:1px;height:20px;background:var(--grey-3);margin:0 2px"></span>
       <span class="cat-pill school-mode active" data-mode="level"><span class="t-zh">依層級</span><span class="t-en">by level</span></span>
       <span class="cat-pill school-mode" data-mode="deficit"><span class="t-zh">依步行不足</span><span class="t-en">by walk-deficit</span></span>
+      <span style="width:1px;height:20px;background:var(--grey-3);margin:0 2px"></span>
+      <span class="filter-group-label" style="letter-spacing:0.05em">Walkshed</span>
+      <span class="cat-pill ws-profile active" data-wsp="c">👦 <span class="t-zh">兒童</span><span class="t-en">Child</span></span>
+      <span class="cat-pill ws-profile" data-wsp="e">🧓 <span class="t-zh">長者</span><span class="t-en">Elder</span></span>
+      <span class="cat-pill ws-profile" data-wsp="w">♿ <span class="t-zh">輪椅</span><span class="t-en">Wheelchair</span></span>
     </div>
     <div class="filter-group" style="margin-left:auto">
       <span class="filter-group-label" id="segCount">—</span>
@@ -472,7 +477,7 @@ body.lang-en .t-en { display: inline; }
     <p style="font-size:12px"><span class="t-zh">2026 年 6 月路網（實際多邊形範圍，幾何經 ±0.3 公尺簡化）。放大後滑過任一段可看路名、寬度、淨寬與斜坡數；<strong>點擊路段即開啟街景比對</strong>：街景為主畫面、地圖縮至右上角，小地圖上的<strong>小人與視角錐</strong>標示實際全景位置與朝向：在全景內拖轉、前進時會<strong>即時跟動</strong>；「↻ 旋轉 90°」可快速換邊看。資訊列顯示<strong>影像拍攝日期</strong>；街景取該點最新一輪官方拍攝（若 Google 服務無法載入，會自動退回精簡嵌入模式，該模式下視角錐僅跟隨旋轉鈕）。資料依縣市按需載入（0.03–6.2 MB／縣市）。</span><span class="t-en">June 2026 network (actual polygon extents, geometry simplified within ±0.3 m). Zoom in and hover a segment for road name, width, clear width and ramp count; <strong>click a segment to open Street View comparison</strong> — the panorama takes the stage and the map docks top-right, with a <strong>pegman + view cone</strong> marking the true panorama position and facing — they <strong>follow live</strong> as you drag or walk inside the panorama; "↻ Rotate 90°" flips sides quickly. The info bar shows the <strong>imagery capture date</strong>, and the panorama uses the newest official pass at that spot (if Google's service fails to load, a lightweight embed takes over, where the cone follows the rotate button only). Data loads on demand per county (0.03–6.2 MB each).</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🔴 A1 事故點圖層</strong>：內政部警政署 A1（當場或 24 小時內死亡）交通事故（2018–2025 有座標者，全國 13,708 點，按縣市過濾顯示），點色依受害者運具（黑=機車、藍=汽/貨車、紅=行人、金=慢車）、點徑依死亡人數。把死亡事故疊在淨寬著色上，可直接檢視「行人死亡點位周邊的人行道是否存在、是否過得去」：紅點（行人）落在紅色路段（淨寬 &lt;1.5 公尺）或根本沒有人行道的路口，就是最需優先改善的證據。滑過任一點可看日期、區、運具與死傷數。</span><span class="t-en"><strong>🔴 A1 crash layer</strong>: National Police Agency A1 fatal crashes (death on scene or within 24 h; 2018–2025 geocoded records, 13,708 points nationwide, filtered to the selected county). Dot colour = victim mode (black motorcycle, blue car/truck, red pedestrian, gold bicycle), dot size = deaths. Overlaying fatalities on the clear-width colours shows directly whether the sidewalks around each death exist and are passable — a red (pedestrian) dot on a red segment (&lt;1.5 m clear) or on a corner with no sidewalk at all is priority-one evidence. Hover a dot for date, district, mode and casualties.</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>⚡ 電線桿圖層</strong>：台電桿籍資料（全國約 273 萬支，TWD97 座標轉換；本島 121 分帶、離島 119 分帶），開啟後放大至街區尺度（zoom ≥ 16）顯示視窗內桿位。電線桿常立於人行道上，是輪椅與嬰兒車的實體障礙：與淨寬著色對照可看出「帳面有人行道、實際過不去」的路段。注意：屏東縣桿籍近乎缺漏（僅 88 筆）；桿位為台電登記位置，可能與現地略有出入。</span><span class="t-en"><strong>⚡ Utility-pole layer</strong>: Taipower pole registry (~2.73M poles nationwide, TWD97→WGS84; 121°E zone for the main island, 119°E for offshore counties). When on, poles in the viewport render at zoom ≥ 16. Poles standing on sidewalks are physical barriers for wheelchairs and strollers — overlay them on the clear-width colours to spot segments that exist on paper but cannot be passed. Note: Pingtung's registry is nearly empty (88 records); positions are as registered and may differ slightly on site.</span></p>
-    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。學校<strong>層級由校名判讀</strong>並分成國小、國中、高中職、大專、特教、其他六類，各為<strong>可複選的獨立圖層並以不同顏色</strong>標示，疊在人行道路網下方——可看出哪些人行道落在學校周邊，也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名、層級與資料年月；<strong>點擊任一學校即畫出 15 分鐘步行圈</strong>——虛線圓＝理想 1 公里範圍、藍色斑塊＝沿人行道實際可達範圍，斑塊越破碎、越空，代表該學區人行道越斷裂欠缺。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). School <strong>level is parsed from each name</strong> into six classes — elementary, junior high, senior/vocational, tertiary, special education and other — each an <strong>independent multi-select layer with its own colour</strong>, drawn beneath the sidewalk network to show which pavements sit within a school catchment (the streets children walk to and from school on). Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name, level and data month; <strong>click a school to draw its 15-min walkshed</strong> — dashed circle = ideal 1 km range, blue patches = what's actually reachable along sidewalks; the emptier and more fragmented the patches, the more broken the network.</span></p>
+    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。學校<strong>層級由校名判讀</strong>並分成國小、國中、高中職、大專、特教、其他六類，各為<strong>可複選的獨立圖層並以不同顏色</strong>標示，疊在人行道路網下方——可看出哪些人行道落在學校周邊，也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名、層級與資料年月；<strong>點擊任一學校即畫出 15 分鐘步行圈</strong>——虛線圓＝理想範圍、藍色斑塊＝沿人行道實際可達範圍，斑塊越破碎、越空，代表該學區人行道越斷裂欠缺。可切換三種步行者：<strong>👦 兒童</strong>（約 4 km/h，1 公里）、<strong>🧓 長者</strong>（約 3 km/h，750 公尺）、<strong>♿ 輪椅／行動不便</strong>（約 2.4 km/h，600 公尺，且<strong>排除淨寬不足 0.9 公尺與「該設而未設」路緣斜坡的路段</strong>——不只走得慢，很多路段根本過不去）。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). School <strong>level is parsed from each name</strong> into six classes — elementary, junior high, senior/vocational, tertiary, special education and other — each an <strong>independent multi-select layer with its own colour</strong>, drawn beneath the sidewalk network to show which pavements sit within a school catchment (the streets children walk to and from school on). Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name, level and data month; <strong>click a school to draw its 15-min walkshed</strong> — dashed circle = ideal range, blue patches = what's actually reachable along sidewalks; the emptier and more fragmented the patches, the more broken the network. Three mobility profiles: <strong>👦 child</strong> (~4 km/h, 1 km), <strong>🧓 elder</strong> (~3 km/h, 750 m), <strong>♿ wheelchair</strong> (~2.4 km/h, 600 m, additionally <strong>excluding segments under 0.9 m clear width or missing required curb ramps</strong> — not just slower, many segments are simply impassable).</span></p>
   </div>
 </div>
 
@@ -1140,57 +1145,78 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── per-school 15-min walkshed drawing (click a school zone) ─────────
-  // Dashed circle = the ideal 1 km / 15-min range; blue patches = where you
-  // can actually get along the sidewalk network. Fragmented patches or a
-  // near-empty circle make the network's gaps directly visible.
-  let wsLayer = null, wsCircle = null, wsPopup = null, wsKey = null;
+  // Dashed circle = the ideal 15-min range for the selected mobility
+  // profile; blue patches = where that profile can actually get along the
+  // sidewalk network. Profiles: child ~4 km/h (1 km), elder ~3 km/h
+  // (750 m), wheelchair ~2.4 km/h (600 m) with segments narrower than
+  // 0.9 m clear width or missing required curb ramps excluded.
+  const WS_PROFILES = {
+    c: { r: 1000, zh: '兒童（4 km/h）', en: 'child (4 km/h)', ideal: '1 公里', ideal_en: '1 km' },
+    e: { r: 750, zh: '長者（3 km/h）', en: 'elder (3 km/h)', ideal: '750 公尺', ideal_en: '750 m' },
+    w: { r: 600, zh: '輪椅（2.4 km/h）', en: 'wheelchair (2.4 km/h)', ideal: '600 公尺', ideal_en: '600 m' },
+  };
+  let wsProfile = 'c';
+  let wsLayer = null, wsCircle = null, wsPopup = null, wsKey = null, wsLast = null;
   const wsCache = {};
   function clearWalkshed() {
     if (wsLayer) { segMap.removeLayer(wsLayer); wsLayer = null; }
     if (wsCircle) { segMap.removeLayer(wsCircle); wsCircle = null; }
     if (wsPopup) { segMap.closePopup(wsPopup); wsPopup = null; }
-    wsKey = null;
+    wsKey = null; wsLast = null;
   }
   function ensureWalksheds(slug) {
     if (wsCache[slug]) return Promise.resolve(wsCache[slug]);
-    return fetch(`data/walksheds/${slug}.json?v=1`).then(r => r.json())
+    return fetch(`data/walksheds/${slug}.json?v=2`).then(r => r.json())
       .then(j => { const m = {}; j.forEach(x => m[x.name] = x); wsCache[slug] = m; return m; })
       .catch(() => (wsCache[slug] = {}));
   }
-  function showWalkshed(p, latlng) {
+  function showWalkshed(p, latlng, keepOnSame) {
     const key = `${p.sg}|${p.name}`;
-    if (wsKey === key) { clearWalkshed(); return; }   // second click toggles off
+    if (!keepOnSame && wsKey === key) { clearWalkshed(); return; }   // second click toggles off
     if (!p.sg) return;
     ensureWalksheds(p.sg).then(m => {
       const rec = m[p.name];
       if (!rec) return;
       clearWalkshed();
-      wsKey = key;
+      wsKey = key; wsLast = { p, latlng };
+      const prof = WS_PROFILES[wsProfile];
+      const geom = rec.g && rec.g[wsProfile];
+      const km = rec.k ? rec.k[wsProfile] : null;
       wsCircle = L.circle([rec.lat, rec.lon], {
-        radius: 1000, color: '#0284C7', weight: 1.6, dashArray: '7 5', fill: false, interactive: false,
+        radius: prof.r, color: '#0284C7', weight: 1.6, dashArray: '7 5', fill: false, interactive: false,
       }).addTo(segMap);
-      if (rec.g) {
-        wsLayer = L.geoJSON({ type: 'Feature', geometry: rec.g }, {
+      if (geom) {
+        wsLayer = L.geoJSON({ type: 'Feature', geometry: geom }, {
           style: { color: '#0EA5E9', weight: 1.2, fillColor: '#0EA5E9', fillOpacity: 0.3, interactive: false },
           interactive: false,
         }).addTo(segMap);
       }
-      const rk = p.rk != null ? p.rk : '—';
+      const wheelNote = wsProfile === 'w'
+        ? `<br><span style="font-size:11px">${TT('已排除淨寬 &lt;0.9 m 及「該設而未設」路緣斜坡的路段', 'segments &lt;0.9 m clear or missing required curb ramps excluded')}</span>`
+        : '';
       wsPopup = L.popup({ offset: [0, -6], autoClose: false, closeOnClick: false })
         .setLatLng(latlng || [rec.lat, rec.lon])
         .setContent(
           `<strong>🏫 ${p.name}</strong><br>` +
-          (rec.g
-            ? TT(`<span style="color:#0284C7">■</span> 15 分鐘沿人行道實際可達：<strong>${rk} km</strong><br><span style="color:#0284C7">◌</span> 虛線＝理想 1 公里範圍<br>藍色斑塊越破碎＝人行道越斷裂`,
-                 `<span style="color:#0284C7">■</span> 15-min actual reach along sidewalks: <strong>${rk} km</strong><br><span style="color:#0284C7">◌</span> dashed = ideal 1 km range<br>fragmented patches = broken network`)
-            : TT(`<span style="color:#DC2626">✕ 校門口沿人行道走不到任何連通路網</span><br><span style="color:#0284C7">◌</span> 虛線＝理想 1 公里範圍（實際可達 0）`,
-                 `<span style="color:#DC2626">✕ no connected sidewalk reachable from the gate</span><br><span style="color:#0284C7">◌</span> dashed = ideal 1 km range (actual reach: 0)`)) +
-          `<br><span style="color:var(--grey-2);font-size:11px">${TT('再點一次學校即關閉', 'click the school again to close')}</span>`)
+          `${TT('步行者：', 'Profile: ')}<strong>${TT(prof.zh, prof.en)}</strong>${wheelNote}<br>` +
+          (geom
+            ? TT(`<span style="color:#0284C7">■</span> 15 分鐘沿人行道實際可達：<strong>${km} km</strong><br><span style="color:#0284C7">◌</span> 虛線＝理想 ${prof.ideal} 範圍<br>藍色斑塊越破碎＝人行道越斷裂`,
+                 `<span style="color:#0284C7">■</span> 15-min actual reach along sidewalks: <strong>${km} km</strong><br><span style="color:#0284C7">◌</span> dashed = ideal ${prof.ideal_en} range<br>fragmented patches = broken network`)
+            : TT(`<span style="color:#DC2626">✕ 此族群沿人行道走不到任何連通路網</span><br><span style="color:#0284C7">◌</span> 虛線＝理想 ${prof.ideal} 範圍（實際可達 0）`,
+                 `<span style="color:#DC2626">✕ no connected sidewalk reachable for this profile</span><br><span style="color:#0284C7">◌</span> dashed = ideal ${prof.ideal_en} range (actual reach: 0)`)) +
+          `<br><span style="color:var(--grey-2);font-size:11px">${TT('可切換上方 👦/🧓/♿ 比較 · 再點學校即關閉', 'switch 👦/🧓/♿ above to compare · click the school again to close')}</span>`)
         .openOn(segMap);
       const b = wsCircle.getBounds();
       if (b.isValid()) segMap.fitBounds(b.pad(0.15));
     });
   }
+  document.querySelectorAll('.cat-pill.ws-profile').forEach(pill => {
+    pill.addEventListener('click', () => {
+      wsProfile = pill.dataset.wsp;
+      document.querySelectorAll('.cat-pill.ws-profile').forEach(x => x.classList.toggle('active', x === pill));
+      if (wsLast) showWalkshed(wsLast.p, wsLast.latlng, true);   // redraw open walkshed with new profile
+    });
+  });
   window.__wsShow = showWalkshed;   // debug/test hook
   document.querySelectorAll('.cat-pill.school-lv').forEach(pill => {
     pill.addEventListener('click', async () => {
