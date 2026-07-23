@@ -408,95 +408,9 @@ body.lang-en .t-en { display: inline; }
   <div class="meta">MOTC Open Data · 22 counties<br><strong id="hMetaN">— segments · — km</strong></div>
 </div>
 
-<!-- 01 — Overview -->
+<!-- 01 — Segment-level map -->
 <div class="section">
-  <div class="section-label"><span class="t-zh">01 — 三年總覽</span><span class="t-en">01 — 3-Year Overview</span></div>
-  <div class="cover">
-    <div>
-      <div class="big-num" id="hLength">—<sup><span class="t-zh">公里</span><span class="t-en">km</span></sup></div>
-      <div class="growth-badge" id="hGrowthBadge">—</div>
-      <div class="big-label-zh"><span class="t-zh">2026 年 6 月全台人行道總長度</span><span class="t-en">Total sidewalk length nationwide, June 2026</span></div>
-      <div class="big-label-en">MOTC national sidewalk inventory · 22 counties</div>
-      <div class="span-meta" id="hSegMeta">—</div>
-    </div>
-    <div class="kpis">
-      <div class="kpi">
-        <div class="kpi-label">Total Length</div>
-        <div class="kpi-zh"><span class="t-zh">2023 → 2026 總長度</span><span class="t-en">2023 → 2026 total length</span></div>
-        <div class="kpi-num" id="kLen2023">—<small>km</small></div>
-        <div class="kpi-delta" id="kLenDelta">—</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Avg. Net Width</div>
-        <div class="kpi-zh"><span class="t-zh">平均淨寬（可通行寬度）</span><span class="t-en">Avg. clear walkable width</span></div>
-        <div class="kpi-num" id="kNet2023">—<small>m</small></div>
-        <div class="kpi-delta" id="kNetDelta">—</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Ramp Coverage</div>
-        <div class="kpi-zh"><span class="t-zh">路緣斜坡缺口率</span><span class="t-en">Curb-ramp gap rate</span></div>
-        <div class="kpi-num" id="kRamp2023">—<small>%</small></div>
-        <div class="kpi-delta" id="kRampDelta">—</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Segments</div>
-        <div class="kpi-zh"><span class="t-zh">人行道路段數</span><span class="t-en">Sidewalk segments</span></div>
-        <div class="kpi-num" id="kSeg2023">—</div>
-        <div class="kpi-delta" id="kSegDelta">—</div>
-      </div>
-    </div>
-  </div>
-  <div class="notes-card" style="margin-top:16px;border-top:3px solid var(--lime)">
-    <p><span class="t-zh"><strong>怎麼解讀</strong>：三年間全台人行道總長度成長，但<strong>路緣斜坡的缺口率不減反增</strong>：代表新增或重新盤點的人行道路段，斜坡設置速度沒有跟上路網擴張的速度。「有沒有人行道」和「這條人行道能不能讓輪椅、嬰兒車、視障者安全通過」，是兩個不同的問題。</span><span class="t-en"><strong>How to read this</strong>: total sidewalk length grew over three years, but the <strong>curb-ramp gap rate rose, not fell</strong> — ramp installation hasn't kept pace with the expanding network. "Is there a sidewalk" and "can a wheelchair, stroller, or visually-impaired pedestrian actually cross safely" are two different questions.</span></p>
-  </div>
-</div>
-
-<!-- 02 — Choropleth -->
-<div class="section">
-  <div class="section-label"><span class="t-zh">02 — 行政區面量圖</span><span class="t-en">02 — District Choropleth</span></div>
-
-  <div class="filter-bar">
-    <div class="filter-group">
-      <span class="filter-group-label">Year</span>
-      <span class="cat-pill en" data-year="2023">2023</span>
-      <span class="cat-pill en active" data-year="2026">2026</span>
-      <span class="cat-pill" data-year="growth"><span class="t-zh">成長</span><span class="t-en">Growth</span></span>
-    </div>
-    <div class="filter-group">
-      <span class="filter-group-label">Metric</span>
-      <span class="cat-pill active" data-metric="length"><span class="t-zh">總長度</span><span class="t-en">Total length</span></span>
-      <span class="cat-pill" data-metric="percap"><span class="t-zh">每千人長度</span><span class="t-en">Per 1,000 residents</span></span>
-      <span class="cat-pill" data-metric="wth"><span class="t-zh">平均寬度</span><span class="t-en">Avg. width</span></span>
-      <span class="cat-pill" data-metric="net"><span class="t-zh">平均淨寬</span><span class="t-en">Avg. clear width</span></span>
-      <span class="cat-pill" data-metric="ramp"><span class="t-zh">斜坡缺口率</span><span class="t-en">Ramp gap rate</span></span>
-    </div>
-    <div class="filter-group" style="margin-left:auto">
-      <span class="filter-group-label" id="filterCount">—</span>
-    </div>
-  </div>
-
-  <div class="map-grid">
-    <div class="map-wrap">
-      <div id="map"></div>
-      <div class="map-legend">
-        <span class="legend-title" id="legendTitle">Quintile</span>
-        <span id="legendBins" style="display:flex;align-items:center;gap:1px"></span>
-      </div>
-    </div>
-    <div class="side-panel">
-      <h3>District Detail<span class="t-zh"> — 行政區明細</span></h3>
-      <div class="detail-empty" id="detailEmpty">
-        <span class="t-zh">點選任一行政區（區、鄉、鎮、市）以查看數據</span>
-        <span class="en t-en">Click a district on the map to inspect</span>
-      </div>
-      <div id="detailCard" style="display:none"></div>
-    </div>
-  </div>
-</div>
-
-<!-- 03 — Segment-level map -->
-<div class="section">
-  <div class="section-label"><span class="t-zh">03 — 逐路段地圖</span><span class="t-en">03 — Segment-Level Map</span></div>
+  <div class="section-label"><span class="t-zh">01 — 逐路段地圖</span><span class="t-en">01 — Segment-Level Map</span></div>
 
   <div class="filter-bar">
     <div class="filter-group">
@@ -562,9 +476,9 @@ body.lang-en .t-en { display: inline; }
   </div>
 </div>
 
-<!-- 03.5 — School walkability audit -->
+<!-- 02 — School walkability audit -->
 <div class="section">
-  <div class="section-label"><span class="t-zh">04 — 學區步行環境健檢｜全國排行</span><span class="t-en">04 — School-Zone Walkability Audit · National Ranking</span></div>
+  <div class="section-label"><span class="t-zh">02 — 學區步行環境健檢｜全國排行</span><span class="t-en">02 — School-Zone Walkability Audit · National Ranking</span></div>
   <div class="county-card">
     <h4>🏫 <span class="t-zh">15 分鐘沿人行道可達分析</span><span class="t-en">15-min sidewalk-network reach</span></h4>
     <div class="card-zh"><span class="t-zh">以各校為起點，沿<strong>實際人行道網路</strong>計算 15 分鐘（步行約 1 km、單車約 3 km）可達範圍，量化人行道的<strong>斷裂與欠缺</strong>。不足分數越高＝步行環境越差；「連通率」為可達人行道 ÷ 直線範圍內人行道（越低代表越破碎）。</span><span class="t-en">From each school, 15-minute reach is traced along the <strong>real sidewalk network</strong> (~1 km walk / ~3 km bike), quantifying <strong>fragmentation and gaps</strong>. Higher deficit score = worse; "connectivity" = reachable ÷ straight-line sidewalk (lower = more broken).</span></div>
@@ -597,23 +511,13 @@ body.lang-en .t-en { display: inline; }
   </div>
 </div>
 
-<!-- 05 — County ranking -->
+<!-- 03 — Notes -->
 <div class="section">
-  <div class="section-label"><span class="t-zh">05 — 縣市排行</span><span class="t-en">05 — County Ranking</span></div>
-  <div class="county-card">
-    <h4>Ranking<span class="t-zh"> · 全 22 縣市</span><span class="t-en"> · all 22 counties</span></h4>
-    <div class="card-zh"><span class="t-zh">依當前指標排序，點選縣市可在上方地圖定位</span><span class="t-en">Ranked by the current metric · tap a county to locate it on the map above</span></div>
-    <div id="byCounty"></div>
-  </div>
-</div>
-
-<!-- 05 — Notes -->
-<div class="section">
-  <div class="section-label"><span class="t-zh">05 — 資料說明</span><span class="t-en">05 — Data Notes</span></div>
+  <div class="section-label"><span class="t-zh">03 — 資料說明</span><span class="t-en">03 — Data Notes</span></div>
   <div class="notes-card">
     <p><span class="t-zh"><strong>資料來源</strong>：交通部「全國人行道整體區位」開放資料，兩次全國普查快照：2023 年 6 月（83,301 個路段，全國 10,167 公里）、2026 年 6 月（92,326 個路段，全國 10,939 公里）。逐路段欄位包含道路名稱、路段長度、人行道寬度、淨寬（扣除路燈、招牌等障礙物後的可通行寬度）、路緣斜坡設置數量、所在縣市與鄉鎮市區。</span><span class="t-en"><strong>Source</strong>: MOTC's national sidewalk-location open dataset, two nationwide snapshots — June 2023 (83,301 segments, 10,167 km total) and June 2026 (92,326 segments, 10,939 km total). Per-segment fields include road name, segment length, sidewalk width, clear width (net of obstructions such as poles and signage), curb-ramp count, and county/district.</span></p>
     <p><span class="t-zh"><strong>路緣斜坡缺口率怎麼算</strong>：原始欄位 SW_RAMP 是「已設置之路緣斜坡數量」，但若此處本來就不需要斜坡（例如路段中段、無側向通行需求），會標記為「N」（2023）或留空（2026）。我們只在「需要斜坡」的路段中，計算 SW_RAMP 為 0（該裝而未裝）的比例，作為缺口率：這是一個保守、只算「真正缺口」的指標。</span><span class="t-en"><strong>How the ramp gap rate is computed</strong>: the source field SW_RAMP counts installed curb ramps, but is marked "N" (2023) or left blank (2026) where no ramp is needed at all. We compute the gap rate only among segments that DO need a ramp, as the share where SW_RAMP = 0 (needed but not installed) — a conservative measure of genuine gaps only.</span></p>
-    <p><span class="t-zh"><strong>已知限制</strong>：2023 年原始資料為 TWD97 二度分帶座標系統（EPSG:3826），2026 年官方已提供 WGS84 版本；本頁的行政區面量圖僅使用逐路段的「縣市／鄉鎮市區」欄位聚合統計，未使用逐路段座標，故不受座標系統差異影響。高雄市那瑪夏區與連江縣東引鄉的人行道資料存在於原始資料中，但因本站既有行政區界圖資（districts.geojson）缺少這兩區的邊界多邊形（與车禍地圖的既有限制相同），故無法在面量圖上著色，僅計入縣市總計與排行榜。嘉義縣資料中有 2 筆路段的縣市欄位誤植（應屬嘉義市西區），已於彙整時更正；苗栗縣「頭份市」與彰化縣「員林市」在原始資料中仍使用 2015 年改制前的舊名（頭份鎮／員林鎮），已於彙整時對應至現行名稱。</span><span class="t-en"><strong>Known limitations</strong>: the 2023 source used the TWD97 TM2 coordinate system (EPSG:3826); the 2026 release already ships a WGS84 version. This page's choropleth aggregates only the per-segment county/district fields, never per-segment coordinates, so it is unaffected by the coordinate-system difference. Sidewalk records exist for 那瑪夏 (Kaohsiung) and 東引鄉 (Lienchiang), but this repo's district-boundary file (districts.geojson) lacks polygons for these two districts (the same pre-existing gap as the crash maps), so they can't be shaded on the map — they're still counted in county totals and the ranking. Two segments in the Chiayi County file were mistagged (they belong to Chiayi City's West District) and were corrected during aggregation; 頭份/員林 (upgraded from 鎮 to 市 in 2015) are mapped to their current names.</span></p>
+    <p><span class="t-zh"><strong>已知限制</strong>：2023 年原始資料為 TWD97 二度分帶座標系統（EPSG:3826），2026 年官方已提供 WGS84 版本；本頁的彙整統計僅使用逐路段的「縣市／鄉鎮市區」欄位，未使用逐路段座標，故不受座標系統差異影響。高雄市那瑪夏區與連江縣東引鄉的人行道資料存在於原始資料中，均已計入縣市統計。嘉義縣資料中有 2 筆路段的縣市欄位誤植（應屬嘉義市西區），已於彙整時更正；苗栗縣「頭份市」與彰化縣「員林市」在原始資料中仍使用 2015 年改制前的舊名（頭份鎮／員林鎮），已於彙整時對應至現行名稱。</span><span class="t-en"><strong>Known limitations</strong>: the 2023 source used the TWD97 TM2 coordinate system (EPSG:3826); the 2026 release already ships a WGS84 version. This page's aggregate statistics use only the per-segment county/district fields, never per-segment coordinates, so they are unaffected by the coordinate-system difference. Sidewalk records for 那瑪夏 (Kaohsiung) and 東引鄉 (Lienchiang) are included in the county statistics. Two segments in the Chiayi County file were mistagged (they belong to Chiayi City's West District) and were corrected during aggregation; 頭份/員林 (upgraded from 鎮 to 市 in 2015) are mapped to their current names.</span></p>
     <p style="font-size:11px;color:var(--grey-2);font-weight:300;line-height:1.8;margin-top:14px;font-family:var(--font-en);letter-spacing:0.05em">
       Sources · MOTC 全國人行道整體區位資料 (data.gov.tw) · MOI Household Registration dataset 8410 (population) · g0v/twgeojson district boundaries
     </p>
@@ -670,308 +574,15 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 (async () => {
   const SW = window.SIDEWALK_NATIONAL;
-  const [districts, populations] = await Promise.all([
-    fetch('districts.geojson').then(r => r.json()),
-    fetch('populations.json').then(r => r.json()),
-  ]);
-  const norm = s => (s || '').replace(/臺/g, '台');
-
-  function popOf(county, district) {
-    const c = populations[county]; if (!c) return null;
-    return c[district] || null;
-  }
 
   // ── national hero ──
   const nat23 = SW.national['2023'], nat26 = SW.national['2026'];
-  const lenGrowthPct = ((nat26.length_km - nat23.length_km) / nat23.length_km * 100).toFixed(1);
-
-  // county-level national ramp/net rollups (weighted)
-  function natWeighted(yr, field, weightField) {
-    let wsum = 0, vsum = 0;
-    for (const c in SW.by_county[yr]) {
-      const r = SW.by_county[yr][c];
-      const w = r[weightField] || 0;
-      vsum += (r[field] || 0) * w; wsum += w;
-    }
-    return wsum ? vsum / wsum : 0;
-  }
-  function natRampGapRate(yr) {
-    let need = 0, gap = 0;
-    for (const c in SW.by_county[yr]) { need += SW.by_county[yr][c].ramp_need; gap += SW.by_county[yr][c].ramp_gap; }
-    return need ? gap / need * 100 : 0;
-  }
-  const net23 = natWeighted('2023', 'avg_net_wth', 'length_km'), net26 = natWeighted('2026', 'avg_net_wth', 'length_km');
-  const ramp23 = natRampGapRate('2023'), ramp26 = natRampGapRate('2026');
-
-  function deltaEl(id, v0, v1, unit, higherIsBetter, decimals) {
-    const el = document.getElementById(id);
-    const d = v1 - v0;
-    const good = higherIsBetter ? d >= 0 : d <= 0;
-    const sign = d > 0 ? '+' : '';
-    el.textContent = `${sign}${d.toFixed(decimals)} ${unit} ${TT('（2023→2026）', '(2023→2026)')}`;
-    el.className = 'kpi-delta ' + (Math.abs(d) < 1e-9 ? '' : (good ? 'up' : 'down'));
-  }
-
   function renderHero() {
     document.getElementById('hMetaN').innerHTML = `${nat26.n.toLocaleString()} ${TT('段', 'segments')} · ${nat26.length_km.toLocaleString()} km`;
-    document.getElementById('hLength').innerHTML = `${nat26.length_km.toLocaleString()}<sup><span class="t-zh">公里</span><span class="t-en">km</span></sup>`;
-    document.getElementById('hGrowthBadge').innerHTML = `▲ +${lenGrowthPct}% <span style="font-weight:400">${TT('自 2023 年 6 月', 'since June 2023')}</span>`;
-    document.getElementById('hSegMeta').innerHTML = TT(
-      `全國 ${nat26.n.toLocaleString()} 個路段 · 22 個縣市 · 2023 年基準 ${nat23.length_km.toLocaleString()} 公里`,
-      `${nat26.n.toLocaleString()} segments nationwide · 22 counties · 2023 baseline ${nat23.length_km.toLocaleString()} km`
-    );
-    document.getElementById('kLen2023').innerHTML = `${nat23.length_km.toLocaleString()}<small>km</small>`;
-    deltaEl('kLenDelta', nat23.length_km, nat26.length_km, 'km', true, 0);
-    document.getElementById('kNet2023').innerHTML = `${net23.toFixed(2)}<small>m</small>`;
-    deltaEl('kNetDelta', net23, net26, 'm', true, 2);
-    document.getElementById('kRamp2023').innerHTML = `${ramp23.toFixed(1)}<small>%</small>`;
-    deltaEl('kRampDelta', ramp23, ramp26, 'pp', false, 1);
-    document.getElementById('kSeg2023').innerHTML = `${nat23.n.toLocaleString()}`;
-    deltaEl('kSegDelta', nat23.n, nat26.n, TT('段', 'segs'), true, 0);
   }
   renderHero();
 
-  // ── choropleth state ──
-  const state = { year: '2026', metric: 'length', selectedKey: null };
-
-  function districtRec(year, county, district) {
-    const c = SW.by_district[year] && SW.by_district[year][county];
-    return (c && c[district]) || null;
-  }
-  function metricFromRec(rec, county, district, metric) {
-    if (!rec) return null;
-    if (metric === 'length') return rec.length_km;
-    if (metric === 'wth') return rec.avg_wth;
-    if (metric === 'net') return rec.avg_net_wth;
-    if (metric === 'ramp') return rec.ramp_gap_rate;
-    if (metric === 'percap') {
-      const pop = popOf(county, district);
-      if (!pop) return null;
-      return rec.length_km * 1000 / pop * 1000; // metres per 1,000 residents
-    }
-    return null;
-  }
-  function valueFor(county, district) {
-    const r23 = districtRec('2023', county, district), r26 = districtRec('2026', county, district);
-    const v23 = metricFromRec(r23, county, district, state.metric);
-    const v26 = metricFromRec(r26, county, district, state.metric);
-    if (state.year === '2023') return v23;
-    if (state.year === '2026') return v26;
-    // growth
-    if (v23 == null && v26 == null) return null;
-    return (v26 || 0) - (v23 || 0);
-  }
-  const HIGHER_IS_BETTER = { length: true, percap: true, wth: true, net: true, ramp: false };
-  const METRIC_UNIT = { length: 'km', percap: 'm/1k', wth: 'm', net: 'm', ramp: '%' };
-  const METRIC_LABEL_ZH = { length: '總長度', percap: '每千人長度', wth: '平均寬度', net: '平均淨寬', ramp: '斜坡缺口率' };
-  const METRIC_LABEL_EN = { length: 'Total length', percap: 'Per 1,000 residents', wth: 'Avg. width', net: 'Avg. clear width', ramp: 'Ramp gap rate' };
-
-  const COLOR_BINS = ['#F2F2F2', '#E8F000', '#C8D400', '#E8A825', '#D94F3D'];
-  function quantileBreaks(values) {
-    const non0 = values.filter(v => v != null && v > 0).sort((a, b) => a - b);
-    if (!non0.length) return [0, 0, 0, 0];
-    const q = p => non0[Math.min(non0.length - 1, Math.floor(non0.length * p))];
-    return [q(0.2), q(0.4), q(0.6), q(0.8)];
-  }
-  function colorFor(v, breaks) {
-    if (v == null) return '#FAFAFA';
-    if (v <= 0) return COLOR_BINS[0];
-    if (v <= breaks[0]) return COLOR_BINS[1];
-    if (v <= breaks[1]) return COLOR_BINS[2];
-    if (v <= breaks[2]) return COLOR_BINS[3];
-    return COLOR_BINS[4];
-  }
-  // diverging scale for Growth mode
-  function colorForGrowth(v, maxAbs, higherIsBetter) {
-    if (v == null) return '#FAFAFA';
-    if (!maxAbs || Math.abs(v) < maxAbs * 0.03) return '#F2F2F2';
-    const t = Math.min(1, Math.abs(v) / maxAbs);
-    const good = higherIsBetter ? v > 0 : v < 0;
-    if (good) return t > 0.6 ? '#A8B200' : (t > 0.3 ? '#C8D400' : '#E8F000');
-    return t > 0.6 ? '#D94F3D' : (t > 0.3 ? '#E8A825' : '#F2C99A');
-  }
-
-  const map = L.map('map', {
-    center: [23.7, 121.0], zoom: 7,
-    zoomControl: true, scrollWheelZoom: true,
-    minZoom: 6, maxZoom: 14,
-    attributionControl: true,
-  });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19,
-  }).addTo(map);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd', maxZoom: 19, pane: 'shadowPane',
-  }).addTo(map);
-
-  let breaks = [0, 0, 0, 0], maxAbsGrowth = 0;
-  const layer = L.geoJSON(districts, {
-    style: f => {
-      const v = valueFor(norm(f.properties.COUNTYNAME), norm(f.properties.TOWNNAME));
-      const fill = state.year === 'growth' ? colorForGrowth(v, maxAbsGrowth, HIGHER_IS_BETTER[state.metric]) : colorFor(v, breaks);
-      return { fillColor: fill, fillOpacity: v == null ? 0.15 : 0.78, color: '#888', weight: 0.5, className: 'district-feature' };
-    },
-    onEachFeature: (f, lyr) => {
-      const p = f.properties;
-      const county = norm(p.COUNTYNAME), district = norm(p.TOWNNAME);
-      lyr.on({
-        mouseover: e => { e.target.setStyle({ weight: 1.5, color: '#1A1A1A' }); e.target.bringToFront(); },
-        mouseout: e => { if (state.selectedKey !== `${county}|${district}`) layer.resetStyle(e.target); },
-        click: e => selectDistrict(county, district, e.target),
-      });
-      const updateTooltip = () => {
-        const v = valueFor(county, district);
-        const label = v == null ? TT('無資料', 'no data') : `${v.toFixed(v >= 100 ? 0 : 2)} ${METRIC_UNIT[state.metric]}`;
-        lyr.bindTooltip(`<strong>${TT(county, enCounty(county))} ${enTown(district)}</strong><br>${TT(METRIC_LABEL_ZH[state.metric], METRIC_LABEL_EN[state.metric])}: ${label}`,
-          { sticky: true, direction: 'top', offset: [0, -4] });
-      };
-      lyr._updateTooltip = updateTooltip;
-      updateTooltip();
-    },
-  }).addTo(map);
-
-  let selectedLayer = null;
-  function selectDistrict(county, district, lyr) {
-    if (selectedLayer) layer.resetStyle(selectedLayer);
-    state.selectedKey = `${county}|${district}`;
-    lyr.setStyle({ weight: 2, color: '#1A1A1A' });
-    lyr.bringToFront();
-    selectedLayer = lyr;
-    renderDetail(county, district);
-  }
-
-  function renderDetail(county, district) {
-    document.getElementById('detailEmpty').style.display = 'none';
-    const card = document.getElementById('detailCard');
-    card.style.display = 'block';
-    const r23 = districtRec('2023', county, district), r26 = districtRec('2026', county, district);
-    function row(labelZh, labelEn, v23, v26, unit, decimals) {
-      if (v23 == null && v26 == null) return '';
-      const d = (v26 || 0) - (v23 || 0);
-      const sign = d > 0 ? '+' : '';
-      return `<div class="detail-stat">
-        <div><div class="stat-label">${labelEn}</div><div class="stat-val">${v26 != null ? v26.toFixed(decimals) : '—'}<small>${unit}</small></div></div>
-        <div><div class="stat-label">Δ 2023→2026</div><div class="stat-val" style="font-size:16px;color:var(--grey-1)">${sign}${d.toFixed(decimals)}<small>${unit}</small></div></div>
-      </div>`;
-    }
-    card.innerHTML = `
-      <div class="detail-name">${TT(county, enCounty(county))} ${enTown(district)}</div>
-      <div class="detail-county">${TT('2026 年資料', '2026 data')}</div>
-      ${row('總長度', 'Length (km)', r23 && r23.length_km, r26 && r26.length_km, 'km', 2)}
-      ${row('平均寬度', 'Width (m)', r23 && r23.avg_wth, r26 && r26.avg_wth, 'm', 2)}
-      ${row('平均淨寬', 'Net width (m)', r23 && r23.avg_net_wth, r26 && r26.avg_net_wth, 'm', 2)}
-      ${row('斜坡缺口率', 'Ramp gap rate (%)', r23 && r23.ramp_gap_rate, r26 && r26.ramp_gap_rate, '%', 1)}
-      <div class="detail-stat" style="border-top:1px solid var(--grey-3)">
-        <div><div class="stat-label">Segments 2023</div><div class="stat-val" style="font-size:16px">${r23 ? r23.n.toLocaleString() : '—'}</div></div>
-        <div><div class="stat-label">Segments 2026</div><div class="stat-val" style="font-size:16px">${r26 ? r26.n.toLocaleString() : '—'}</div></div>
-      </div>
-    `;
-  }
-
-  function renderLegend() {
-    const en = window.__LANG === 'en';
-    const titleEl = document.getElementById('legendTitle');
-    titleEl.textContent = `${TT(METRIC_LABEL_ZH[state.metric], METRIC_LABEL_EN[state.metric])} (${state.year === 'growth' ? TT('成長', 'growth') : state.year})`;
-    const bins = document.getElementById('legendBins');
-    if (state.year === 'growth') {
-      bins.innerHTML = [
-        `<span class="legend-tick">${TT('惡化', 'worse')}</span>`,
-        `<span class="legend-swatch" style="background:#D94F3D"></span>`,
-        `<span class="legend-swatch" style="background:#E8A825"></span>`,
-        `<span class="legend-swatch" style="background:#F2F2F2"></span>`,
-        `<span class="legend-swatch" style="background:#C8D400"></span>`,
-        `<span class="legend-swatch" style="background:#A8B200"></span>`,
-        `<span class="legend-tick">${TT('改善', 'better')}</span>`,
-      ].join('');
-    } else {
-      const fmt = v => v >= 100 ? Math.round(v) : v.toFixed(1);
-      bins.innerHTML = [
-        `<span class="legend-tick">0</span>`,
-        ...COLOR_BINS.flatMap((c, i) => [`<span class="legend-swatch" style="background:${c}"></span>`,
-          i < 4 ? `<span class="legend-tick">${fmt(breaks[i])}</span>` : `<span class="legend-tick">+</span>`]),
-      ].join('');
-    }
-  }
-
-  function recompute() {
-    // recompute breaks / maxAbsGrowth over all districts for current metric+year
-    const vals = [];
-    for (const county in SW.by_district['2026']) {
-      for (const district in SW.by_district['2026'][county]) vals.push(valueFor(county, district));
-    }
-    for (const county in SW.by_district['2023']) {
-      for (const district in SW.by_district['2023'][county]) {
-        if (!(SW.by_district['2026'][county] && SW.by_district['2026'][county][district])) vals.push(valueFor(county, district));
-      }
-    }
-    const nonNull = vals.filter(v => v != null);
-    breaks = quantileBreaks(nonNull);
-    maxAbsGrowth = nonNull.length ? Math.max(...nonNull.map(v => Math.abs(v))) : 0;
-    layer.eachLayer(lyr => { lyr._updateTooltip && lyr._updateTooltip(); });
-    layer.setStyle(f => {
-      const v = valueFor(norm(f.properties.COUNTYNAME), norm(f.properties.TOWNNAME));
-      const fill = state.year === 'growth' ? colorForGrowth(v, maxAbsGrowth, HIGHER_IS_BETTER[state.metric]) : colorFor(v, breaks);
-      return { fillColor: fill, fillOpacity: v == null ? 0.15 : 0.78 };
-    });
-    renderLegend();
-    document.getElementById('filterCount').textContent =
-      `${TT(METRIC_LABEL_ZH[state.metric], METRIC_LABEL_EN[state.metric])} · ${state.year === 'growth' ? TT('2023→2026 成長', '2023→2026 growth') : state.year}`;
-    renderCountyRanking();
-    if (state.selectedKey) {
-      const [c, d] = state.selectedKey.split('|');
-      renderDetail(c, d);
-    }
-  }
-
-  function renderCountyRanking() {
-    const rows = Object.keys(SW.by_county['2026']).map(county => {
-      const r23 = SW.by_county['2023'][county], r26 = SW.by_county['2026'][county];
-      let v;
-      if (state.metric === 'percap') {
-        // county-level population = sum of district populations
-        const popMap = populations[county] || {};
-        const pop = Object.values(popMap).reduce((s, x) => s + x, 0);
-        const l23 = r23 ? r23.length_km : 0, l26 = r26 ? r26.length_km : 0;
-        const p23 = pop ? l23 * 1000 / pop * 1000 : null, p26 = pop ? l26 * 1000 / pop * 1000 : null;
-        v = state.year === '2023' ? p23 : state.year === '2026' ? p26 : (p26 != null && p23 != null ? p26 - p23 : null);
-      } else {
-        const field = { length: 'length_km', wth: 'avg_wth', net: 'avg_net_wth', ramp: 'ramp_gap_rate' }[state.metric];
-        const v23 = r23 ? r23[field] : null, v26 = r26 ? r26[field] : null;
-        v = state.year === '2023' ? v23 : state.year === '2026' ? v26 : (v26 != null && v23 != null ? v26 - v23 : null);
-      }
-      return { county, v };
-    }).filter(r => r.v != null);
-    // Best performer first: descending when a higher value is better (length/width/etc.),
-    // ascending when a lower value is better (ramp gap rate) — same rule for growth deltas.
-    const desc = HIGHER_IS_BETTER[state.metric] ? -1 : 1;
-    rows.sort((a, b) => desc * (a.v - b.v));
-    const maxAbs = Math.max(...rows.map(r => Math.abs(r.v)), 1e-9);
-    document.getElementById('byCounty').innerHTML = rows.map(r => {
-      const slug = window.__COUNTY2SLUG[r.county];
-      const pct = Math.min(100, Math.abs(r.v) / maxAbs * 100);
-      const sign = state.year === 'growth' && r.v > 0 ? '+' : '';
-      const valStr = `${sign}${r.v.toFixed(r.v >= 100 || Math.abs(r.v) >= 100 ? 0 : 2)}`;
-      return `<div class="county-row${slug ? ' clickable' : ''}" ${slug ? `data-slug="${slug}"` : ''} style="${slug ? 'cursor:pointer' : ''}">
-        <span class="c-name">${TT(r.county, enCounty(r.county))}</span>
-        <span class="c-track"><span class="c-fill" style="width:${pct}%"></span></span>
-        <span class="c-val">${valStr}<small style="color:var(--grey-2);font-size:9px"> ${METRIC_UNIT[state.metric]}</small></span>
-      </div>`;
-    }).join('');
-    document.querySelectorAll('#byCounty .county-row.clickable').forEach(row => {
-      row.addEventListener('click', () => window.open('city.html?c=' + row.dataset.slug, '_blank'));
-    });
-  }
-
-  document.querySelectorAll('.cat-pill[data-year]').forEach(p => p.addEventListener('click', () => {
-    document.querySelectorAll('.cat-pill[data-year]').forEach(x => x.classList.remove('active'));
-    p.classList.add('active'); state.year = p.dataset.year; recompute();
-  }));
-  document.querySelectorAll('.cat-pill[data-metric]').forEach(p => p.addEventListener('click', () => {
-    document.querySelectorAll('.cat-pill[data-metric]').forEach(x => x.classList.remove('active'));
-    p.classList.add('active'); state.metric = p.dataset.metric; recompute();
-  }));
-
-  // ── §03 segment-level map (per-county, on-demand) ────────────────────
+  // ── §01 segment-level map (per-county, on-demand) ────────────────────
   const segMap = L.map('segmap', {
     center: [25.04, 121.53], zoom: 13, minZoom: 8, maxZoom: 19,
     zoomControl: true, scrollWheelZoom: true, preferCanvas: true,
@@ -1625,8 +1236,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.__swRender = () => { if (SW) render(); };
   })();
 
-  window.__rerender = () => { renderHero(); recompute(); buildSegSelect(); renderSegLayer(); };
-  recompute();
+  window.__rerender = () => { renderHero(); buildSegSelect(); renderSegLayer(); };
   loadSegCounty(segState.slug);
   setTimeout(() => segMap.invalidateSize(), 300);
 })();
