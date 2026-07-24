@@ -517,7 +517,7 @@ body.lang-en .t-en { display: inline; }
 
   <div class="county-card" style="margin-top:16px">
     <h4>📸 <span class="t-zh">街道改造相簿</span><span class="t-en">Street Makeover Album</span> <span id="albumCount" style="font-family:var(--font-en);font-weight:400;color:var(--grey-2);font-size:12px"></span></h4>
-    <div class="card-zh"><span class="t-zh">在街景模式按「📸 收藏此景」，即以官方 Street View Static API 擷取當下視角（全景 ID＋方位角），存進這本相簿——收集你想改造的街道空間。相簿存在這台瀏覽器（localStorage），可加註記、匯出清單。</span><span class="t-en">In Street View, press "📸 Save view" to capture the current viewpoint (pano ID + heading) via the official Street View Static API into this album — a collection of streets you want to remake. Stored in this browser (localStorage); add notes and export the list.</span></div>
+    <div class="card-zh"><span class="t-zh">在街景模式按「📸 收藏此景」，即以官方 Street View Static API 擷取當下視角（全景 ID＋方位角），存進這本相簿——收集你想改造的街道空間。每筆可按「🎨 AI 改造」一鍵送往 <a href="https://ai-street-designer.onrender.com/" target="_blank" rel="noopener" style="font-weight:700">AI 街景生成器</a>（圖片網址自動複製、開啟工具即可貼上生成改造願景圖）。相簿存在這台瀏覽器（localStorage），可加註記、匯出清單。</span><span class="t-en">In Street View, press "📸 Save view" to capture the current viewpoint (pano ID + heading) via the official Street View Static API into this album — a collection of streets you want to remake. Each entry has a "🎨 AI remake" button that hands the view to the <a href="https://ai-street-designer.onrender.com/" target="_blank" rel="noopener" style="font-weight:700">AI street designer</a> (image URL auto-copied for pasting). Stored in this browser (localStorage); add notes and export the list.</span></div>
     <div class="album-tools">
       <span class="cat-pill" id="albumExportCsv">⬇ <span class="t-zh">匯出 CSV</span><span class="t-en">Export CSV</span></span>
       <span class="cat-pill" id="albumExportJson">⬇ <span class="t-zh">匯出 JSON</span><span class="t-en">Export JSON</span></span>
@@ -1396,6 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `<div class="ai-meta">${when} · ${it.county || ''} · ${it.heading}°</div>` +
         (it.note ? `<div class="ai-note">${it.note.replace(/</g, '&lt;')}</div>` : '') + `</div>` +
         `<div class="ai-actions">` +
+        `<span data-act="ai" title="${TT('開啟 AI 街景生成器（圖片網址已複製，可直接貼上）', 'opens the AI street designer (image URL copied)')}">🎨 ${TT('AI 改造', 'AI remake')}</span>` +
         `<span data-act="note">📝 ${TT('註記', 'note')}</span>` +
         `<span data-act="dl">⬇ ${TT('下載', 'save')}</span>` +
         `<span data-act="del">✕ ${TT('刪除', 'delete')}</span>` +
@@ -1404,7 +1405,21 @@ document.addEventListener('DOMContentLoaded', () => {
     grid.querySelectorAll('.ai-actions span').forEach(btn => btn.addEventListener('click', e => {
       const i = +e.target.closest('.album-item').dataset.i, it = album[i];
       const act = e.target.dataset.act;
-      if (act === 'del') { album.splice(i, 1); albumSave(); renderAlbum(); }
+      if (act === 'ai') {
+        // Hand off to the AI street designer: pass the view as URL params
+        // (harmless if the app ignores them) and copy the image URL to the
+        // clipboard so it can be pasted straight in.
+        const img = svStaticUrl(it, '640x480');
+        const q = new URLSearchParams();
+        if (img) q.set('img', img);
+        q.set('lat', it.lat.toFixed(6)); q.set('lng', it.lng.toFixed(6));
+        q.set('heading', it.heading);
+        if (it.road) q.set('road', it.road);
+        if (navigator.clipboard) navigator.clipboard.writeText(img || svGmapsLink(it)).catch(() => {});
+        toast(TT('🎨 圖片網址已複製，開啟 AI 街景生成器…', '🎨 image URL copied — opening the AI designer…'));
+        window.open(`https://ai-street-designer.onrender.com/?${q.toString()}`, '_blank');
+      }
+      else if (act === 'del') { album.splice(i, 1); albumSave(); renderAlbum(); }
       else if (act === 'note') {
         const v = prompt(TT('這條街想怎麼改？（註記）', 'Notes — what should change here?'), it.note || '');
         if (v !== null) { it.note = v; albumSave(); renderAlbum(); }
