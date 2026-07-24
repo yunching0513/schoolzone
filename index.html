@@ -173,6 +173,30 @@ body { font-family: var(--font-zh); background: var(--grey-4); color: var(--blac
   padding: 10px 12px; font-size: 12px; line-height: 1.55; display: none; }
 #wsInfo .ws-close { position: absolute; top: 4px; right: 7px; cursor: pointer; color: var(--grey-2); font-size: 14px; }
 #wsInfo .ws-close:hover { color: var(--black); }
+#svStage .sv-snap {
+  font-family: var(--font-zh); font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em;
+  background: transparent; color: var(--lime); border: 1px solid var(--lime);
+  padding: 6px 11px; cursor: pointer; white-space: nowrap;
+}
+#svStage .sv-snap:hover { background: var(--lime); color: var(--black); }
+.album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-top: 12px; }
+.album-item { border: 1px solid var(--grey-3); background: var(--white); position: relative; }
+.album-item img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; background: var(--grey-4); }
+.album-item .ai-body { padding: 8px 10px; font-size: 11.5px; line-height: 1.5; }
+.album-item .ai-title { font-weight: 700; }
+.album-item .ai-meta { color: var(--grey-2); font-family: var(--font-en); font-size: 10px; margin-top: 2px; }
+.album-item .ai-note { margin-top: 4px; color: var(--grey-1); font-size: 11px; white-space: pre-wrap; }
+.album-item .ai-actions { display: flex; gap: 8px; padding: 0 10px 8px; }
+.album-item .ai-actions span { cursor: pointer; font-size: 11px; color: var(--grey-2); }
+.album-item .ai-actions span:hover { color: var(--black); }
+.album-empty { color: var(--grey-2); font-size: 12px; padding: 14px 0; }
+.album-tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.album-tools .cat-pill { user-select: none; }
+#svToast {
+  position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
+  background: var(--black); color: var(--lime); font-size: 13px; font-weight: 700;
+  padding: 10px 18px; border-radius: 3px; z-index: 4000; display: none;
+}
 
 /* Map area */
 .map-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 24px; }
@@ -468,6 +492,7 @@ body.lang-en .t-en { display: inline; }
       <div class="sv-bar">
         <span class="sv-info" id="svInfo">—</span>
         <span class="sv-date" id="svDate" style="display:none"></span>
+        <button class="sv-snap" id="svSnap" title="收藏此景到相簿 / save this view">📸 <span class="t-zh">收藏此景</span><span class="t-en">Save view</span></button>
         <button class="sv-rotate" id="svRotate" title="旋轉視角 / rotate view">↻ <span class="t-zh">旋轉 90°</span><span class="t-en">Rotate 90°</span><span class="sv-dir" id="svDir">N</span></button>
         <a class="sv-ext" id="svExt" href="#" target="_blank" rel="noopener">↗ <span class="t-zh">看最新街景（Google Maps）</span><span class="t-en">Latest imagery (Google Maps)</span></a>
         <button class="sv-close" id="svClose">✕ <span class="t-zh">關閉街景</span><span class="t-en">Close</span></button>
@@ -489,7 +514,19 @@ body.lang-en .t-en { display: inline; }
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>⚡ 電線桿圖層</strong>：台電桿籍資料（全國約 273 萬支，TWD97 座標轉換；本島 121 分帶、離島 119 分帶），開啟後放大至街區尺度（zoom ≥ 16）顯示視窗內桿位。電線桿常立於人行道上，是輪椅與嬰兒車的實體障礙：與淨寬著色對照可看出「帳面有人行道、實際過不去」的路段。注意：屏東縣桿籍近乎缺漏（僅 88 筆）；桿位為台電登記位置，可能與現地略有出入。</span><span class="t-en"><strong>⚡ Utility-pole layer</strong>: Taipower pole registry (~2.73M poles nationwide, TWD97→WGS84; 121°E zone for the main island, 119°E for offshore counties). When on, poles in the viewport render at zoom ≥ 16. Poles standing on sidewalks are physical barriers for wheelchairs and strollers — overlay them on the clear-width colours to spot segments that exist on paper but cannot be passed. Note: Pingtung's registry is nearly empty (88 records); positions are as registered and may differ slightly on site.</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。學校<strong>層級由校名判讀</strong>並分成國小、國中、高中職、大專、特教、其他六類，各為<strong>可複選的獨立圖層並以不同顏色</strong>標示，疊在人行道路網下方——可看出哪些人行道落在學校周邊，也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名、層級與資料年月；<strong>點擊任一學校即畫出 15 分鐘步行圈</strong>——虛線圓＝理想範圍、藍色斑塊＝沿人行道實際可達範圍，斑塊越破碎、越空，代表該學區人行道越斷裂欠缺。可切換三種步行者：<strong>🧑 青少年</strong>（約 4 km/h，1 公里）、<strong>👦🧓 孩童・長者</strong>（約 3 km/h，750 公尺——實證研究顯示學童揹書包、等紅綠燈的實際步速與長者相近，交通工程設計亦將兩者歸為同一設計速度群）、<strong>♿ 輪椅／行動不便</strong>（約 2.4 km/h，600 公尺，且<strong>排除淨寬不足 0.9 公尺與「該設而未設」路緣斜坡的路段</strong>——不只走得慢，很多路段根本過不去）。<strong>🌳 300m 生活街道圈（倡議圖層）</strong>：開啟後以每所學校為圓心畫出方圓 300 公尺綠色虛線圈——通學的最後一段路；點擊任一圈可放大並顯示倡議說明（行人優先、車速上限 20 km/h、穿越性車流退場），供簡報與政策倡議示意使用。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). School <strong>level is parsed from each name</strong> into six classes — elementary, junior high, senior/vocational, tertiary, special education and other — each an <strong>independent multi-select layer with its own colour</strong>, drawn beneath the sidewalk network to show which pavements sit within a school catchment (the streets children walk to and from school on). Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name, level and data month; <strong>click a school to draw its 15-min walkshed</strong> — dashed circle = ideal range, blue patches = what's actually reachable along sidewalks; the emptier and more fragmented the patches, the more broken the network. Three mobility profiles: <strong>🧑 teen</strong> (~4 km/h, 1 km), <strong>👦🧓 child &amp; elder</strong> (~3 km/h, 750 m — studies show schoolchildren's effective walking speed, with backpacks and crossings, matches elders', and traffic engineering groups them at the same design speed), <strong>♿ wheelchair</strong> (~2.4 km/h, 600 m, additionally <strong>excluding segments under 0.9 m clear width or missing required curb ramps</strong> — not just slower, many segments are simply impassable). <strong>🌳 300 m living-streets ring (advocacy layer)</strong>: draws a dashed green 300 m radius around every school — the last leg of the school run; click a ring to zoom in with an advocacy note (pedestrian priority, 20 km/h, no through-traffic) for presentations and policy work.</span></p>
   </div>
+
+  <div class="county-card" style="margin-top:16px">
+    <h4>📸 <span class="t-zh">街道改造相簿</span><span class="t-en">Street Makeover Album</span> <span id="albumCount" style="font-family:var(--font-en);font-weight:400;color:var(--grey-2);font-size:12px"></span></h4>
+    <div class="card-zh"><span class="t-zh">在街景模式按「📸 收藏此景」，即以官方 Street View Static API 擷取當下視角（全景 ID＋方位角），存進這本相簿——收集你想改造的街道空間。相簿存在這台瀏覽器（localStorage），可加註記、匯出清單。</span><span class="t-en">In Street View, press "📸 Save view" to capture the current viewpoint (pano ID + heading) via the official Street View Static API into this album — a collection of streets you want to remake. Stored in this browser (localStorage); add notes and export the list.</span></div>
+    <div class="album-tools">
+      <span class="cat-pill" id="albumExportCsv">⬇ <span class="t-zh">匯出 CSV</span><span class="t-en">Export CSV</span></span>
+      <span class="cat-pill" id="albumExportJson">⬇ <span class="t-zh">匯出 JSON</span><span class="t-en">Export JSON</span></span>
+      <span class="cat-pill" id="albumClear">🗑 <span class="t-zh">清空相簿</span><span class="t-en">Clear all</span></span>
+    </div>
+    <div id="albumGrid" class="album-grid"></div>
+  </div>
 </div>
+<div id="svToast"></div>
 
 <!-- 02 — School walkability audit -->
 <div class="section">
@@ -579,6 +616,7 @@ function setLang(l) {
   document.querySelectorAll('#langToggle .lt-opt').forEach(o => o.classList.toggle('active', o.dataset.lang === l));
   if (window.__rerender) window.__rerender();
   if (window.__swRender) window.__swRender();
+  if (window.__albumRender) window.__albumRender();
 }
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#langToggle .lt-opt').forEach(o =>
@@ -1295,6 +1333,121 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   window.__wsShow = showWalkshed;   // debug/test hook
   window.__segMap = segMap;
+
+  // ── street makeover album ────────────────────────────────────────────
+  // Cross-origin Street View pixels can't be canvas-captured (tainted
+  // canvas), so "screenshots" are re-fetched legitimately: we record the
+  // pano id + heading/pitch and render the same view via the official
+  // Street View Static API. Entries persist in localStorage.
+  const ALBUM_KEY = 'vzt_album_v1';
+  let album = [];
+  try { album = JSON.parse(localStorage.getItem(ALBUM_KEY) || '[]'); } catch (e) {}
+  function albumSave() { try { localStorage.setItem(ALBUM_KEY, JSON.stringify(album)); } catch (e) {} }
+  function svStaticUrl(it, size) {
+    if (!window.GMAPS_KEY) return null;
+    const loc = it.pano ? `pano=${encodeURIComponent(it.pano)}` : `location=${it.lat.toFixed(6)},${it.lng.toFixed(6)}`;
+    return `https://maps.googleapis.com/maps/api/streetview?size=${size || '640x480'}&${loc}` +
+      `&heading=${Math.round(it.heading)}&pitch=${Math.round(it.pitch || 0)}&fov=90&key=${encodeURIComponent(window.GMAPS_KEY)}`;
+  }
+  function svGmapsLink(it) {
+    return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${it.lat.toFixed(6)},${it.lng.toFixed(6)}&heading=${Math.round(it.heading)}`;
+  }
+  let toastTimer = null;
+  function toast(msg) {
+    const el = document.getElementById('svToast');
+    el.textContent = msg; el.style.display = 'block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.style.display = 'none'; }, 1800);
+  }
+  function captureView() {
+    if (!svPoint) return;
+    let pano = null, pitch = 0, heading = svHeading;
+    if (svMode === 'js' && svPanoObj) {
+      pano = svPanoObj.getPano() || null;
+      const pov = svPanoObj.getPov();
+      heading = ((pov.heading % 360) + 360) % 360; pitch = pov.pitch || 0;
+    }
+    const seg = (svSelLayer && svSelLayer.feature) ? svSelLayer.feature.properties : null;
+    album.unshift({
+      t: Date.now(), lat: svPoint.lat, lng: svPoint.lng,
+      heading: Math.round(heading), pitch: Math.round(pitch), pano,
+      road: seg ? (seg.n || '') : '', dist: seg ? (seg.v || '') : '',
+      county: bySlugZh[segState.slug] || '', note: '',
+    });
+    albumSave(); renderAlbum();
+    toast(TT('📸 已加入街道改造相簿', '📸 saved to the makeover album'));
+  }
+  function renderAlbum() {
+    const grid = document.getElementById('albumGrid');
+    document.getElementById('albumCount').textContent = album.length ? `· ${album.length}` : '';
+    if (!album.length) {
+      grid.innerHTML = `<div class="album-empty">${TT('尚無收藏——在街景模式按「📸 收藏此景」開始收集。', 'Nothing saved yet — press "📸 Save view" in Street View to start collecting.')}</div>`;
+      return;
+    }
+    grid.innerHTML = album.map((it, i) => {
+      const url = svStaticUrl(it, '400x300');
+      const d = new Date(it.t);
+      const when = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+      const title = it.road ? `${it.road}${it.dist ? ' · ' + it.dist : ''}` : `${it.lat.toFixed(5)}, ${it.lng.toFixed(5)}`;
+      return `<div class="album-item" data-i="${i}">` +
+        (url ? `<a href="${svGmapsLink(it)}" target="_blank" rel="noopener"><img src="${url}" loading="lazy" alt=""></a>`
+             : `<a href="${svGmapsLink(it)}" target="_blank" rel="noopener"><div style="aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:var(--grey-4);font-size:11px;color:var(--grey-2)">${TT('無金鑰：點開街景', 'no key: open link')}</div></a>`) +
+        `<div class="ai-body"><div class="ai-title">${title}</div>` +
+        `<div class="ai-meta">${when} · ${it.county || ''} · ${it.heading}°</div>` +
+        (it.note ? `<div class="ai-note">${it.note.replace(/</g, '&lt;')}</div>` : '') + `</div>` +
+        `<div class="ai-actions">` +
+        `<span data-act="note">📝 ${TT('註記', 'note')}</span>` +
+        `<span data-act="dl">⬇ ${TT('下載', 'save')}</span>` +
+        `<span data-act="del">✕ ${TT('刪除', 'delete')}</span>` +
+        `</div></div>`;
+    }).join('');
+    grid.querySelectorAll('.ai-actions span').forEach(btn => btn.addEventListener('click', e => {
+      const i = +e.target.closest('.album-item').dataset.i, it = album[i];
+      const act = e.target.dataset.act;
+      if (act === 'del') { album.splice(i, 1); albumSave(); renderAlbum(); }
+      else if (act === 'note') {
+        const v = prompt(TT('這條街想怎麼改？（註記）', 'Notes — what should change here?'), it.note || '');
+        if (v !== null) { it.note = v; albumSave(); renderAlbum(); }
+      } else if (act === 'dl') {
+        const url = svStaticUrl(it, '640x480');
+        if (!url) { window.open(svGmapsLink(it), '_blank'); return; }
+        fetch(url).then(r => { if (!r.ok) throw 0; return r.blob(); }).then(b => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(b);
+          a.download = `street_${it.lat.toFixed(5)}_${it.lng.toFixed(5)}_${it.heading}.jpg`;
+          a.click(); URL.revokeObjectURL(a.href);
+        }).catch(() => window.open(url, '_blank'));   // CORS-blocked → open in a tab to save manually
+      }
+    }));
+  }
+  document.getElementById('svSnap').addEventListener('click', captureView);
+  document.getElementById('albumClear').addEventListener('click', () => {
+    if (album.length && confirm(TT(`確定清空相簿（${album.length} 筆）？`, `Clear all ${album.length} saved views?`))) {
+      album = []; albumSave(); renderAlbum();
+    }
+  });
+  function albumDownload(name, mime, text) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type: mime }));
+    a.download = name; a.click(); URL.revokeObjectURL(a.href);
+  }
+  document.getElementById('albumExportJson').addEventListener('click', () => {
+    if (!album.length) return;
+    albumDownload('street_album.json', 'application/json',
+      JSON.stringify(album.map(it => ({ ...it, image: svStaticUrl(it, '640x480'), streetview: svGmapsLink(it) })), null, 2));
+  });
+  document.getElementById('albumExportCsv').addEventListener('click', () => {
+    if (!album.length) return;
+    const esc = s => `"${String(s == null ? '' : s).replace(/"/g, '""')}"`;
+    const rows = [['date', 'road', 'district', 'county', 'lat', 'lng', 'heading', 'note', 'streetview_link', 'image_url']];
+    album.forEach(it => rows.push([
+      new Date(it.t).toISOString().slice(0, 10), it.road, it.dist, it.county,
+      it.lat.toFixed(6), it.lng.toFixed(6), it.heading, it.note, svGmapsLink(it), svStaticUrl(it, '640x480') || '',
+    ]));
+    albumDownload('street_album.csv', 'text/csv', '﻿' + rows.map(r => r.map(esc).join(',')).join('\n'));
+  });
+  renderAlbum();
+  window.__albumRender = renderAlbum;
 
   // ── map-level click router ───────────────────────────────────────────
   // Priority: sidewalk segment (its own handler marks the event) → school
