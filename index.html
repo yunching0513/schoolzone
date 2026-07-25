@@ -404,6 +404,48 @@ footer .tag.black { background: var(--black); color: var(--white); border-color:
   .filter-group-label { width: 100%; }
 }
 
+/* ── mobile map & layout (phones) ─────────────────────────────── */
+#touchHint {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(26, 26, 26, 0.45); color: #FFF; font-size: 15px; font-weight: 700;
+  letter-spacing: 0.06em; z-index: 1500; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s; text-align: center; padding: 0 24px;
+}
+#touchHint.on { opacity: 1; }
+.video-card { background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 16px; }
+.video-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--grey-4); }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+@media (max-width: 700px) {
+  /* shorter, viewport-relative map */
+  #segmap { height: 62vh !important; min-height: 400px; }
+  .map-wrap { padding: 10px; }
+  /* filter rows scroll sideways instead of stacking into a wall of pills */
+  .filter-group {
+    width: 100%; flex-wrap: nowrap; overflow-x: auto;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px;
+  }
+  .filter-group::-webkit-scrollbar { display: none; }
+  .filter-group-label { width: auto; flex: none; }
+  .cat-pill { flex: none; padding: 8px 13px; font-size: 12px; }
+  /* legend scrolls in one row */
+  .map-legend { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .map-legend::-webkit-scrollbar { display: none; }
+  .map-legend > * { flex: none; white-space: nowrap; }
+  /* walkshed / living-street info card becomes a bottom sheet */
+  #wsInfo { left: 8px; right: 8px; bottom: 8px; top: auto; max-width: none; font-size: 12.5px; }
+  /* ranking rows: metrics wrap to their own line */
+  .sw-row { flex-wrap: wrap; row-gap: 2px; }
+  .sw-name { min-width: 55%; }
+  .sw-metrics { width: 100%; text-align: left; white-space: normal; padding-left: 44px; }
+  .sw-list { max-height: 420px; }
+  .sw-stat { min-width: 100px; padding: 8px 10px; }
+  .sw-stat .n { font-size: 19px; }
+  /* street view stage */
+  #svStage .sv-bar { flex-wrap: wrap; gap: 8px; padding: 8px 10px; }
+  #svStage .sv-info { flex: 1 1 100%; white-space: normal; font-size: 12px; }
+  #svDock { width: 46%; height: 130px; }
+}
+
 /* i18n + logo */
 .t-en { display: none; }
 body.lang-en .t-zh { display: none; }
@@ -435,6 +477,18 @@ body.lang-en .t-en { display: inline; }
     </div>
   </div>
   <div class="meta">MOTC Open Data · 22 counties<br><strong id="hMetaN">— segments · — km</strong></div>
+</div>
+
+<!-- 00 — Demo video -->
+<div class="section">
+  <div class="section-label"><span class="t-zh">📺 示範影片</span><span class="t-en">📺 Demo Video</span></div>
+  <div class="video-card">
+    <div class="video-frame">
+      <iframe src="https://www.youtube-nocookie.com/embed/5A7puM7b2TQ" title="打造夢想街道 示範影片"
+        loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
 </div>
 
 <!-- 01 — Segment-level map -->
@@ -1333,6 +1387,42 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   window.__wsShow = showWalkshed;   // debug/test hook
   window.__segMap = segMap;
+
+  // ── mobile: cooperative touch gestures ───────────────────────────────
+  // On touch devices one-finger drags scroll the PAGE (the map otherwise
+  // traps every swipe); two fingers pan/zoom the map, Google-embed style.
+  // A brief overlay hint teaches the gesture. Taps still route normally.
+  if (window.matchMedia('(pointer: coarse)').matches) {
+    const mc = segMap.getContainer();
+    segMap.dragging.disable();
+    mc.style.touchAction = 'pan-y';
+    const hint = document.createElement('div');
+    hint.id = 'touchHint';
+    hint.textContent = TT('☝️ 用兩指移動地圖', '☝️ Use two fingers to move the map');
+    mc.appendChild(hint);
+    let hintT = null;
+    mc.addEventListener('touchstart', e => {
+      if (e.touches.length >= 2) {
+        e.preventDefault();                 // keep the browser from zooming the page
+        if (!segMap.dragging.enabled()) segMap.dragging.enable();
+        mc.style.touchAction = 'none';
+        hint.classList.remove('on');
+      }
+    }, { passive: false });
+    mc.addEventListener('touchmove', e => {
+      if (e.touches.length === 1 && !segMap.dragging.enabled()) {
+        hint.classList.add('on');
+        clearTimeout(hintT);
+        hintT = setTimeout(() => hint.classList.remove('on'), 1100);
+      }
+    }, { passive: true });
+    mc.addEventListener('touchend', e => {
+      if (e.touches.length === 0 && segMap.dragging.enabled()) {
+        segMap.dragging.disable();
+        mc.style.touchAction = 'pan-y';
+      }
+    });
+  }
 
   // ── street makeover album ────────────────────────────────────────────
   // Cross-origin Street View pixels can't be canvas-captured (tainted
