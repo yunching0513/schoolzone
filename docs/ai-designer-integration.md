@@ -3,7 +3,7 @@
 「打造夢想街道」的街道改造相簿，每筆收藏都有「🎨 AI 改造」按鈕，會以下列格式開啟生成器：
 
 ```
-https://ai-street-designer.onrender.com/?img=<街景圖網址>&lat=<緯度>&lng=<經度>&heading=<方位角>&road=<路名>
+https://ai-street-designer-git-codex-know-abfca6-yunching0513s-projects.vercel.app/?img=<街景圖網址>&lat=<緯度>&lng=<經度>&heading=<方位角>&road=<路名>
 ```
 
 同時會把 `img` 的網址複製到剪貼簿。
@@ -40,7 +40,7 @@ if (img && /^https:\/\/maps\.googleapis\.com\/maps\/api\/streetview/.test(img)) 
 ```
 
 注意：`img` 是 Google Street View Static API 網址，內含你的 Maps 金鑰。
-金鑰已限制網域（github.io / localhost），在生成器（onrender.com）的**後端**抓圖不受
+金鑰已限制網域（github.io / localhost），在生成器（Vercel）的**後端**抓圖不受
 referrer 限制、前端 fetch 則可能被擋——若前端抓不到，把抓圖改到後端做即可
 （生成器後端多半本來就要下載圖片送 AI 模型）。
 
