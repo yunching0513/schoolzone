@@ -521,6 +521,10 @@ body.lang-en .t-en { display: inline; }
     <div class="filter-group">
       <span class="filter-group-label">Advocacy</span>
       <span class="cat-pill" id="lsToggle">🌳 <span class="t-zh">300m 生活街道圈</span><span class="t-en">300 m living streets</span></span>
+      <span style="width:1px;height:20px;background:var(--grey-3);margin:0 2px"></span>
+      <span class="cat-pill tw-pill" data-tw="lsw">🛣 <span class="t-zh">生活街道候選 ≤12 m</span><span class="t-en">Living-street candidates ≤12 m</span></span>
+      <span class="cat-pill tw-pill" data-tw="lsw15"><span class="t-zh">＋12–15 m 邊界</span><span class="t-en">+12–15 m borderline</span></span>
+      <span class="cat-pill tw-pill" data-tw="hier">🧭 <span class="t-zh">道路層級 Sustainable Safety</span><span class="t-en">Road hierarchy (Sustainable Safety)</span></span>
     </div>
     <div class="filter-group" style="margin-left:auto">
       <span class="filter-group-label" id="segCount">—</span>
@@ -555,6 +559,7 @@ body.lang-en .t-en { display: inline; }
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🔴 A1 事故點圖層</strong>：內政部警政署 A1（當場或 24 小時內死亡）交通事故（2018–2025 有座標者，全國 13,708 點，按縣市過濾顯示），點色依受害者運具（黑=機車、藍=汽/貨車、紅=行人、金=慢車）、點徑依死亡人數。把死亡事故疊在淨寬著色上，可直接檢視「行人死亡點位周邊的人行道是否存在、是否過得去」：紅點（行人）落在紅色路段（淨寬 &lt;1.5 公尺）或根本沒有人行道的路口，就是最需優先改善的證據。滑過任一點可看日期、區、運具與死傷數。</span><span class="t-en"><strong>🔴 A1 crash layer</strong>: National Police Agency A1 fatal crashes (death on scene or within 24 h; 2018–2025 geocoded records, 13,708 points nationwide, filtered to the selected county). Dot colour = victim mode (black motorcycle, blue car/truck, red pedestrian, gold bicycle), dot size = deaths. Overlaying fatalities on the clear-width colours shows directly whether the sidewalks around each death exist and are passable — a red (pedestrian) dot on a red segment (&lt;1.5 m clear) or on a corner with no sidewalk at all is priority-one evidence. Hover a dot for date, district, mode and casualties.</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>⚡ 電線桿圖層</strong>：台電桿籍資料（全國約 273 萬支，TWD97 座標轉換；本島 121 分帶、離島 119 分帶），開啟後放大至街區尺度（zoom ≥ 16）顯示視窗內桿位。電線桿常立於人行道上，是輪椅與嬰兒車的實體障礙：與淨寬著色對照可看出「帳面有人行道、實際過不去」的路段。注意：屏東縣桿籍近乎缺漏（僅 88 筆）；桿位為台電登記位置，可能與現地略有出入。</span><span class="t-en"><strong>⚡ Utility-pole layer</strong>: Taipower pole registry (~2.73M poles nationwide, TWD97→WGS84; 121°E zone for the main island, 119°E for offshore counties). When on, poles in the viewport render at zoom ≥ 16. Poles standing on sidewalks are physical barriers for wheelchairs and strollers — overlay them on the clear-width colours to spot segments that exist on paper but cannot be passed. Note: Pingtung's registry is nearly empty (88 records); positions are as registered and may differ slightly on site.</span></p>
     <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🏫 學校範圍圖層</strong>：內政部國土測繪中心「各級學校範圍圖」（全國約 4,336 筆校地範圍，圖層代碼 121、115 年 4 月版；座標由 TWD97 TM2／EPSG:3826 轉為 WGS84）。學校<strong>層級由校名判讀</strong>並分成國小、國中、高中職、大專、特教、其他六類，各為<strong>可複選的獨立圖層並以不同顏色</strong>標示，疊在人行道路網下方——可看出哪些人行道落在學校周邊，也就是學童每天上下學實際會走的路段。與淨寬著色、行人事故點對照，能鎖定「校門口周邊卻沒有安全人行道」的優先改善路口。滑過任一範圍可看校名、層級與資料年月；<strong>點擊任一學校即畫出 15 分鐘步行圈</strong>——虛線圓＝理想範圍、藍色斑塊＝沿人行道實際可達範圍，斑塊越破碎、越空，代表該學區人行道越斷裂欠缺。可切換三種步行者：<strong>🧑 青少年</strong>（約 4 km/h，1 公里）、<strong>👦🧓 孩童・長者</strong>（約 3 km/h，750 公尺——實證研究顯示學童揹書包、等紅綠燈的實際步速與長者相近，交通工程設計亦將兩者歸為同一設計速度群）、<strong>♿ 輪椅／行動不便</strong>（約 2.4 km/h，600 公尺，且<strong>排除淨寬不足 0.9 公尺與「該設而未設」路緣斜坡的路段</strong>——不只走得慢，很多路段根本過不去）。<strong>🌳 300m 生活街道圈（倡議圖層）</strong>：開啟後以每所學校為圓心畫出方圓 300 公尺綠色虛線圈——通學的最後一段路；點擊任一圈可放大並顯示倡議說明（行人優先、車速上限 20 km/h、穿越性車流退場），供簡報與政策倡議示意使用。</span><span class="t-en"><strong>🏫 School-zone layer</strong>: NLSC "school boundary map" (~4,336 school-land polygons nationwide, layer 121, April 2026 edition; reprojected TWD97 TM2 / EPSG:3826 → WGS84). School <strong>level is parsed from each name</strong> into six classes — elementary, junior high, senior/vocational, tertiary, special education and other — each an <strong>independent multi-select layer with its own colour</strong>, drawn beneath the sidewalk network to show which pavements sit within a school catchment (the streets children walk to and from school on). Cross-referenced with the clear-width colours and pedestrian crashes, it pinpoints priority corners where a school gate lacks a safe sidewalk nearby. Hover a zone for the school name, level and data month; <strong>click a school to draw its 15-min walkshed</strong> — dashed circle = ideal range, blue patches = what's actually reachable along sidewalks; the emptier and more fragmented the patches, the more broken the network. Three mobility profiles: <strong>🧑 teen</strong> (~4 km/h, 1 km), <strong>👦🧓 child &amp; elder</strong> (~3 km/h, 750 m — studies show schoolchildren's effective walking speed, with backpacks and crossings, matches elders', and traffic engineering groups them at the same design speed), <strong>♿ wheelchair</strong> (~2.4 km/h, 600 m, additionally <strong>excluding segments under 0.9 m clear width or missing required curb ramps</strong> — not just slower, many segments are simply impassable). <strong>🌳 300 m living-streets ring (advocacy layer)</strong>: draws a dashed green 300 m radius around every school — the last leg of the school run; click a ring to zoom in with an advocacy note (pedestrian priority, 20 km/h, no through-traffic) for presentations and policy work.</span></p>
+    <p style="font-size:12px;margin-top:8px"><span class="t-zh"><strong>🛣 生活街道候選圖層（Taiwanwonnerf）</strong>：以 OpenStreetMap 全台路網（2026 年 9 月）估算每一路段路寬，指認 15 公尺以下、可能成為<strong>生活街道</strong>的道路：<strong>≤8 公尺</strong>巷弄型、<strong>8–12 公尺</strong>社區街道，另可加開 12–15 公尺邊界案例。路寬優先取 OSM width 標籤（覆蓋率僅約 0.3%），其次依 lanes 推估（lanes×3.5＋2），再依台灣路名慣例（弄 4 m、巷 6 m、街 10 m、路 12 m）與道路等級預設；點擊任一路段可見估算值與依據。全台 ≤12 公尺道路約 109,000 公里，佔路網長度八成以上。<strong>🧭 道路層級圖層</strong>：依荷蘭 Sustainable Safety（Duurzaam Veilig）三層功能分級——<strong>Through roads</strong>（國道、快速公路，黑線）、<strong>Distributor roads</strong>（省道、縣道、鄉道、市區幹道，藍線）、<strong>Access roads</strong>（其餘市區道路與巷弄，即生活街道候選）。荷蘭經驗是：功能、設計與使用三者一致，Access road 才能落實 30 km/h 與行人優先；台灣的 tertiary（鄉道、市區次要幹道）常兼具集散與出入功能，屬「灰色道路」，暫歸 Distributor。方法與資料：<a href="https://github.com/yunching0513/202609---Taiwanwonnerf" target="_blank" rel="noopener">Taiwanwonnerf</a>（含各縣市 Shapefile）。</span><span class="t-en"><strong>🛣 Living-street candidates (Taiwanwonnerf)</strong>: every OSM road segment in Taiwan (Sept 2026) gets an estimated width; segments under 15 m are flagged as potential <strong>living streets</strong> — <strong>≤8 m</strong> alleys and <strong>8–12 m</strong> local streets, plus an optional 12–15 m borderline class. Width comes from the OSM width tag where present (~0.3% coverage), else lanes×3.5+2, else Taiwanese road-name conventions (弄 4 m, 巷 6 m, 街 10 m, 路 12 m) and highway-class defaults; click any segment to see the estimate and its basis. Roads ≤12 m total ~109,000 km, over 80% of network length. <strong>🧭 Road hierarchy</strong>: the Dutch Sustainable Safety three-tier functional classification — <strong>Through roads</strong> (freeways/expressways, black), <strong>Distributor roads</strong> (provincial/county/township roads and urban arterials, blue), <strong>Access roads</strong> (all other local streets, i.e. the living-street candidates). Dutch practice keeps function, design and use consistent so that access roads can carry 30 km/h and pedestrian priority; Taiwan's tertiary roads often mix both roles ("grey roads") and are provisionally classed as distributors. Method and data: <a href="https://github.com/yunching0513/202609---Taiwanwonnerf" target="_blank" rel="noopener">Taiwanwonnerf</a> (with per-county shapefiles).</span></p>
   </div>
 
   <div class="county-card" style="margin-top:16px">
@@ -649,6 +654,7 @@ body.lang-en .t-en { display: inline; }
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="assets/protomaps-leaflet.js"></script>
 <script src="data/cities.js"></script>
 <script src="data/townships_en.js"></script>
 <script src="data/sidewalk_national.js"></script>
@@ -745,17 +751,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const ls = (typeof lsOn !== 'undefined' && lsOn)
       ? `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px;margin-left:8px"><span style="width:11px;height:11px;border-radius:50%;background:rgba(34,197,94,0.12);border:1.5px dashed #15803D"></span><span class="t-zh">🌳 學校 300m・生活街道優先</span><span class="t-en">🌳 school 300 m · living streets</span></span>`
       : '';
+    const tw = (typeof twLegendHTML === 'function') ? twLegendHTML() : '';
     if (segState.color === 'ramp') {
       return `<span class="legend-title">Curb ramps</span>` +
         sw('#D94F3D', '該設而未設', 'needed · missing') +
         sw('#A8B200', '已設置', 'installed') +
-        sw('#B9B9B9', '無須設置', 'not needed') + pole + crash + school + ls;
+        sw('#B9B9B9', '無須設置', 'not needed') + pole + crash + school + ls + tw;
     }
     return `<span class="legend-title">Clear width</span>` +
       sw('#D94F3D', '淨寬 < 1.5 m', '< 1.5 m') +
       sw('#E8A825', '1.5 – 2.5 m', '1.5 – 2.5 m') +
       sw('#A8B200', '≥ 2.5 m', '≥ 2.5 m') +
-      sw('#B9B9B9', '無資料', 'no data') + pole + crash + school + ls;
+      sw('#B9B9B9', '無資料', 'no data') + pole + crash + school + ls + tw;
   }
 
   // ── Utility-pole obstacle overlay (Taipower registry, per county) ──
@@ -1669,6 +1676,138 @@ document.addEventListener('DOMContentLoaded', () => {
     renderLivingStreets();
   });
 
+
+  // ── Taiwanwonnerf：全台生活街道候選（依估算路寬）＋ Sustainable Safety 道路層級 ──
+  // 向量圖磚（PMTiles）來自 yunching0513/202609---Taiwanwonnerf：OSM 路網、估算路寬、
+  // 荷蘭 Duurzaam Veilig 三層功能分級。以 protomaps-leaflet 在 Leaflet 畫布上繪製。
+  const TW = { lsw: false, lsw15: false, hier: false };
+  const TW_TILES = 'data/tiles/';
+  segMap.createPane('twPane'); segMap.getPane('twPane').style.zIndex = 350;   // 位於底圖之上、人行道路段之下
+  const TW_COL = { A: '#0F766E', B: '#2DD4BF', C: '#B9B9B9', T: '#1A1A1A', D: '#3A7CC3', ACC: '#5EEAD4' };
+  const TW_SUB = { '國道': 'national freeway', '快速公路': 'expressway', '省道': 'provincial highway', '縣道': 'county road', '鄉道': 'township road', '市區主要幹道': 'urban arterial', '市區次要幹道': 'urban collector' };
+  const TW_SRC = { osm_width: ['OSM width 標籤', 'OSM width tag'], osm_lanes: ['OSM lanes 推估', 'from OSM lanes'], name_suffix: ['路名慣例（弄/巷/街/路）', 'Taiwanese road-name suffix'], class_default: ['道路等級預設', 'highway-class default'] };
+  let twLsLayer = null, twHierLayer = null, twSel = null, twStats = null, twHStats = null;
+  const twZ = (z, a, b, c) => z <= 10 ? a : z >= 16 ? c : a + (b - a) * Math.min(1, (z - 10) / 6) + (z > 13 ? (c - b) * (z - 13) / 3 : 0);
+  function twBuildLs() {
+    const showC = () => TW.lsw15;
+    return protomapsL.leafletLayer({
+      url: TW_TILES + 'living_streets.pmtiles', maxDataZoom: 13, pane: 'twPane',
+      attribution: '<a href="https://github.com/yunching0513/202609---Taiwanwonnerf">Taiwanwonnerf</a> © OpenStreetMap',
+      paintRules: [
+        { dataLayer: 'living_streets', filter: (z, f) => f.props.cls === 'C' && showC(),
+          symbolizer: new protomapsL.LineSymbolizer({ color: TW_COL.C, width: z => twZ(z, 0.5, 1.2, 3), opacity: 0.8, lineCap: 'round', lineJoin: 'round' }) },
+        { dataLayer: 'living_streets', filter: (z, f) => f.props.cls === 'B',
+          symbolizer: new protomapsL.LineSymbolizer({ color: TW_COL.B, width: z => twZ(z, 0.6, 1.4, 3.5), opacity: 0.9, lineCap: 'round', lineJoin: 'round' }) },
+        { dataLayer: 'living_streets', filter: (z, f) => f.props.cls === 'A',
+          symbolizer: new protomapsL.LineSymbolizer({ color: TW_COL.A, width: z => twZ(z, 0.5, 1.2, 3), opacity: 0.9, lineCap: 'round', lineJoin: 'round' }) },
+      ], labelRules: [],
+    });
+  }
+  function twBuildHier() {
+    const kD = f => f.props.link ? 0.35 : (f.props.sub === '省道' ? 1 : (f.props.sub === '縣道' || f.props.sub === '市區主要幹道') ? 0.8 : 0.6);
+    return protomapsL.leafletLayer({
+      url: TW_TILES + 'hierarchy.pmtiles', maxDataZoom: 13, pane: 'twPane',
+      attribution: 'Sustainable Safety hierarchy © OpenStreetMap',
+      paintRules: [
+        { dataLayer: 'hierarchy', filter: (z, f) => f.props.ss === 'D',
+          symbolizer: new protomapsL.LineSymbolizer({ color: TW_COL.D, width: (z, f) => twZ(z, 1, 2, 4.5) * kD(f), opacity: 0.85, lineCap: 'round', lineJoin: 'round' }) },
+        { dataLayer: 'hierarchy', filter: (z, f) => f.props.ss === 'T',
+          symbolizer: new protomapsL.LineSymbolizer({ color: '#FFFFFF', width: (z, f) => twZ(z, 2.6, 4.2, 8.5) * (f.props.link ? 0.45 : 1), opacity: 1, lineCap: 'round', lineJoin: 'round' }) },
+        { dataLayer: 'hierarchy', filter: (z, f) => f.props.ss === 'T',
+          symbolizer: new protomapsL.LineSymbolizer({ color: TW_COL.T, width: (z, f) => twZ(z, 1.4, 2.4, 5.5) * (f.props.link ? 0.45 : 1), opacity: 0.95, lineCap: 'round', lineJoin: 'round' }) },
+      ], labelRules: [],
+    });
+  }
+  async function twEnsureStats() {
+    if (!twStats) { try { twStats = await (await fetch(TW_TILES + 'living_streets_summary.json')).json(); } catch (e) { twStats = {}; } }
+    if (!twHStats) { try { twHStats = await (await fetch(TW_TILES + 'hierarchy_stats.json')).json(); } catch (e) { twHStats = {}; } }
+  }
+  function twRender() {
+    const wantLs = TW.lsw || TW.lsw15;
+    if (wantLs && !twLsLayer) twLsLayer = twBuildLs().addTo(segMap);
+    if (!wantLs && twLsLayer) { segMap.removeLayer(twLsLayer); twLsLayer = null; }
+    if (wantLs && twLsLayer) twLsLayer.redraw && twLsLayer.redraw();
+    if (TW.hier && !twHierLayer) twHierLayer = twBuildHier().addTo(segMap);
+    if (!TW.hier && twHierLayer) { segMap.removeLayer(twHierLayer); twHierLayer = null; }
+    if (!wantLs && !TW.hier) twClearSel();
+    document.getElementById('segLegend').innerHTML = segLegendHTML();
+  }
+  function twLegendHTML() {
+    const km = v => (v == null ? '' : ` ${Math.round(v).toLocaleString()} km`);
+    const ln = (color, zh, en, w) =>
+      `<span style="display:inline-flex;align-items:center;gap:5px;margin-right:8px"><span style="width:16px;height:0;border-top:${w || 2}px solid ${color}"></span><span class="t-zh">${zh}</span><span class="t-en">${en}</span></span>`;
+    let h = '';
+    if (TW.lsw || TW.lsw15) {
+      const s = twStats && twStats.by_class;
+      h += `<span class="legend-title" style="margin-left:10px">🛣 <span class="t-zh">生活街道候選（估算路寬）</span><span class="t-en">Living-street candidates (est. width)</span></span>` +
+        ln(TW_COL.A, `≤ 8 m 巷弄${km(s && s.A.km)}`, `≤ 8 m alleys${km(s && s.A.km)}`, 2.5) +
+        ln(TW_COL.B, `8–12 m 社區街道${km(s && s.B.km)}`, `8–12 m local streets${km(s && s.B.km)}`, 2.5) +
+        (TW.lsw15 ? ln(TW_COL.C, `12–15 m 邊界${km(s && s.C.km)}`, `12–15 m borderline${km(s && s.C.km)}`, 2.5) : '');
+    }
+    if (TW.hier) {
+      const t = twHStats || {};
+      h += `<span class="legend-title" style="margin-left:10px">🧭 <span class="t-zh">道路層級</span><span class="t-en">Road hierarchy</span></span>` +
+        ln(TW_COL.T, `Through 國道・快速${km(t.T && t.T.km)}`, `Through (freeway/expressway)${km(t.T && t.T.km)}`, 3.5) +
+        ln(TW_COL.D, `Distributor 省・縣・鄉道・市區幹道${km(t.D && t.D.km)}`, `Distributor (prov./county/township/arterial)${km(t.D && t.D.km)}`, 2.5) +
+        ln(TW_COL.A, `Access 市區道路・巷弄${km(t.A && t.A.km)}`, `Access (local streets)${km(t.A && t.A.km)}`, 1.5);
+    }
+    return h;
+  }
+  function twClearSel() { if (twSel) { segMap.removeLayer(twSel); twSel = null; wsInfoEl.style.display = 'none'; } }
+  function twPick(latlng) {
+    const brush = 10;
+    const order = [];
+    if (twHierLayer) order.push(['hier', twHierLayer]);
+    if (twLsLayer) order.push(['ls', twLsLayer]);
+    for (const [kind, layer] of order) {
+      let best = null;
+      try {
+        for (const [, feats] of layer.queryTileFeaturesDebug(latlng.lng, latlng.lat, brush)) {
+          for (const pf of feats) {
+            const p = pf.feature.props;
+            if (kind === 'ls' && p.cls === 'C' && !TW.lsw15) continue;
+            if (!best) best = pf;
+          }
+        }
+      } catch (e) {}
+      if (best) return { kind, p: best.feature.props };
+    }
+    return null;
+  }
+  function twShow(hit) {
+    clearWalkshed(); clearLsSel();
+    const p = hit.p;
+    const osm = `<a href="https://www.openstreetmap.org/way/${p.id}" target="_blank" rel="noopener" style="color:var(--grey-1)">OSM way/${p.id} ↗</a>`;
+    let html = `<span class="ws-close" title="${TT('關閉', 'close')}">✕</span>`;
+    if (hit.kind === 'hier') {
+      const ss = p.ss === 'T' ? TT('Through road 通過性道路', 'Through road') : TT('Distributor road 集散道路', 'Distributor road');
+      html += `<strong>🧭 ${p.ref ? p.ref + ' ' : ''}${p.name || TT('（未命名）', '(unnamed)')}</strong><br>` +
+        `<strong>${ss}</strong> · ${TT(p.sub, TW_SUB[p.sub] || p.sub)}${p.link ? TT('（匝道／連絡道）', ' (ramp/link)') : ''}<br>` +
+        `<span style="font-size:11px;color:var(--grey-1)">OSM ${p.hw}${p.lanes ? ' · ' + TT('車道', 'lanes') + ' ' + p.lanes : ''}${p.ms ? ' · ' + TT('速限', 'speed limit') + ' ' + p.ms : ''} · ${p.len} m · ${osm}</span>`;
+    } else {
+      const cls = { A: ['≤ 8 m 巷弄型生活街道', '≤ 8 m alley-type living street'], B: ['8–12 m 社區街道', '8–12 m local street'], C: ['12–15 m 邊界案例', '12–15 m borderline'] }[p.cls] || ['', ''];
+      const src = TW_SRC[p.src] || [p.src, p.src];
+      html += `<strong>🛣 ${p.name || TT('（未命名道路）', '(unnamed road)')}</strong><br>` +
+        `${TT('估算路寬', 'Estimated width')} <strong>${p.w} m</strong> · ${TT(cls[0], cls[1])}<br>` +
+        `<span style="font-size:11px;color:var(--grey-1)">${TT('依據', 'basis')}：${TT(src[0], src[1])} · OSM ${p.hw}${p.svc ? '/' + p.svc : ''}${p.ow ? ' · ' + TT('單行', 'one-way') : ''} · ${p.len} m · ${osm}</span>`;
+    }
+    html += `<div style="font-size:11px;color:var(--grey-1);margin-top:4px">${TT('資料：OSM 路網推估，僅供初步指認；正式分析請以國土測繪中心通用電子地圖 WIDTH 欄位校正。', 'OSM-based estimate for screening only; verify against NLSC road-width data.')}</div>`;
+    wsInfoEl.innerHTML = html;
+    wsInfoEl.style.display = 'block';
+    wsInfoEl.querySelector('.ws-close').addEventListener('click', twClearSel);
+  }
+  document.querySelectorAll('.cat-pill.tw-pill').forEach(pill => {
+    pill.addEventListener('click', async () => {
+      const k = pill.dataset.tw;
+      TW[k] = !TW[k];
+      if (k === 'lsw15' && TW.lsw15) TW.lsw = true;
+      if (k === 'lsw' && !TW.lsw) TW.lsw15 = false;
+      document.querySelectorAll('.cat-pill.tw-pill').forEach(x => x.classList.toggle('active', TW[x.dataset.tw]));
+      await twEnsureStats();
+      twRender();
+    });
+  });
+
   segMap.on('click', e => {
     if (e.originalEvent === lastLayerClickEvt) return;   // a segment already took this click
     if (schoolLevels.size && schoolData) {
@@ -1678,6 +1817,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (lsOn && schoolData) {
       const hit = lsAt(e.latlng);
       if (hit) { selectLs(hit); return; }
+    }
+    if ((TW.lsw || TW.lsw15 || TW.hier) && segMap.getZoom() >= 12) {
+      const hit = twPick(e.latlng);
+      if (hit) { twShow(hit); return; }
     }
     if (segMap.getZoom() >= 15) enterSVAt(e.latlng);     // street-scale only, so pan-clicks at county zoom don't open SV
   });

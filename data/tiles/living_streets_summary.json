@@ -1,0 +1,44 @@
+{
+  "total_ways": 537332,
+  "total_km": 132802.0,
+  "by_class": {
+    "A": {
+      "ways": 388277,
+      "km": 74257.1
+    },
+    "B": {
+      "ways": 94819,
+      "km": 34959.2
+    },
+    "C": {
+      "ways": 33529,
+      "km": 14857.4
+    },
+    "X": {
+      "ways": 20707,
+      "km": 8728.4
+    }
+  },
+  "by_width_src": {
+    "class_default": 320719,
+    "name_suffix": 186410,
+    "osm_lanes": 28758,
+    "osm_width": 1445
+  },
+  "by_highway": {
+    "service": 320631,
+    "residential": 98803,
+    "unclassified": 42145,
+    "tertiary": 37344,
+    "primary": 16404,
+    "secondary": 12911,
+    "living_street": 3004,
+    "pedestrian": 1935,
+    "primary_link": 1721,
+    "tertiary_link": 1343,
+    "secondary_link": 950,
+    "road": 141
+  },
+  "osm_width_tag_coverage_pct": 0.27,
+  "osm_lanes_tag_coverage_pct": 5.41
+}
