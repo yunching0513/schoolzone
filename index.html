@@ -358,14 +358,16 @@ body { font-family: var(--font-zh); background: var(--grey-4); color: var(--blac
 .partner-logos img { max-width: 560px; width: 100%; height: auto; }
 .partner-logos .pl-visit {
   display: inline-flex; align-items: center; gap: 9px; margin-top: 20px;
+  /* 窄螢幕可換行並縮到容器內——否則這顆藥丸固定 397px，會撐出整頁水平捲動 */
+  flex-wrap: wrap; justify-content: center; max-width: 100%;
   font-family: var(--font-zh); font-weight: 700; font-size: 13px; letter-spacing: 0.04em;
   color: var(--black); text-decoration: none; border: 1.5px solid var(--black);
   border-radius: 999px; padding: 8px 18px; transition: background .16s ease, color .16s ease;
 }
 .partner-logos .pl-visit:hover { background: var(--black); color: var(--lime); }
-.partner-logos .pl-visit .pl-url { font-family: var(--font-en); font-weight: 600; font-size: 11.5px; letter-spacing: 0.06em; color: var(--lime-dk); }
+.partner-logos .pl-visit .pl-url { font-family: var(--font-en); font-weight: 600; font-size: 11.5px; letter-spacing: 0.06em; color: var(--lime-dk); white-space: nowrap; }
 .partner-logos .pl-visit:hover .pl-url { color: var(--lime); }
-.partner-logos .pl-visit > span { flex: none; white-space: nowrap; }
+.partner-logos .pl-visit > span { flex: 0 1 auto; min-width: 0; }
 
 footer {
   border-top: 2px solid var(--black);
@@ -429,6 +431,9 @@ footer .tag.black { background: var(--black); color: var(--white); border-color:
   .filter-group::-webkit-scrollbar { display: none; }
   .filter-group-label { width: auto; flex: none; }
   .cat-pill { flex: none; padding: 8px 13px; font-size: 12px; }
+  /* 夥伴連結：手機上收窄留白，讓藥丸文字有空間換行 */
+  .partner-logos { padding: 28px 16px; }
+  .partner-logos .pl-visit { padding: 10px 16px; row-gap: 4px; }
   /* legend scrolls in one row */
   .map-legend { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   .map-legend::-webkit-scrollbar { display: none; }
