@@ -31,6 +31,7 @@
   <meta name="twitter:image" content="https://yunching0513.github.io/taiwan-mobility-atlas/assets/og.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<link rel="stylesheet" href="assets/ppgis.css?v=1">
 <style>
 @keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
 body { animation: pageFadeIn 0.45s ease-out; }
@@ -196,6 +197,7 @@ body { font-family: var(--font-zh); background: var(--grey-4); color: var(--blac
   position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
   background: var(--black); color: var(--lime); font-size: 13px; font-weight: 700;
   padding: 10px 18px; border-radius: 3px; z-index: 4000; display: none;
+  pointer-events: none;   /* 提示框浮在地圖上方，不可吃掉使用者的下一次點擊 */
 }
 
 /* Map area */
@@ -659,6 +661,9 @@ body.lang-en .t-en { display: inline; }
 <script src="data/townships_en.js"></script>
 <script src="data/sidewalk_national.js"></script>
 <script src="data/gmaps_key.js"></script>
+<script src="data/ppgis_config.js?v=1"></script>
+<script src="assets/ppgis.js?v=1"></script>
+<script src="assets/ppgis-ui.js?v=1"></script>
 <script>
 // ── i18n core ──
 window.__LANG = (function(){ try { return localStorage.getItem('lang') || 'zh'; } catch(e){ return 'zh'; } })();
@@ -677,6 +682,7 @@ function setLang(l) {
   if (window.__rerender) window.__rerender();
   if (window.__swRender) window.__swRender();
   if (window.__albumRender) window.__albumRender();
+  if (window.__ppgisRender) window.__ppgisRender();
 }
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#langToggle .lt-opt').forEach(o =>
@@ -1809,6 +1815,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   segMap.on('click', e => {
+    if (window.__ppgisClick && window.__ppgisClick(e)) return;   // 標註／畫路模式先攔
     if (e.originalEvent === lastLayerClickEvt) return;   // a segment already took this click
     if (schoolLevels.size && schoolData) {
       const hit = schoolAt(e.latlng);
@@ -1928,6 +1935,20 @@ document.addEventListener('DOMContentLoaded', () => {
   window.__rerender = () => { renderHero(); buildSegSelect(); renderSegLayer(); };
   loadSegCounty(segState.slug);
   setTimeout(() => segMap.invalidateSize(), 300);
+
+  // ---- 公民科學標註所需的掛勾（見 assets/ppgis-ui.js）--------------
+  window.__mapHooks = {
+    map: segMap,
+    toast,
+    svStaticUrl,
+    svPoint: () => svPoint,
+    svHeading: () => svHeading,
+    svPano: () => (svMode === 'js' && svPanoObj) ? svPanoObj : null,
+    svSelLayer: () => svSelLayer,
+    county: () => bySlugZh[segState.slug] || '',
+    schoolAt,
+  };
+  if (window.__ppgisInit) window.__ppgisInit(window.__mapHooks);
 })();
 </script>
 </body>

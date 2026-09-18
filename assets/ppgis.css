@@ -1,0 +1,98 @@
+/* 打造夢想街道 · 公民科學標註介面
+   沿用主頁的設計語彙（lime 強調色、方角、細框）。
+   手機優先：彈窗在小螢幕變成底部抽屜，按鈕維持 44px 觸控高度。 */
+
+/* ---------------------------------------------------- 工具列狀態 */
+.ppgis-who { font-size: 11px; color: var(--grey-1); display: inline-flex; align-items: center; gap: 6px; }
+.ppgis-anon { color: var(--grey-2); }
+.ppgis-me { font-weight: 700; }
+.ppgis-q { background: var(--gold); color: var(--black); padding: 1px 5px; font-size: 10px; font-weight: 700; }
+.ppgis-leave { color: var(--grey-2); text-decoration: underline; cursor: pointer; }
+.ppgis-leave:hover { color: var(--red); }
+
+/* ------------------------------------------------------ 路徑 HUD */
+#ppgisRouteHud {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: 14px; z-index: 620;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--white); border: 1px solid var(--black); padding: 8px 12px;
+  font-family: var(--font-zh); font-size: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.18);
+}
+#ppgisRouteHud button {
+  font-family: inherit; font-size: 12px; padding: 6px 10px; cursor: pointer;
+  border: 1px solid var(--grey-3); background: var(--white);
+}
+#ppgisRouteHud button:hover:not(:disabled) { border-color: var(--black); }
+#ppgisRouteHud button:disabled { opacity: .4; cursor: default; }
+#ppgisRouteHud button#ppgisRouteDone { background: var(--lime); border-color: var(--lime); font-weight: 700; }
+
+/* --------------------------------------------------------- 彈窗 */
+.ppgis-modal-back {
+  position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.ppgis-modal {
+  background: var(--white); border: 1px solid var(--black);
+  width: min(520px, 100%); max-height: min(86vh, 86dvh); display: flex; flex-direction: column;
+  font-family: var(--font-zh); box-shadow: 0 8px 40px rgba(0,0,0,.3);
+}
+.ppgis-modal-h {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--grey-3); font-size: 15px;
+}
+.ppgis-x { border: 0; background: none; font-size: 16px; cursor: pointer; padding: 4px 8px; color: var(--grey-1); }
+.ppgis-x:hover { color: var(--black); }
+.ppgis-modal-b { padding: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.ppgis-modal-f {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px; border-top: 1px solid var(--grey-3);
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+.ppgis-ok {
+  font-family: inherit; font-size: 13px; font-weight: 700; padding: 11px 22px;
+  background: var(--lime); border: 1px solid var(--lime); cursor: pointer; min-height: 44px;
+}
+.ppgis-ok:hover:not(:disabled) { background: var(--lime-dk); border-color: var(--lime-dk); }
+.ppgis-ok:disabled { opacity: .5; cursor: default; }
+.ppgis-err { font-size: 12px; color: var(--red); flex: 1; }
+
+/* ------------------------------------------------------- 表單列 */
+.ppgis-lede { font-size: 12.5px; color: var(--grey-1); margin: 0 0 14px; line-height: 1.6; }
+.ppgis-note { font-size: 11.5px; color: var(--grey-2); margin: 10px 0 0; line-height: 1.6; }
+.ppgis-f { display: block; margin-bottom: 14px; }
+.ppgis-f > span { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.ppgis-f input[type=text], .ppgis-f input[type=number], .ppgis-f input:not([type]),
+.ppgis-f select, .ppgis-f textarea {
+  width: 100%; font-family: inherit; font-size: 16px;   /* 16px：避免 iOS 聚焦時自動放大 */
+  padding: 10px; border: 1px solid var(--grey-3); background: var(--white);
+  box-sizing: border-box; min-height: 44px;
+}
+.ppgis-f textarea { min-height: 72px; resize: vertical; }
+.ppgis-f input:focus, .ppgis-f select:focus, .ppgis-f textarea:focus {
+  outline: 2px solid var(--lime-dk); outline-offset: -1px;
+}
+.ppgis-f input[type=range] { width: calc(100% - 40px); min-height: 0; vertical-align: middle; }
+.ppgis-f output { display: inline-block; width: 32px; text-align: center; font-weight: 700; }
+.ppgis-check { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; line-height: 1.6; margin-bottom: 12px; }
+.ppgis-check input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
+
+/* --------------------------------------------------- 類別選擇器 */
+.ppgis-kgroup { margin-bottom: 14px; }
+.ppgis-klabel { font-size: 11px; font-weight: 700; letter-spacing: .05em; color: var(--grey-1); margin-bottom: 7px; }
+.ppgis-kchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ppgis-kind {
+  font-size: 12.5px; padding: 9px 12px; border: 1px solid var(--grey-3);
+  background: var(--white); cursor: pointer; user-select: none; line-height: 1.3;
+  transition: background .12s, border-color .12s;
+}
+.ppgis-kind:hover { border-color: var(--black); }
+.ppgis-kind.on { background: var(--lime); border-color: var(--lime); font-weight: 700; }
+
+/* ------------------------------------------------------- 手機版 */
+@media (max-width: 700px) {
+  .ppgis-modal-back { padding: 0; align-items: flex-end; }
+  .ppgis-modal { width: 100%; max-height: 90dvh; border-width: 1px 0 0; }
+  .ppgis-modal-b { padding: 14px; }
+  .ppgis-kind { font-size: 13px; padding: 10px 13px; }
+  #ppgisRouteHud { left: 8px; right: 8px; transform: none; justify-content: space-between; }
+  #ppgisRouteHud button { min-height: 40px; }
+}

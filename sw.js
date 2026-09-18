@@ -1,5 +1,5 @@
 /* Taiwan Street Vision Project — service worker (PWA installability + light offline) */
-const VERSION = 'vzt-atlas-v4';   // bump to invalidate installed-app caches after each release
+const VERSION = 'vzt-atlas-v5';   // bump to invalidate installed-app caches after each release
 const CORE = [
   './',
   './index.html',
@@ -62,6 +62,9 @@ self.addEventListener('fetch', (event) => {
     })());
     return;
   }
+
+  // Live PPGIS data must never be served from cache — always go to the network
+  if (/\.supabase\.co$/.test(url.hostname)) return;
 
   // Cross-origin (map tiles, unpkg, fonts): cache-first runtime
   event.respondWith((async () => {
