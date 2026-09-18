@@ -85,6 +85,23 @@ select * from v_route_independence;
 select * from v_licence_summary order by wave, licence_key;
 ```
 
+## 安全檢查
+
+部署後跑一次 Supabase 的 database linter（Dashboard → Advisors → Security）。
+
+預期會看到的**非問題**警告：
+- `spatial_ref_sys` 未啟用 RLS、`postgis` 安裝在 public schema —— PostGIS 的標準狀態
+- 13 個 SECURITY DEFINER 函式可被匿名執行 —— **這正是本專案的架構**：
+  匿名不能直接寫表，一律透過這些函式，函式內自行驗證憑證與場次
+
+必須為 false 的項目（`0002` 已處理）：
+
+```sql
+select p.proname, has_function_privilege('anon', p.oid, 'execute') as anon_can_execute
+from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+where n.nspname='public' and p.proname in ('_participant_by_token','gen_pseudonym');
+```
+
 ## 關閉場次
 
 ```sql

@@ -204,6 +204,11 @@ function check(name, cond, extra) {
   await p2.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
   await p2.route('**://*.basemaps.cartocdn.com/**', r => r.abort());
   await p2.route('**://maps.googleapis.com/**', r => r.abort());
+  // 明確注入空設定（正式設定檔已填好真實後端，不能靠磁碟上的內容判斷）
+  await p2.route('**/data/ppgis_config.js*', r => r.fulfill({
+    contentType: 'application/javascript',
+    body: `window.PPGIS_CONFIG={url:'',anonKey:''};`,
+  }));
   await p2.goto('http://127.0.0.1:8765/index.html', { waitUntil: 'domcontentloaded' });
   await p2.waitForTimeout(1200);
   check('未設定時不出現工具列', await p2.locator('#ppgisGroup').count() === 0);

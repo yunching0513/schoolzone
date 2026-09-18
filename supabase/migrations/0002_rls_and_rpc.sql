@@ -365,4 +365,10 @@ grant execute on function save_album_item(uuid, double precision, double precisi
 grant execute on function save_remake(uuid, uuid, text, text, text, text)              to anon, authenticated;
 grant execute on function is_researcher()                                              to anon, authenticated;
 
--- _participant_by_token / gen_pseudonym 僅供內部呼叫，不對外開放
+-- _participant_by_token / gen_pseudonym 僅供內部呼叫，不對外開放。
+-- 注意：Postgres 預設把函式的 EXECUTE 授權給 PUBLIC，上面的
+-- `revoke ... from anon, authenticated` 收不掉那份授權——必須明確從 PUBLIC 收回，
+-- 否則 PostgREST 會把它們當成 /rest/v1/rpc/ 端點對外開放（匿名即可探測憑證有效性
+-- 並取回整筆 participants，含 device_hash）。
+revoke all on function _participant_by_token(uuid) from public, anon, authenticated;
+revoke all on function gen_pseudonym()             from public, anon, authenticated;
