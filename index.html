@@ -377,6 +377,13 @@ footer {
   color: var(--grey-2); text-transform: uppercase;
 }
 footer .tags { display: flex; gap: 6px; }
+#visitCount {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-en); font-size: 9px; letter-spacing: 0.2em;
+  color: var(--grey-2); text-transform: uppercase; white-space: nowrap;
+}
+#visitCount .vc-l { font-family: var(--font-zh); letter-spacing: 0.08em; text-transform: none; }
+#visitCount .vc-sep { color: var(--grey-3); }
 footer .tag { padding: 3px 10px; font-weight: 600; background: var(--white); border: 1px solid var(--grey-3); }
 footer .tag.lime { background: var(--lime); border-color: var(--lime); color: var(--black); }
 footer .tag.black { background: var(--black); color: var(--white); border-color: var(--black); }
@@ -432,6 +439,7 @@ footer .tag.black { background: var(--black); color: var(--white); border-color:
   .filter-group-label { width: auto; flex: none; }
   .cat-pill { flex: none; padding: 8px 13px; font-size: 12px; }
   /* 夥伴連結：手機上收窄留白，讓藥丸文字有空間換行 */
+  footer { flex-wrap: wrap; gap: 10px 14px; justify-content: center; text-align: center; }
   .partner-logos { padding: 28px 16px; }
   .partner-logos .pl-visit { padding: 10px 16px; row-gap: 4px; }
   /* legend scrolls in one row */
@@ -669,6 +677,7 @@ body.lang-en .t-en { display: inline; }
 <script src="data/ppgis_config.js?v=2"></script>
 <script src="assets/ppgis.js?v=1"></script>
 <script src="assets/ppgis-ui.js?v=1"></script>
+<script src="assets/visits.js?v=1"></script>
 <script>
 // ── i18n core ──
 window.__LANG = (function(){ try { return localStorage.getItem('lang') || 'zh'; } catch(e){ return 'zh'; } })();
@@ -688,6 +697,7 @@ function setLang(l) {
   if (window.__swRender) window.__swRender();
   if (window.__albumRender) window.__albumRender();
   if (window.__ppgisRender) window.__ppgisRender();
+  if (window.__visitsRender) window.__visitsRender();
 }
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#langToggle .lt-opt').forEach(o =>

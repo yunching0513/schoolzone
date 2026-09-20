@@ -26,7 +26,8 @@
 | `assets/ppgis.js`, `assets/ppgis-ui.js`, `assets/ppgis.css` | 公民科學標註（PPGIS）客戶端與介面 |
 | `data/ppgis_config.js` | PPGIS 後端設定（**預設留空＝功能關閉**） |
 | `supabase/` | PPGIS 資料庫 migration、seed 與部署說明 |
-| `tests/ppgis.spec.js` | PPGIS 端對端測試（Playwright） |
+| `assets/visits.js` | 頁尾造訪人次 |
+| `tests/ppgis.spec.js`, `tests/visits.spec.js` | 端對端測試（Playwright） |
 | `districts.geojson`, `populations.json` | 行政區界與人口 |
 | `assets/`, `manifest.webmanifest`, `sw.js` | 圖示、PWA manifest 與 service worker |
 
@@ -49,6 +50,18 @@
 部署步驟見 [`supabase/README.md`](supabase/README.md)。
 
 > `data/ppgis_config.js` 留空時整個模組靜默停用，地圖其他功能完全不受影響。
+
+## 造訪人次
+
+頁尾顯示累計造訪次數、約略不重複訪客數與今日次數。
+
+伺服器端**只存每日彙總計數**（`supabase/migrations/0004_site_visits.sql`）——
+沒有 IP、沒有 user agent、沒有瀏覽器指紋、沒有每人一列的紀錄。
+「不重複訪客」完全由瀏覽器端判斷（`localStorage` 旗標），第一次造訪才把
+`p_new=true` 送上去，伺服器收到的只是「請加一」；清除瀏覽器資料會被重新算成
+新訪客，所以是約略值而非分析工具。同一分頁重新整理不重複計數。
+
+後端未設定或連不上時整個計數器不出現，不會在頁尾留下壞掉的數字。
 
 ## 本地預覽
 

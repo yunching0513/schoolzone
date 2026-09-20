@@ -16,11 +16,13 @@
 | `supabase/migrations/0001_ppgis_core.sql` | 資料表、列舉型別、索引 |
 | `supabase/migrations/0002_rls_and_rpc.sql` | RLS 權限與 SECURITY DEFINER 寫入函式 |
 | `supabase/migrations/0003_taxonomy_and_views.sql` | 標註語彙、量表題目、徽章、分析檢視 |
+| `supabase/migrations/0004_site_visits.sql` | 造訪人次（僅每日彙總，無訪客識別） |
 | `supabase/seed/0100_schools.sql` | 4,336 所學校與客觀基線指標 |
 | `data/ppgis_config.js` | 前端設定（**預設留空＝功能關閉**） |
 | `assets/ppgis.js` | 客戶端（PostgREST + 離線佇列） |
 | `assets/ppgis-ui.js` | 地圖上的標註／畫路／圖層介面 |
 | `assets/ppgis.css` | 介面樣式 |
+| `assets/visits.js` | 頁尾造訪人次 |
 | `tests/ppgis.spec.js` | 端對端測試（Playwright，模擬後端） |
 
 ---

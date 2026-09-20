@@ -12,6 +12,7 @@ Dashboard → SQL Editor，**依序**貼上並執行：
 migrations/0001_ppgis_core.sql
 migrations/0002_rls_and_rpc.sql
 migrations/0003_taxonomy_and_views.sql
+migrations/0004_site_visits.sql
 seed/0100_schools.sql          ← 616 KB，4,336 校；可能要分段貼
 ```
 
