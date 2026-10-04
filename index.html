@@ -83,6 +83,12 @@ body { font-family: var(--font-zh); background: var(--grey-4); color: var(--blac
   text-align: right; line-height: 1.6;
 }
 .page-header .meta strong { color: var(--black); font-weight: 600; }
+.xlink {
+  display: inline-block; margin-top: 10px; font-size: 12.5px; font-weight: 700;
+  color: var(--black); text-decoration: none; border-bottom: 2px solid var(--lime); padding-bottom: 1px;
+}
+.xlink:hover { background: var(--lime); }
+.xlink[hidden] { display: none; }
 .disclaimer {
   margin-top: 8px; font-family: var(--font-en); font-size: 10px;
   letter-spacing: 0.04em; color: var(--grey-2); line-height: 1.5;
@@ -490,6 +496,7 @@ body.lang-en .t-en { display: inline; }
       <span class="t-zh">交通部人行道整體區位資料 · 非官方專案 · 2023 年 6 月 vs. 2026 年 6 月兩次全國普查快照</span>
       <span class="t-en">MOTC national sidewalk inventory · unofficial project · June 2023 vs. June 2026 nationwide snapshots</span>
     </div>
+    <a class="xlink" id="rsLink" href="road-safety.html" hidden>→ <span class="t-zh">國際比較：道路安全 × 國家所得四象限</span><span class="t-en">Global view: road safety × income quadrants</span></a>
   </div>
   <div class="meta">MOTC Open Data · 22 counties<br><strong id="hMetaN">— segments · — km</strong></div>
 </div>
@@ -678,6 +685,12 @@ body.lang-en .t-en { display: inline; }
 <script src="assets/ppgis.js?v=1"></script>
 <script src="assets/ppgis-ui.js?v=1"></script>
 <script src="assets/visits.js?v=1"></script>
+<script>
+  // 國際比較頁的資料要另外建置（scripts/build_road_safety.py）；建好之前不顯示入口
+  fetch('data/road_safety_gdp.json', { method: 'HEAD', cache: 'no-cache' })
+    .then(r => { if (r.ok) document.getElementById('rsLink').hidden = false; })
+    .catch(() => {});
+</script>
 <script>
 // ── i18n core ──
 window.__LANG = (function(){ try { return localStorage.getItem('lang') || 'zh'; } catch(e){ return 'zh'; } })();

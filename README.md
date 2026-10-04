@@ -27,7 +27,9 @@
 | `data/ppgis_config.js` | PPGIS 後端設定（**預設留空＝功能關閉**） |
 | `supabase/` | PPGIS 資料庫 migration、seed 與部署說明 |
 | `assets/visits.js` | 頁尾造訪人次 |
-| `tests/ppgis.spec.js`, `tests/visits.spec.js` | 端對端測試（Playwright） |
+| `road-safety.html` | 國際比較：道路安全 × 人均 GDP 四象限 |
+| `scripts/build_road_safety.py` | 上一頁的資料建置（WHO／IMF／World Bank；僅用標準函式庫） |
+| `tests/*.spec.js` | 端對端測試（Playwright） |
 | `districts.geojson`, `populations.json` | 行政區界與人口 |
 | `assets/`, `manifest.webmanifest`, `sw.js` | 圖示、PWA manifest 與 service worker |
 
@@ -62,6 +64,39 @@
 新訪客，所以是約略值而非分析工具。同一分頁重新整理不重複計數。
 
 後端未設定或連不上時整個計數器不出現，不會在頁尾留下壞掉的數字。
+
+## 國際比較：道路安全 × 國家所得
+
+`road-safety.html` 以四象限呈現各國道路交通死亡率與人均 GDP，聚焦台灣與人口密度、氣候、
+文化相近的國家：
+
+| 象限 | 位置 | 定義 |
+|---|---|---|
+| ① | 右上 | 富裕國家｜低交通死亡率 |
+| ② | 左上 | 中低收入國家｜低交通死亡率 |
+| ③ | 右下 | 富裕國家｜高交通死亡率 |
+| ④ | 左下 | 中低收入國家｜高交通死亡率 |
+
+縱軸倒置（越往上越安全）。兩條門檻線可拖曳，所有統計即時重算。
+
+**資料**：WHO GHO `RS_198`（道路交通死亡率估計值）、IMF WEO `NGDPDPC`（人均 GDP，含台灣）、
+World Bank（人口密度、所得分組）。台灣不在 WHO 資料中，改用交通部 30 日死亡人數 ÷ IMF 人口。
+
+**建置**（需要能連到 `ghoapi.azureedge.net`、`www.imf.org`、`api.worldbank.org`）：
+
+```bash
+python3 scripts/build_road_safety.py          # 產生 data/road_safety_gdp.json
+```
+
+只用 Python 標準函式庫。資料檔產生之前，主頁不會顯示這一頁的入口。
+
+> ⚠️ `scripts/build_road_safety.py` 裡 `TAIWAN` 區塊的交通部 30 日死亡人數與土地面積，
+> 是在無法連網核對的情況下填入的。發布前請核對官方數字，再把 `verified` 改成 `True`；
+> 未核對時頁面會在台灣的數字旁標示「待核對」。
+
+**大洲只分 4 組**（亞洲・大洋洲／歐洲／美洲／非洲）：散佈圖上任兩點都可能相鄰，
+以色盲模擬驗證，8 種分類色取 6 種的 28 種組合全部無法通過門檻，4 色才能通過；
+並以形狀（圓、方、三角、菱）做第二編碼。
 
 ## 本地預覽
 

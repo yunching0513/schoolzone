@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>道路安全 × 國家所得｜打造夢想街道</title>
+<meta name="description" content="以 WHO 道路交通死亡率與 IMF 人均 GDP 繪製的四象限比較，聚焦台灣與人口密度、氣候、文化相近的國家。">
+<meta name="theme-color" content="#1A1A1A">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ------------------------------------------------------------------ tokens
+   網站品牌色（lime／黑）用於版面框架；資料標記用經驗證的分類色。
+   4 色組合在「全配對」下以色盲模擬驗證：亮色全數通過硬性門檻；
+   暗色有一組（綠↔黃）落在 6–8 警示帶，因此另以「形狀」做第二編碼。 */
+:root {
+  color-scheme: light;
+  --lime: #C8D400; --lime-dk: #A8B200;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --rule: #1A1A1A;
+  --hair: rgba(11,11,11,0.10);
+  --c-asia: #2a78d6;
+  --c-europe: #eda100;
+  --c-americas: #e87ba4;
+  --c-africa: #008300;
+  --font-zh: 'Noto Sans TC', system-ui, sans-serif;
+  --font-en: 'Space Grotesk', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+    --hair: rgba(255,255,255,0.10);
+    --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+  --hair: rgba(255,255,255,0.10);
+  --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--page); color: var(--ink); font-family: var(--font-zh); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.shell { max-width: 1240px; margin: 0 auto; padding: 48px 40px 80px; }
+
+/* ------------------------------------------------------------------ header */
+.page-header { display: flex; align-items: flex-end; gap: 24px; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 2px solid var(--rule); }
+.logo-mark { font-family: var(--font-en); font-size: 9px; font-weight: 600; letter-spacing: .18em; border: 1.5px solid var(--rule); padding: 5px 10px; text-transform: uppercase; line-height: 1.5; white-space: nowrap; }
+.title-block { flex: 1; min-width: 0; }
+.eyebrow { font-family: var(--font-en); font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; line-height: 1.35; }
+.sub { margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
+.back { font-family: var(--font-en); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--axis); white-space: nowrap; padding-bottom: 1px; }
+.back:hover { color: var(--ink); border-color: var(--ink); }
+
+.section { margin-bottom: 44px; }
+.section-label { font-family: var(--font-en); font-size: 10px; font-weight: 600; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--grid); }
+
+/* ------------------------------------------------------------------ stat tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--hair); padding: 16px 18px; }
+.tile .label { font-size: 12px; color: var(--ink-2); }
+.tile .value { font-size: 30px; font-weight: 700; line-height: 1.15; margin-top: 6px; letter-spacing: .01em; }
+.tile .unit { font-size: 12px; font-weight: 400; color: var(--ink-2); margin-left: 4px; }
+.tile .note { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.tile.lead { border-left: 3px solid var(--lime); }
+.badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 6px; margin-left: 6px; border: 1px solid var(--ink-2); color: var(--ink-2); vertical-align: middle; letter-spacing: .04em; line-height: 1.5; }
+
+/* ------------------------------------------------------------------ filter row（一列、在圖表上方） */
+.filters { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-bottom: 10px; }
+.filters + .card { margin-top: 14px; }
+.fgroup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.flabel { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--muted); margin-right: 4px; }
+.chip { font-family: var(--font-zh); font-size: 12px; padding: 6px 11px; border: 1px solid var(--axis); background: var(--surface); color: var(--ink); cursor: pointer; line-height: 1.3; }
+.chip:hover { border-color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: #111; font-weight: 700; }
+.chip:focus-visible, .lg-item:focus-visible, th button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.thr { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-2); }
+.thr input[type=range] { width: 130px; accent-color: var(--ink); }
+.thr output { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 700; min-width: 58px; }
+.linkbtn { font-size: 11.5px; color: var(--ink-2); background: none; border: 0; border-bottom: 1px solid var(--axis); cursor: pointer; padding: 0 0 1px; font-family: inherit; }
+.linkbtn:hover { color: var(--ink); border-color: var(--ink); }
+
+/* ------------------------------------------------------------------ chart card */
+.card { background: var(--surface); border: 1px solid var(--hair); padding: 16px 16px 10px; position: relative; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin: 0 4px 6px; }
+.lg-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink); background: none; border: 0; cursor: pointer; padding: 3px 2px; font-family: inherit; }
+.lg-item[aria-pressed="false"] { color: var(--muted); text-decoration: line-through; }
+.lg-item[aria-pressed="false"] svg { opacity: .3; }
+.lg-item .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.lg-note { font-size: 11.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--font-zh); }
+.tick text { font-family: var(--font-en); font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.axisline { stroke: var(--axis); stroke-width: 1; }
+.thrline { stroke: var(--ink-2); stroke-width: 1.5; }
+.axis-title { font-size: 11.5px; fill: var(--ink-2); }
+.qlabel, .qcount { pointer-events: none; }
+.qlabel { font-size: 12px; font-weight: 700; fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.qcount { font-size: 11px; fill: var(--muted); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.pt { stroke: var(--surface); stroke-width: 2; }            /* 2px 表面色環 */
+.pt.bg { opacity: .55; }
+@media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .pt.bg { opacity: .75; } }
+:root[data-theme="dark"] .pt.bg { opacity: .75; }
+.pt.dim { opacity: .18; }
+.pt.hot { stroke: var(--ink); stroke-width: 2; opacity: 1; }
+.g-asia { fill: var(--c-asia); } .g-europe { fill: var(--c-europe); }
+.g-americas { fill: var(--c-americas); } .g-africa { fill: var(--c-africa); }
+.tw-ring { fill: none; stroke: var(--ink); stroke-width: 2; }
+.plabel { font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.plabel.tw { font-size: 13px; font-weight: 900; }
+.focus-hit { fill: transparent; cursor: pointer; }
+.focus-hit:focus { outline: none; }
+.focus-hit:focus-visible + .focus-ring { stroke: var(--ink); stroke-width: 2; fill: none; }
+
+.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--hair); box-shadow: 0 6px 24px rgba(0,0,0,.14); padding: 10px 12px; min-width: 190px; max-width: 260px; font-size: 12px; line-height: 1.5; display: none; }
+.tip .tv { font-size: 22px; font-weight: 700; line-height: 1.1; }
+.tip .tu { font-size: 11.5px; color: var(--ink-2); margin-left: 4px; }
+.tip .tn { margin-top: 4px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.tip .tn .key { width: 14px; height: 2px; flex: none; }
+.tip .ten { color: var(--muted); font-weight: 400; font-family: var(--font-en); }
+.tip dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin-top: 6px; color: var(--ink-2); }
+.tip dd { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.tip .tq { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grid); color: var(--ink-2); }
+.tip .tsrc { margin-top: 4px; font-size: 11px; color: var(--muted); }
+.caption { font-size: 11.5px; color: var(--muted); margin: 8px 4px 2px; }
+
+/* ------------------------------------------------------------------ table view */
+.tbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
+.tbar label { font-size: 12.5px; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.twrap { overflow-x: auto; border: 1px solid var(--hair); background: var(--surface); -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; min-width: 760px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-weight: 700; color: var(--ink-2); font-size: 11.5px; position: sticky; top: 0; background: var(--surface); }
+th button { all: unset; cursor: pointer; }
+th button::after { content: ' ↕'; color: var(--axis); }
+th[aria-sort="ascending"] button::after { content: ' ↑'; color: var(--ink); }
+th[aria-sort="descending"] button::after { content: ' ↓'; color: var(--ink); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.tw td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, transparent); }
+.swatch { display: inline-flex; align-items: center; gap: 6px; }
+.tagchip { display: inline-block; font-size: 10.5px; color: var(--ink-2); border: 1px solid var(--grid); padding: 0 5px; margin-right: 3px; }
+
+/* ------------------------------------------------------------------ notes */
+.notes { background: var(--surface); border: 1px solid var(--hair); padding: 18px 22px; font-size: 13px; color: var(--ink-2); }
+.notes h3 { font-size: 13px; color: var(--ink); margin: 14px 0 4px; }
+.notes h3:first-child { margin-top: 0; }
+.notes ul { padding-left: 1.2em; }
+.notes li { margin: 3px 0; }
+.notes a { color: var(--ink); }
+.notes code { font-size: 12px; background: var(--page); padding: 0 4px; }
+
+.empty { background: var(--surface); border: 1px solid var(--hair); padding: 28px; font-size: 13.5px; color: var(--ink-2); }
+.empty code { background: var(--page); padding: 1px 6px; }
+
+footer { border-top: 2px solid var(--rule); padding-top: 18px; margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-family: var(--font-en); font-size: 9px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
+footer a { color: var(--ink-2); }
+
+/* ------------------------------------------------------------------ mobile */
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) {
+  .shell { padding: 28px 16px 56px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 32px; }
+  .title-block { width: 100%; }
+  h1 { font-size: 21px; }
+  .tile .value { font-size: 24px; }
+  .tile .unit { display: block; margin: 2px 0 0; }
+  .tile .badge { margin: 4px 0 0; }
+  .tile { padding: 14px; }
+  .filters { gap: 10px; }
+  .thr { width: 100%; }
+  .thr input[type=range] { flex: 1; width: auto; }
+  .chip { padding: 8px 12px; }
+  .card { padding: 12px 6px 8px; }
+  .notes { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) { .pt { transition: opacity .15s; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="page-header">
+  <div class="logo-mark">Taiwan<br>Mobility<br>Atlas</div>
+  <div class="title-block">
+    <div class="eyebrow">Road Safety × Income · Four Quadrants</div>
+    <h1>道路安全 × 國家所得｜台灣在世界的位置</h1>
+    <div class="sub" id="subline">WHO 道路交通死亡率 × IMF 人均 GDP</div>
+  </div>
+  <a class="back" href="./">← 打造夢想街道</a>
+</header>
+
+<div id="app" hidden>
+
+<section class="section" aria-labelledby="s1">
+  <div class="section-label" id="s1">01 — 台灣在哪裡</div>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<section class="section" aria-labelledby="s2">
+  <div class="section-label" id="s2">02 — 四象限：道路安全 × 人均 GDP</div>
+
+  <div class="filters" role="group" aria-label="突顯國家">
+    <div class="fgroup" id="chips"><span class="flabel">突顯</span></div>
+  </div>
+  <div class="filters" role="group" aria-label="象限門檻">
+    <span class="flabel">門檻</span>
+    <div class="thr">
+      <span>所得門檻</span>
+      <input type="range" id="gdpThr" min="3" max="4.78" step="0.005" aria-label="人均 GDP 門檻（對數）">
+      <output id="gdpOut" for="gdpThr"></output>
+    </div>
+    <div class="thr">
+      <span>死亡率門檻</span>
+      <input type="range" id="rateThr" min="1" max="40" step="0.1" aria-label="道路交通死亡率門檻">
+      <output id="rateOut" for="rateThr"></output>
+    </div>
+    <button class="linkbtn" id="thrReset" type="button">回到預設門檻</button>
+  </div>
+
+  <div class="card">
+    <div class="legend" id="legend" aria-label="大洲分組（點擊可隱藏）"></div>
+    <div class="chart" id="chart">
+      <div class="tip" id="tip" role="status" aria-live="polite"></div>
+    </div>
+    <p class="caption" id="caption"></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="s3">
+  <div class="section-label" id="s3">03 — 比較表</div>
+  <div class="tbar">
+    <label><input type="checkbox" id="showAll"> 顯示全部國家</label>
+    <span class="caption" id="tcount" style="margin:0"></span>
+  </div>
+  <div class="twrap"><table id="table" aria-describedby="s3"></table></div>
+</section>
+
+<section class="section" aria-labelledby="s4">
+  <div class="section-label" id="s4">04 — 資料與方法</div>
+  <div class="notes" id="notes"></div>
+</section>
+
+</div>
+
+<div class="empty" id="empty" hidden>
+  <p><strong>資料尚未建置。</strong>這一頁需要 <code>data/road_safety_gdp.json</code>，
+  請在專案根目錄執行 <code>python3 scripts/build_road_safety.py</code>
+  （需要能連到 WHO、IMF、World Bank 的網路），完成後重新整理即可。</p>
+</div>
+
+<footer>
+  <span>Taiwan Mobility Atlas · Road Safety × Income</span>
+  <span><a href="./">打造夢想街道</a></span>
+</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // --------------------------------------------------------------- 常數
+  // 大洲分組：只用 4 組，因為散佈圖上任兩點都可能相鄰。8 色取 6 的 28 種組合
+  // 在色盲模擬（全配對）下全部無法通過門檻；4 色則可通過，並以形狀做第二編碼。
+  const GROUPS = [
+    { key: 'asia',     zh: '亞洲・大洋洲', shape: 'circle' },
+    { key: 'europe',   zh: '歐洲',         shape: 'square' },
+    { key: 'americas', zh: '美洲',         shape: 'triangle' },
+    { key: 'africa',   zh: '非洲',         shape: 'diamond' },
+  ];
+  const GROUP = Object.fromEntries(GROUPS.map(g => [g.key, g]));
+  const TAGS = {
+    culture: '文化相近', climate: '氣候相近', density: '人口密度相近',
+    moto: '機車為主', benchmark: '政策標竿',
+  };
+  // 象限沿用研究定義的編號（非數學座標的逆時針順序）
+  const QUAD = {
+    1: '富裕國家｜低交通死亡率',
+    2: '中低收入國家｜低交通死亡率',
+    3: '富裕國家｜高交通死亡率',
+    4: '中低收入國家｜高交通死亡率',
+  };
+  const QNUM = { 1: '①', 2: '②', 3: '③', 4: '④' };
+  // 圖上空間不夠時逐級縮短（全名仍見於說明、提示框與比較表）
+  const QUAD_FORMS = [
+    QUAD,
+    { 1: '富裕｜低交通死亡率', 2: '中低收入｜低交通死亡率', 3: '富裕｜高交通死亡率', 4: '中低收入｜高交通死亡率' },
+    { 1: '富裕・低死亡', 2: '中低收入・低死亡', 3: '富裕・高死亡', 4: '中低收入・高死亡' },
+    { 1: '', 2: '', 3: '', 4: '' },
+  ];
+  const INCOME = { HIC: '高所得', UMC: '中高所得', LMC: '中低所得', LIC: '低所得' };
+
+  const state = {
+    data: null, meta: null, tw: null,
+    highlight: 'focus',                         // focus | culture | climate | density | moto | benchmark | none
+    hidden: new Set(),                          // 被圖例關掉的大洲
+    thr: { gdp: 0, rate: 0 }, def: { gdp: 0, rate: 0 },
+    sort: { key: 'rate', dir: 1 }, showAll: false,
+  };
+
+  const $ = id => document.getElementById(id);
+  const fmtInt = v => Math.round(v).toLocaleString('en-US');
+  const fmtUSD = v => '$' + fmtInt(v);
+  const fmt1 = v => (v == null ? '—' : Number(v).toFixed(1));
+  const median = a => { const s = a.slice().sort((x, y) => x - y), n = s.length;
+    return n ? (n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2) : null; };
+  const el = (tag, attrs, text) => {           // 名稱一律走 textContent（資料視為不受信任）
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const NS = 'http://www.w3.org/2000/svg';
+  const sv = (tag, attrs) => { const e = document.createElementNS(NS, tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+
+  const quadOf = c => {
+    const rich = c.gdp_pc >= state.thr.gdp, low = c.rate < state.thr.rate;
+    return rich && low ? 1 : !rich && low ? 2 : rich ? 3 : 4;
+  };
+  const isHi = c => {
+    if (c.iso3 === 'TWN') return true;
+    if (state.highlight === 'none') return false;
+    if (state.highlight === 'focus') return c.focus;
+    return c.tags.includes(state.highlight);
+  };
+
+  // 同面積的四種形狀（圓／方／三角／菱），讓大小不因形狀失真
+  function shapePath(shape, x, y, r) {
+    switch (shape) {
+      case 'square': { const h = r * 0.886; return `M${x - h},${y - h}h${2 * h}v${2 * h}h${-2 * h}Z`; }
+      case 'triangle': { const a = r * 2.694, H = a * 0.866;
+        return `M${x},${y - 2 * H / 3}L${x + a / 2},${y + H / 3}L${x - a / 2},${y + H / 3}Z`; }
+      case 'diamond': { const d = r * 1.2533; return `M${x},${y - d}L${x + d},${y}L${x},${y + d}L${x - d},${y}Z`; }
+      default: return `M${x - r},${y}a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`;
+    }
+  }
+  function keySwatch(group, size) {
+    const s = sv('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}`, 'aria-hidden': 'true' });
+    s.appendChild(sv('path', { d: shapePath(GROUP[group].shape, size / 2, size / 2 + (GROUP[group].shape === 'triangle' ? 1 : 0), size * 0.36), class: 'g-' + group }));
+    return s;
+  }
+
+  // --------------------------------------------------------------- 載入
+  fetch('data/road_safety_gdp.json', { cache: 'no-cache' })
+    .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
+    .then(init)
+    .catch(() => { $('empty').hidden = false; });
+
+  function init(d) {
+    state.data = d.countries;
+    state.meta = d.meta;
+    state.tw = d.countries.find(c => c.iso3 === 'TWN');
+    const rates = d.countries.map(c => c.rate);
+    state.def.gdp = d.meta.gdp_threshold;
+    // 死亡率門檻：WHO 全球估計值；若資料沒有，退回各國中位數
+    state.def.rate = d.meta.global_rate != null ? d.meta.global_rate : median(rates);
+    state.thr = { ...state.def };
+    $('app').hidden = false;
+    $('subline').textContent =
+      `${d.meta.year} 年資料 · WHO 道路交通死亡率估計值 × IMF 人均 GDP · ${d.countries.length} 個國家／地區`;
+
+    buildChips(); buildThresholds(); buildLegend(); buildNotes();
+    renderAll();
+    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(renderChart, 120); });
+    $('showAll').addEventListener('change', e => { state.showAll = e.target.checked; renderTable(); });
+  }
+
+  function renderAll() { renderTiles(); renderChart(); renderTable(); }
+
+  // --------------------------------------------------------------- 控制列
+  function buildChips() {
+    const box = $('chips');
+    const opts = [['focus', '焦點國家'], ['culture', '文化相近'], ['climate', '氣候相近'],
+                  ['density', '人口密度相近'], ['moto', '機車為主'], ['benchmark', '政策標竿'], ['none', '不突顯']];
+    opts.forEach(([k, label]) => {
+      const n = k === 'none' ? null : state.data.filter(c => c.iso3 !== 'TWN' && (k === 'focus' ? c.focus : c.tags.includes(k))).length;
+      const b = el('button', { type: 'button', class: 'chip', 'aria-pressed': String(state.highlight === k) },
+                   n == null ? label : `${label} ${n}`);
+      b.addEventListener('click', () => {
+        state.highlight = k;
+        box.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+        renderChart(); renderTable();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function buildThresholds() {
+    const g = $('gdpThr'), r = $('rateThr');
+    const sync = () => {
+      g.value = Math.log10(state.thr.gdp); r.value = state.thr.rate;
+      $('gdpOut').textContent = fmtUSD(state.thr.gdp);
+      $('rateOut').textContent = fmt1(state.thr.rate);
+    };
+    g.addEventListener('input', () => { state.thr.gdp = Math.round(10 ** +g.value / 50) * 50; sync(); renderTiles(); renderChart(); renderTable(); });
+    r.addEventListener('input', () => { state.thr.rate = +r.value; sync(); renderTiles(); renderChart(); renderTable(); });
+    $('thrReset').addEventListener('click', () => { state.thr = { ...state.def }; sync(); renderAll(); });
+    sync();
+  }
+
+  function buildLegend() {
+    const lg = $('legend');
+    lg.textContent = '';
+    GROUPS.forEach(g => {
+      const n = state.data.filter(c => c.group === g.key).length;
+      const b = el('button', { type: 'button', class: 'lg-item', 'aria-pressed': String(!state.hidden.has(g.key)) });
+      b.appendChild(keySwatch(g.key, 14));
+      b.appendChild(el('span', null, g.zh));
+      b.appendChild(el('span', { class: 'n' }, String(n)));
+      b.addEventListener('click', () => {
+        state.hidden.has(g.key) ? state.hidden.delete(g.key) : state.hidden.add(g.key);
+        b.setAttribute('aria-pressed', String(!state.hidden.has(g.key)));
+        renderChart();
+      });
+      lg.appendChild(b);
+    });
+    const note = el('span', { class: 'lg-note' });
+    const s = sv('svg', { width: 20, height: 20, viewBox: '0 0 20 20', 'aria-hidden': 'true' });
+    s.appendChild(sv('circle', { cx: 10, cy: 10, r: 4.5, class: 'g-asia' }));
+    s.appendChild(sv('circle', { cx: 10, cy: 10, r: 8, class: 'tw-ring' }));
+    note.appendChild(s); note.appendChild(document.createTextNode('台灣　大點＝突顯國家'));
+    lg.appendChild(note);
+  }
+
+  // --------------------------------------------------------------- 01 台灣在哪裡
+  function renderTiles() {
+    const tw = state.tw, box = $('tiles');
+    box.textContent = '';
+    if (!tw) return;
+    const rich = state.data.filter(c => c.iso3 !== 'TWN' && c.gdp_pc >= state.thr.gdp);
+    const med = median(rich.map(c => c.rate));
+    const ranked = rich.concat([tw]).sort((a, b) => b.rate - a.rate);
+    const rank = ranked.indexOf(tw) + 1;
+    const unverified = state.meta.taiwan && state.meta.taiwan.verified === false;
+
+    const tile = (label, value, unit, note, lead, badge) => {
+      const t = el('div', { class: 'tile' + (lead ? ' lead' : '') });
+      t.appendChild(el('div', { class: 'label' }, label));
+      const v = el('div', { class: 'value' }, value);
+      if (unit) v.appendChild(el('span', { class: 'unit' }, unit));
+      if (badge) v.appendChild(el('span', { class: 'badge', title: '台灣數字尚未與交通部官方統計核對' }, badge));
+      t.appendChild(v);
+      if (note) t.appendChild(el('div', { class: 'note' }, note));
+      box.appendChild(t);
+    };
+    tile('台灣道路交通死亡率', fmt1(tw.rate), '人／每十萬人',
+         `交通部 30 日死亡 ${fmtInt(state.meta.taiwan.deaths_30d)} 人`, true, unverified ? '待核對' : null);
+    tile('富裕國家死亡率中位數', fmt1(med), '人／每十萬人',
+         `人均 GDP ≥ ${fmtUSD(state.thr.gdp)} 的 ${rich.length} 國`);
+    tile('台灣是中位數的', med ? (tw.rate / med).toFixed(1) : '—', '倍',
+         '同為富裕國家，台灣道路的致命程度');
+    tile('富裕國家中排名', `第 ${rank} 高`, `／${ranked.length} 國`,
+         `台灣落在第 ${QNUM[quadOf(tw)]} 象限：${QUAD[quadOf(tw)]}`);
+  }
+
+  // --------------------------------------------------------------- 02 散佈圖
+  let pts = [];          // 目前畫面上的點（螢幕座標），給 hover 找最近點用
+  function renderChart() {
+    const box = $('chart');
+    box.querySelectorAll('svg').forEach(s => s.remove());
+    hideTip();
+    const W = Math.max(260, box.clientWidth);
+    const mobile = W < 560;
+    const H = Math.round(Math.min(640, Math.max(mobile ? 400 : 440, W * 0.6)));
+    const m = { t: 30, r: mobile ? 12 : 24, b: 50, l: mobile ? 40 : 56 };
+    const pw = W - m.l - m.r, ph = H - m.t - m.b;
+
+    const vis = state.data.filter(c => !state.hidden.has(c.group));
+    const all = state.data;
+    const gmin = Math.min(...all.map(c => c.gdp_pc)), gmax = Math.max(...all.map(c => c.gdp_pc));
+    const lx0 = Math.log10(gmin * 0.8), lx1 = Math.log10(gmax * 1.25);
+    const rmax = Math.max(...all.map(c => c.rate), state.thr.rate);
+    const ystep = rmax > 30 ? 10 : 5;
+    const y1 = Math.ceil((rmax + 1) / ystep) * ystep;
+    const X = v => m.l + (Math.log10(v) - lx0) / (lx1 - lx0) * pw;
+    const Y = v => m.t + v / y1 * ph;               // 倒置：0 在上，越往下死亡率越高
+
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img',
+      'aria-label': `散佈圖：橫軸人均 GDP（對數），縱軸道路交通死亡率（向上越低）。共 ${vis.length} 國。數值見下方比較表。` });
+
+    // 格線與刻度
+    const gx = sv('g', { class: 'tick' });
+    [100, 200, 500, 1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5, 2e5].filter(v => Math.log10(v) >= lx0 && Math.log10(v) <= lx1)
+      .filter(v => !mobile || [1, 1e1, 1e2, 1e3, 1e4, 1e5].some(p => v === p) || v === 5e3 || v === 5e4)
+      .forEach(v => {
+        gx.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t, y2: m.t + ph, class: 'gridline' }));
+        const t = sv('text', { x: X(v), y: m.t + ph + 16, 'text-anchor': 'middle' });
+        t.textContent = v >= 1e3 ? '$' + (v / 1e3) + 'k' : '$' + v;
+        gx.appendChild(t);
+      });
+    for (let v = 0; v <= y1; v += ystep) {
+      gx.appendChild(sv('line', { x1: m.l, x2: m.l + pw, y1: Y(v), y2: Y(v), class: 'gridline' }));
+      const t = sv('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' });
+      t.textContent = v;
+      gx.appendChild(t);
+    }
+    svg.appendChild(gx);
+    svg.appendChild(sv('line', { x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph, class: 'axisline' }));
+    svg.appendChild(sv('line', { x1: m.l, x2: m.l, y1: m.t, y2: m.t + ph, class: 'axisline' }));
+
+    const xt = sv('text', { x: m.l + pw, y: H - 8, 'text-anchor': 'end', class: 'axis-title' });
+    xt.textContent = '人均 GDP（現價美元，對數尺度）→ 越往右越富裕';
+    svg.appendChild(xt);
+    const yt = sv('text', { x: m.l, y: m.t - 12, 'text-anchor': 'start', class: 'axis-title' });
+    yt.textContent = mobile ? '死亡率（每十萬人）↑ 越低越安全' : '道路交通死亡率（每十萬人）↑ 越往上越低、越安全';
+    svg.appendChild(yt);
+
+    // 門檻線（參考線，實線）
+    const tx = X(state.thr.gdp), ty = Y(state.thr.rate);
+    if (tx > m.l && tx < m.l + pw) svg.appendChild(sv('line', { x1: tx, x2: tx, y1: m.t, y2: m.t + ph, class: 'thrline' }));
+    svg.appendChild(sv('line', { x1: m.l, x2: m.l + pw, y1: ty, y2: ty, class: 'thrline' }));
+
+    // 象限標籤與國家數
+    const qn = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    vis.forEach(c => qn[quadOf(c)]++);
+    const placed = [];
+    const qpos = {
+      2: { x: m.l + 8, y: m.t + 16, a: 'start' },  1: { x: m.l + pw - 8, y: m.t + 16, a: 'end' },
+      4: { x: m.l + 8, y: m.t + ph - 22, a: 'start' }, 3: { x: m.l + pw - 8, y: m.t + ph - 22, a: 'end' },
+    };
+    const qg = sv('g');
+    const qt = {};
+    [1, 2, 3, 4].forEach(q => {
+      const p = qpos[q];
+      qt[q] = sv('text', { x: p.x, y: p.y, 'text-anchor': p.a, class: 'qlabel' });
+      const c = sv('text', { x: p.x, y: p.y + 15, 'text-anchor': p.a, class: 'qcount' });
+      c.textContent = `${qn[q]} 國`;
+      qg.appendChild(qt[q]); qg.appendChild(c);
+    });
+    svg.appendChild(qg);
+    box.appendChild(svg);                       // 先掛上，才量得到文字寬度
+    const clash = (a, b) => { const A = a.getBBox(), B = b.getBBox(); return A.x + A.width + 10 > B.x; };
+    for (const form of QUAD_FORMS) {
+      [1, 2, 3, 4].forEach(q => { qt[q].textContent = form[q] ? `${QNUM[q]} ${form[q]}` : QNUM[q]; });
+      if (!clash(qt[2], qt[1]) && !clash(qt[4], qt[3])) break;
+    }
+
+    // 點：先畫背景國家，再畫突顯國家，台灣最後（永遠在最上層）
+    const order = vis.slice().sort((a, b) => (isHi(a) - isHi(b)) || ((a.iso3 === 'TWN') - (b.iso3 === 'TWN')));
+    const anyHi = vis.some(c => c.iso3 !== 'TWN' && isHi(c));
+    const layer = sv('g');
+    pts = [];
+    order.forEach(c => {
+      const x = X(c.gdp_pc), y = Y(c.rate), hi = isHi(c), tw = c.iso3 === 'TWN';
+      const r = tw ? 7.5 : hi ? 6 : 4.2;
+      const p = sv('path', { d: shapePath(GROUP[c.group].shape, x, y, r),
+        class: `pt g-${c.group}${hi ? '' : (anyHi || state.highlight === 'none' ? (state.highlight === 'none' ? '' : ' bg') : '')}` });
+      p.dataset.iso = c.iso3;
+      layer.appendChild(p);
+      if (tw) layer.appendChild(sv('circle', { cx: x, cy: y, r: r + 5, class: 'tw-ring' }));
+      pts.push({ c, x, y, r, vr: tw ? r + 6 : r, node: p, hi });   // vr：可見範圍（台灣含外環）
+    });
+    svg.appendChild(layer);
+    svg.appendChild(qg);                         // 象限標籤移到點的上層（有表面色描邊，不會被點蓋住）
+
+    // 直接標籤：只標突顯國家（台灣優先），放不下就交給提示框與比較表
+    // 先把四個象限標籤的範圍登記為障礙物
+    qg.querySelectorAll('text').forEach(t => { const b = t.getBBox(); placed.push({ x: b.x - 2, y: b.y - 1, w: b.width + 4, h: b.height + 2 }); });
+    const lab = sv('g');
+    svg.appendChild(lab);
+    const toLabel = pts.filter(p => p.hi).sort((a, b) => (b.c.iso3 === 'TWN') - (a.c.iso3 === 'TWN'));
+    const maxLabels = mobile ? 9 : 40;
+    let nlab = 0;
+    toLabel.forEach(p => {
+      if (nlab >= maxLabels && p.c.iso3 !== 'TWN') return;
+      const t = sv('text', { class: 'plabel' + (p.c.iso3 === 'TWN' ? ' tw' : '') });
+      t.textContent = p.c.zh;
+      lab.appendChild(t);
+      const bb = t.getBBox(), w = bb.width, h = bb.height;
+      const gap = p.r + (p.c.iso3 === 'TWN' ? 8 : 4);
+      const cands = [
+        [p.x + gap, p.y + h * 0.32, 'start'], [p.x - gap, p.y + h * 0.32, 'end'],
+        [p.x, p.y - gap - 2, 'middle'], [p.x, p.y + gap + h * 0.8, 'middle'],
+      ];
+      let ok = false;
+      for (const [cx, cy, anc] of cands) {
+        const x0 = anc === 'start' ? cx : anc === 'end' ? cx - w : cx - w / 2;
+        const rect = { x: x0 - 2, y: cy - h * 0.8 - 1, w: w + 4, h: h + 2 };
+        if (rect.x < m.l || rect.x + rect.w > m.l + pw || rect.y < m.t || rect.y + rect.h > m.t + ph) continue;
+        if (placed.some(q => rect.x < q.x + q.w && rect.x + rect.w > q.x && rect.y < q.y + q.h && rect.y + rect.h > q.y)) continue;
+        t.setAttribute('x', cx); t.setAttribute('y', cy); t.setAttribute('text-anchor', anc);
+        placed.push(rect); ok = true; nlab++; break;
+      }
+      if (!ok) t.remove();
+    });
+
+    // 可聚焦的突顯點（鍵盤可逐一瀏覽，與滑鼠提示框同內容）
+    const kb = sv('g');
+    pts.filter(p => p.hi).forEach(p => {
+      const hit = sv('circle', { cx: p.x, cy: p.y, r: Math.max(12, p.r + 6), class: 'focus-hit', tabindex: '0', role: 'img',
+        'aria-label': `${p.c.zh}：死亡率每十萬人 ${fmt1(p.c.rate)}，人均 GDP ${fmtUSD(p.c.gdp_pc)}，第 ${quadOf(p.c)} 象限` });
+      hit.addEventListener('focus', () => showTip(p));
+      hit.addEventListener('blur', hideTip);
+      kb.appendChild(hit);
+      kb.appendChild(sv('circle', { cx: p.x, cy: p.y, r: p.r + 4, class: 'focus-ring', fill: 'none' }));
+    });
+    svg.appendChild(kb);
+
+    // 滑鼠：找最近的點（24px 內），不必精準點中 8px 的點
+    const ov = sv('rect', { x: m.l, y: m.t, width: pw, height: ph, fill: 'transparent' });
+    svg.insertBefore(ov, kb);
+    const nearest = ev => {
+      const rect = svg.getBoundingClientRect(), k = rect.width / W;
+      const mx = (ev.clientX - rect.left) / k, my = (ev.clientY - rect.top) / k;
+      // 量到標記「可見邊緣」而非中心：滑到台灣的外環上，就該是台灣
+      let best = null, bd = 24 / k;
+      for (const p of pts) {
+        const d = Math.max(0, Math.hypot(p.x - mx, p.y - my) - p.vr);
+        if (d < bd || (d === bd && best && p.hi && !best.hi)) { bd = d; best = p; }
+      }
+      return best;
+    };
+    svg.addEventListener('pointermove', ev => { const p = nearest(ev); p ? showTip(p) : hideTip(); });
+    svg.addEventListener('pointerleave', hideTip);
+    svg.addEventListener('pointerdown', ev => { const p = nearest(ev); p ? showTip(p) : hideTip(); });
+
+    const hid = state.hidden.size ? `（已隱藏：${[...state.hidden].map(k => GROUP[k].zh).join('、')}）` : '';
+    $('caption').textContent =
+      `門檻：人均 GDP ${fmtUSD(state.thr.gdp)}、死亡率 ${fmt1(state.thr.rate)}／十萬人。點的形狀與顏色都代表大洲${hid}。` +
+      '滑過或點選任一點看詳細數字；所有數值也列在下方比較表。';
+  }
+
+  let hot = null;
+  function showTip(p) {
+    const tip = $('tip'), c = p.c;
+    if (hot && hot !== p.node) hot.classList.remove('hot');
+    hot = p.node; hot.classList.add('hot');
+    tip.textContent = '';
+    const top = el('div');
+    top.appendChild(el('span', { class: 'tv' }, fmt1(c.rate)));
+    top.appendChild(el('span', { class: 'tu' }, '人／每十萬人'));
+    tip.appendChild(top);
+    const name = el('div', { class: 'tn' });
+    const key = el('span', { class: 'key' }); key.style.background = `var(--c-${c.group})`;
+    name.appendChild(key); name.appendChild(el('span', null, c.zh));
+    name.appendChild(el('span', { class: 'ten' }, c.en));
+    tip.appendChild(name);
+    const dl = el('dl');
+    const row = (k, v) => { dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, v)); };
+    row('人均 GDP', fmtUSD(c.gdp_pc));
+    row('人口密度', c.density != null ? `${fmtInt(c.density)}／km²` : '—');
+    row('所得分組', INCOME[c.income] || '—');
+    row('大洲', GROUP[c.group].zh);
+    if (c.rate_low != null && c.rate_high != null) row('WHO 95% 區間', `${fmt1(c.rate_low)}–${fmt1(c.rate_high)}`);
+    tip.appendChild(dl);
+    const q = quadOf(c);
+    tip.appendChild(el('div', { class: 'tq' }, `${QNUM[q]} ${QUAD[q]}`));
+    if (c.tags.length) tip.appendChild(el('div', { class: 'tsrc' }, '相似面向：' + c.tags.map(t => TAGS[t]).join('、')));
+    if (c.rate_source === 'MOTC') {
+      const v = state.meta.taiwan && state.meta.taiwan.verified === false ? '（待核對）' : '';
+      tip.appendChild(el('div', { class: 'tsrc' }, `死亡率：交通部 30 日死亡人數 ÷ IMF 人口${v}；非 WHO 估計值`));
+    }
+    tip.style.display = 'block';
+    const box = $('chart'), svg = box.querySelector('svg');
+    const k = svg.getBoundingClientRect().width / +svg.getAttribute('viewBox').split(' ')[2];
+    const bw = box.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = p.x * k + 14, topY = p.y * k - th / 2;
+    if (left + tw > bw) left = p.x * k - tw - 14;
+    if (left < 0) left = Math.max(0, Math.min(bw - tw, p.x * k - tw / 2));
+    topY = Math.max(0, Math.min(topY, box.clientHeight - th));
+    tip.style.left = left + 'px'; tip.style.top = topY + 'px';
+  }
+  function hideTip() {
+    $('tip').style.display = 'none';
+    if (hot) { hot.classList.remove('hot'); hot = null; }
+  }
+
+  // --------------------------------------------------------------- 03 比較表（圖表的無障礙等價物）
+  const COLS = [
+    { key: 'zh', label: '國家／地區' },
+    { key: 'group', label: '大洲' },
+    { key: 'rate', label: '死亡率（每十萬人）', num: true },
+    { key: 'gdp_pc', label: '人均 GDP（美元）', num: true },
+    { key: 'density', label: '人口密度（／km²）', num: true },
+    { key: 'quad', label: '象限' },
+    { key: 'tags', label: '相似面向' },
+  ];
+  function renderTable() {
+    const tb = $('table');
+    tb.textContent = '';
+    const rows = state.data.filter(c => state.showAll || isHi(c) || c.iso3 === 'TWN');
+    const s = state.sort;
+    const val = (c, k) => k === 'quad' ? quadOf(c) : k === 'group' ? GROUP[c.group].zh : k === 'tags' ? c.tags.length : c[k];
+    rows.sort((a, b) => {
+      const va = val(a, s.key), vb = val(b, s.key);
+      if (va == null) return 1; if (vb == null) return -1;
+      return (typeof va === 'string' ? va.localeCompare(vb, 'zh-Hant') : va - vb) * s.dir;
+    });
+    const thead = el('thead'), hr = el('tr');
+    COLS.forEach(col => {
+      const th = el('th', { scope: 'col', class: col.num ? 'num' : '' });
+      if (s.key === col.key) th.setAttribute('aria-sort', s.dir > 0 ? 'ascending' : 'descending');
+      const b = el('button', { type: 'button' }, col.label);
+      b.addEventListener('click', () => {
+        state.sort = { key: col.key, dir: s.key === col.key ? -s.dir : (col.num ? 1 : 1) };
+        renderTable();
+      });
+      th.appendChild(b); hr.appendChild(th);
+    });
+    thead.appendChild(hr); tb.appendChild(thead);
+    const tbody = el('tbody');
+    const unverified = state.meta.taiwan && state.meta.taiwan.verified === false;
+    rows.forEach(c => {
+      const tr = el('tr', c.iso3 === 'TWN' ? { class: 'tw' } : null);
+      const name = el('td');
+      name.appendChild(document.createTextNode(c.zh));
+      if (c.iso3 === 'TWN' && unverified) name.appendChild(el('span', { class: 'badge' }, '待核對'));
+      tr.appendChild(name);
+      const g = el('td'); const sw = el('span', { class: 'swatch' });
+      sw.appendChild(keySwatch(c.group, 12)); sw.appendChild(document.createTextNode(GROUP[c.group].zh));
+      g.appendChild(sw); tr.appendChild(g);
+      tr.appendChild(el('td', { class: 'num' }, fmt1(c.rate)));
+      tr.appendChild(el('td', { class: 'num' }, fmtInt(c.gdp_pc)));
+      tr.appendChild(el('td', { class: 'num' }, c.density != null ? fmtInt(c.density) : '—'));
+      const q = quadOf(c);
+      tr.appendChild(el('td', null, `${QNUM[q]} ${QUAD[q]}`));
+      const tg = el('td');
+      c.tags.forEach(t => tg.appendChild(el('span', { class: 'tagchip' }, TAGS[t])));
+      tr.appendChild(tg);
+      tbody.appendChild(tr);
+    });
+    tb.appendChild(tbody);
+    $('tcount').textContent = state.showAll ? `全部 ${rows.length} 國` : `台灣與 ${rows.length - 1} 個突顯國家`;
+  }
+
+  // --------------------------------------------------------------- 04 資料與方法
+  function buildNotes() {
+    const m = state.meta, n = $('notes');
+    const tw = m.taiwan || {};
+    const glob = m.global_rate != null ? `WHO 全球估計值（${fmt1(m.global_rate)}／十萬人）` : '各國中位數（資料未含 WHO 全球估計值）';
+    const html = [
+      ['資料來源', [
+        `<strong>道路交通死亡率</strong>：WHO Global Health Observatory，指標 <code>RS_198</code>（Estimated road traffic death rate per 100 000 population），${m.year} 年。這是 WHO《Global Status Report on Road Safety》所用的同一套估計值。`,
+        `<strong>人均 GDP</strong>：IMF World Economic Outlook，<code>NGDPDPC</code>（現價美元，非購買力平價）。IMF 有收錄台灣，因此台灣與各國用同一個 GDP 來源。`,
+        `<strong>人口密度、所得分組</strong>：World Bank WDI <code>EN.POP.DNST</code> 與國家所得分類。`,
+      ]],
+      ['台灣的數字', [
+        `台灣不在 WHO 與 World Bank 的資料中。死亡率改以<strong>交通部「30 日死亡人數」</strong>（${tw.deaths_30d ? fmtInt(tw.deaths_30d) + ' 人' : '—'}）除以 IMF 同年人口（${tw.population_m ? tw.population_m + ' 百萬人' : '—'}）換算。`,
+        `WHO 對死亡登記完整的國家同樣採 30 日定義，因此兩者大致可比，但並非同一套推估模型。${tw.verified === false ? '<strong>目前台灣的死亡人數與土地面積尚未與官方統計核對</strong>，頁面上標示為「待核對」。' : ''}`,
+        `人口密度以 IMF 人口 ÷ 土地面積 ${tw.area_km2 ? fmtInt(tw.area_km2) + ' km²' : ''} 計算。`,
+      ]],
+      ['四象限怎麼切', [
+        `<strong>所得門檻</strong>預設為 World Bank ${m.year} 年資料的高所得門檻 ${fmtUSD(m.gdp_threshold)}。注意 World Bank 以 GNI（Atlas 法）分類，本圖橫軸是 GDP，門檻附近國家的分類僅供參考。`,
+        `<strong>死亡率門檻</strong>預設為${glob}。兩條門檻線都可以拖曳調整，所有數字（含 01 的統計）會即時重算。`,
+        '縱軸<strong>倒置</strong>：越往上死亡率越低、越安全。因此 ① 富裕低死亡在右上、② 中低收入低死亡在左上、③ 富裕高死亡在右下、④ 中低收入高死亡在左下。象限編號沿用研究定義，並非數學座標的逆時針順序。',
+      ]],
+      ['「相似國家」怎麼選', [
+        `<strong>人口密度相近</strong>：資料自動判定，台灣密度的 0.5–2 倍（${m.density_band ? fmtInt(m.density_band[0]) + '–' + fmtInt(m.density_band[1]) + '／km²' : ''}）。`,
+        '<strong>文化相近</strong>（漢字文化圈／東亞）、<strong>氣候相近</strong>（熱帶或亞熱帶季風）、<strong>機車為主</strong>、<strong>政策標竿</strong>（荷蘭 Sustainable Safety、瑞典 Vision Zero）為人工判定，判定清單寫在 <code>scripts/build_road_safety.py</code> 的 <code>FOCUS</code>，可以直接修改。',
+        '「機車為主」不在原始需求中，但機車是台灣交通死亡的主要運具，是比較時最重要的干擾因子之一，因此一併標出。',
+      ]],
+      ['為什麼大洲只分 4 組', [
+        '散佈圖上任兩個點都可能相鄰，所以每一對顏色都必須分得出來。以色盲模擬（protanopia／deuteranopia）驗證，8 種分類色取 6 種的 28 種組合<strong>全部</strong>無法通過門檻，連 5 色也全數失敗；4 色才能通過。',
+        '因此分為「亞洲・大洋洲」「歐洲」「美洲」「非洲」，並以<strong>形狀</strong>（圓、方、三角、菱）做第二編碼，色盲讀者也能分辨。亞洲包含中東；俄羅斯歸歐洲、土耳其與賽普勒斯歸亞洲。',
+      ]],
+      ['限制', [
+        '對死亡登記不完整的國家，WHO 以模型推估，不確定性可能很大（滑過點可看 95% 區間）。低收入國家的估計值通常高於其官方通報數。',
+        '人均 GDP 為現價美元，受匯率影響；若要比較生活水準，購買力平價（PPP）較合適。',
+        '單一年度的橫斷面比較，不代表因果關係：所得、機動化程度、運具組成、道路設計與執法都會同時影響死亡率。',
+      ]],
+    ];
+    n.innerHTML = html.map(([h, items]) => `<h3>${h}</h3><ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`).join('') +
+      `<p style="margin-top:12px;font-size:12px;color:var(--muted)">資料建置：<code>python3 scripts/build_road_safety.py</code>（${String(m.generated).replace(/[^0-9-]/g, '')} 產生）</p>`;
+  }
+})();
+</script>
+</body>
+</html>

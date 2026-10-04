@@ -14,3 +14,15 @@ node tests/ppgis.spec.js
 ```
 
 腳本裡的 Leaflet 與 Chromium 路徑寫死在最上方，依環境調整。
+
+## 道路安全 × 國家所得
+
+```bash
+python3 tests/road_safety_mock.py /tmp/rs.json          # 以模擬 API 回應產生合成資料
+RS_FIXTURE=/tmp/rs.json node tests/road-safety.spec.js
+```
+
+`road_safety_mock.py` 用模擬的 WHO／IMF／World Bank 回應跑完整的
+`scripts/build_road_safety.py`，順便測到資料建置腳本本身（性別篩選、全球估計值、
+台灣換算、缺資料國家的略過）。**產生的數值全是隨機合成的**，只用來測圖表行為，
+絕不可放進 `data/`。固定亂數種子，結果可重現。
