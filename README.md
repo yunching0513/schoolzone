@@ -19,6 +19,7 @@
 | `data/sidewalk_national.js` | 全國人行道統計摘要 |
 | `data/cities.js`, `data/townships_en.js` | 縣市／鄉鎮對照 |
 | `data/gmaps_key.js` | Google Maps API 金鑰（街景比對用；受網域限制） |
+| `data/basemap_config.js` | CARTO 底圖金鑰（留空＝改用國土測繪中心底圖） |
 | `data/tiles/living_streets.pmtiles` | 全台生活街道候選（≤15 m，估算路寬分級 A/B/C）向量圖磚，來自 [Taiwanwonnerf](https://github.com/yunching0513/202609---Taiwanwonnerf) |
 | `data/tiles/hierarchy.pmtiles` | 道路功能層級（Sustainable Safety：Through／Distributor）向量圖磚 |
 | `data/tiles/*_stats.json`, `living_streets_summary.json` | 上述圖層之長度統計（圖例用） |
@@ -98,6 +99,18 @@ python3 scripts/build_road_safety.py          # 產生 data/road_safety_gdp.json
 以色盲模擬驗證，8 種分類色取 6 種的 28 種組合全部無法通過門檻，4 色才能通過；
 並以形狀（圓、方、三角、菱）做第二編碼。
 
+## 底圖
+
+CARTO 自 2026 年起要求 API 金鑰，沒有金鑰的圖磚會被印上「API KEY REQUIRED」。
+地圖依序嘗試三個來源，前幾張圖磚全部失敗就自動換下一個：
+
+1. **CARTO 淺色底圖**——只在 `data/basemap_config.js` 填了 `cartoKey` 時使用。
+   金鑰免費（非商業用途每月 500 萬次圖磚），在 <https://carto.com/basemaps/apikey> 填 email 即寄到。
+2. **內政部國土測繪中心「臺灣通用電子地圖」**——免金鑰，以 CSS 濾鏡轉灰階。
+3. **OpenStreetMap**——免金鑰，同樣轉灰階。
+
+填入或更換金鑰後，記得把 `sw.js` 的 `VERSION` 加一。
+
 ## 本地預覽
 
 ```bash
@@ -105,7 +118,7 @@ python3 -m http.server 8848   # PMTiles 需 HTTP Range；若圖層不顯示請�
 # 開啟 http://127.0.0.1:8848/
 ```
 
-> 地圖圖磚、Leaflet 與 Google 街景由外部 CDN 載入，預覽時需要對外網路連線。
+> 地圖圖磚、Leaflet 與 Google 街景由外部服務載入，預覽時需要對外網路連線。
 
 ## 授權
 

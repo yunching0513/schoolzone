@@ -199,6 +199,8 @@ body { font-family: var(--font-zh); background: var(--grey-4); color: var(--blac
 .album-empty { color: var(--grey-2); font-size: 12px; padding: 14px 0; }
 .album-tools { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
 .album-tools .cat-pill { user-select: none; }
+/* 彩色底圖轉灰階，讓人行道的顏色維持主角 */
+.bm-gray { filter: grayscale(1) contrast(.82) brightness(1.08); }
 #svToast {
   position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
   background: var(--black); color: var(--lime); font-size: 13px; font-weight: 700;
@@ -681,6 +683,7 @@ body.lang-en .t-en { display: inline; }
 <script src="data/townships_en.js"></script>
 <script src="data/sidewalk_national.js"></script>
 <script src="data/gmaps_key.js"></script>
+<script src="data/basemap_config.js?v=1"></script>
 <script src="data/ppgis_config.js?v=2"></script>
 <script src="assets/ppgis.js?v=1"></script>
 <script src="assets/ppgis-ui.js?v=1"></script>
@@ -735,12 +738,44 @@ document.addEventListener('DOMContentLoaded', () => {
     zoomControl: true, scrollWheelZoom: true, preferCanvas: true,
     attributionControl: true,
   });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19,
-  }).addTo(segMap);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd', maxZoom: 19, pane: 'shadowPane',
-  }).addTo(segMap);
+  // ── 底圖 ──────────────────────────────────────────────────────────────
+  // CARTO 自 2026 年起要求金鑰，沒有金鑰的圖磚會印上「API KEY REQUIRED」。
+  // 依序嘗試：CARTO（有金鑰時）→ 國土測繪中心通用版電子地圖 → OpenStreetMap。
+  // 後兩者是彩色地圖，以 .bm-gray 濾鏡轉成灰階，讓人行道的顏色維持主角。
+  // 某個來源的前幾張圖磚全部失敗、一張都沒載到，就自動換下一個。
+  const BM_KEY = (window.BASEMAP_CONFIG || {}).cartoKey || '';
+  const BASEMAPS = [];
+  if (BM_KEY) BASEMAPS.push({ name: 'carto', layers: [
+    ['https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png?key=' + encodeURIComponent(BM_KEY),
+     { attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19 }],
+    ['https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png?key=' + encodeURIComponent(BM_KEY),
+     { subdomains: 'abcd', maxZoom: 19, pane: 'shadowPane' }],
+  ] });
+  BASEMAPS.push({ name: 'nlsc', layers: [
+    ['https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}',
+     { attribution: '底圖 &copy; <a href="https://maps.nlsc.gov.tw/" target="_blank" rel="noopener">內政部國土測繪中心</a>',
+       maxZoom: 19, maxNativeZoom: 18, className: 'bm-gray' }],
+  ] });
+  BASEMAPS.push({ name: 'osm', layers: [
+    ['https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+     { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+       maxZoom: 19, className: 'bm-gray' }],
+  ] });
+  let bmLayers = [];
+  function useBasemap(i) {
+    bmLayers.forEach(l => segMap.removeLayer(l));
+    const bm = BASEMAPS[i];
+    if (!bm) return;
+    bmLayers = bm.layers.map(([url, opts]) => L.tileLayer(url, opts).addTo(segMap));
+    window.__basemap = bm.name;
+    let ok = 0, bad = 0;
+    const base = bmLayers[0];
+    const onLoad = () => { ok++; base.off('tileload', onLoad); base.off('tileerror', onErr); };
+    const onErr = () => { if (++bad >= 6 && ok === 0) { base.off('tileload', onLoad); base.off('tileerror', onErr); useBasemap(i + 1); } };
+    base.on('tileload', onLoad);
+    base.on('tileerror', onErr);
+  }
+  useBasemap(0);
   const segRenderer = L.canvas({ padding: 0.3 });
 
   const segState = { slug: 'taipei', color: 'net' };

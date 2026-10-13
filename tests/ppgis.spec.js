@@ -25,6 +25,8 @@ function check(name, cond, extra) {
     r.fulfill({ contentType: 'text/css', body: LEAFLET_CSS }));
   await page.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
   await page.route('**://*.basemaps.cartocdn.com/**', r => r.abort());
+  await page.route('**://wmts.nlsc.gov.tw/**', r => r.abort());
+  await page.route('**://tile.openstreetmap.org/**', r => r.abort());
   await page.route('**://*.tile.openstreetmap.org/**', r => r.abort());
   await page.route('**://maps.googleapis.com/**', r => r.abort());
 
@@ -203,6 +205,8 @@ function check(name, cond, extra) {
     r.fulfill({ contentType: 'text/css', body: LEAFLET_CSS }));
   await p2.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
   await p2.route('**://*.basemaps.cartocdn.com/**', r => r.abort());
+  await p2.route('**://wmts.nlsc.gov.tw/**', r => r.abort());
+  await p2.route('**://tile.openstreetmap.org/**', r => r.abort());
   await p2.route('**://maps.googleapis.com/**', r => r.abort());
   // 明確注入空設定（正式設定檔已填好真實後端，不能靠磁碟上的內容判斷）
   await p2.route('**/data/ppgis_config.js*', r => r.fulfill({

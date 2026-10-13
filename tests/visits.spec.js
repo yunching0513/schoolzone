@@ -19,6 +19,8 @@ async function stub(ctx, opts = {}) {
     r.fulfill({ contentType: 'text/css', body: LEAFLET_CSS }));
   await ctx.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
   await ctx.route('**://*.basemaps.cartocdn.com/**', r => r.abort());
+  await ctx.route('**://wmts.nlsc.gov.tw/**', r => r.abort());
+  await ctx.route('**://tile.openstreetmap.org/**', r => r.abort());
   await ctx.route('**://maps.googleapis.com/**', r => r.abort());
   await ctx.route('**/data/ppgis_config.js*', r => r.fulfill({
     contentType: 'application/javascript',
