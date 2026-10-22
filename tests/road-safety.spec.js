@@ -65,7 +65,8 @@ async function open(browser, opts = {}) {
   const tw = D.countries.find(c => c.iso3 === 'TWN');
   check('四張統計卡', tiles.length === 4);
   check('台灣死亡率正確', tiles[0].includes(tw.rate.toFixed(1)), tiles[0].replace(/\n/g, ' '));
-  check('未核對時標示「待核對」', tiles[0].includes('待核對'));
+  const unverified = D.meta.taiwan && D.meta.taiwan.verified === false;
+  check(unverified ? '未核對時標示「待核對」' : '已核對時不標示「待核對」', tiles[0].includes('待核對') === unverified);
   const rich = D.countries.filter(c => c.iso3 !== 'TWN' && c.gdp_pc >= D.meta.gdp_threshold).map(c => c.rate).sort((a, b) => a - b);
   const med = rich.length % 2 ? rich[(rich.length - 1) / 2] : (rich[rich.length / 2 - 1] + rich[rich.length / 2]) / 2;
   check('富裕國家中位數正確', tiles[1].includes(med.toFixed(1)), `預期 ${med.toFixed(1)}`);

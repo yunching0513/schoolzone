@@ -39,20 +39,22 @@ WB_DENSITY = 'https://api.worldbank.org/v2/country/all/indicator/EN.POP.DNST?for
 # ---------------------------------------------------------------------------
 # 台灣（WHO／World Bank 均未收錄）
 #
-# ⚠️ 以下數值由 Claude 依記憶填入，建置環境當時無法連線核對。
-#    公開發布前請以官方來源逐一確認：
-#    - 30 日死亡人數：交通部「道安資訊查詢網」https://roadsafety.tw/
-#                     或交通部統計查詢網 https://stat.motc.gov.tw/
-#    - 土地面積：內政部統計（臺閩地區土地面積）
+# 30 日死亡人數：交通部路政及道安司「道安資訊查詢網」https://roadsafety.tw/
+#   各縣市全年 30 日死亡人數加總（22 縣市＋國道＋其他），2026-10-22 取得。
+#   每次執行時會再向同一來源即時查詢；查得到就以即時值為準，並與下表比對。
+# 土地面積：行政院國情簡介，有效管轄面積 36,197.3371 km²
+#   （含本島、澎湖、金門、馬祖及附屬島嶼，與 IMF 人口的涵蓋範圍一致）。
 # ---------------------------------------------------------------------------
 TAIWAN = {
-    'deaths_30d': {2021: 2962, 2022: 3085},
-    'area_km2': 36197.07,
-    'verified': False,      # 核對完畢後改成 True
+    'deaths_30d': {2021: 2962, 2022: 3064, 2023: 3023, 2024: 2950},
+    'area_km2': 36197.3371,
+    'verified': True,
 }
+ROADSAFETY_API = 'https://roadsafety.tw/api/DashboardAjax/GetCitiesAreaAccDataStatistics'
 
 # World Bank 高所得門檻（GNI per capita, Atlas method, 現價美元），依「資料年」
 # 來源：https://datahelpdesk.worldbank.org/knowledgebase/articles/906519
+#   2023 年資料（FY2025 分類）= 14,005，2026-10-22 經第二手來源核對
 # 注意：分類用的是 GNI，本圖橫軸是 GDP；門檻線是近似參考，頁面可拖曳調整。
 WB_HIGH_INCOME = {2019: 12535, 2020: 12695, 2021: 13205, 2022: 13845, 2023: 14005}
 
@@ -330,7 +332,9 @@ COUNTRIES = {
 
 
 def get_json(url):
-    req = urllib.request.Request(url, headers={'User-Agent': 'schoolzone-road-safety/1.0'})
+    # IMF 的防火牆會擋掉非標準格式的 User-Agent（403），因此用 compatible 格式，仍標明專案身分
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; schoolzone-road-safety/1.0; '
+                                                             '+https://github.com/yunching0513/schoolzone)'})
     with urllib.request.urlopen(req, timeout=90) as r:
         return json.load(r)
 
@@ -382,6 +386,21 @@ def fetch_wb_density(year):
     return out
 
 
+def fetch_taiwan_deaths(year):
+    """向道安資訊查詢網即時查詢某年全國 30 日死亡人數；失敗回傳 None。"""
+    from urllib.parse import urlencode
+    roc = year - 1911
+    q = urlencode({'City': 'ALL', 'Cyear': f'{roc}年', 'Month': '12月', 'SType': 'ALL', 'Type': '30日死亡人數'})
+    try:
+        rows = get_json(f'{ROADSAFETY_API}?{q}')
+        if not rows:
+            return None
+        return int(sum(r['value'] for r in rows))
+    except Exception as e:                               # 非公開文件化的端點，失敗就退回內建數字
+        print(f'  （道安資訊查詢網即時查詢失敗：{e}，改用內建數字）')
+        return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--year', type=int, help='資料年（預設：WHO 最新年份）')
@@ -393,8 +412,16 @@ def main():
     year = args.year or years[-1]
     print(f'  WHO 年份 {years[0]}–{years[-1]}，使用 {year}')
 
-    if year not in TAIWAN['deaths_30d']:
-        sys.exit(f'✗ TAIWAN["deaths_30d"] 缺少 {year} 年的交通部 30 日死亡人數，請補上後再執行。')
+    print('· 交通部道安資訊查詢網 台灣 30 日死亡人數 …', flush=True)
+    live = fetch_taiwan_deaths(year)
+    known = TAIWAN['deaths_30d'].get(year)
+    if live is not None:
+        if known is not None and live != known:
+            print(f'  ⚠ 即時值 {live:,} 與內建值 {known:,} 不同（官方資料可能已修正），以即時值為準')
+        TAIWAN['deaths_30d'][year] = live
+        print(f'  {year} 年：{live:,} 人')
+    elif known is None:
+        sys.exit(f'✗ 查不到 {year} 年台灣 30 日死亡人數，請在 TAIWAN["deaths_30d"] 補上後再執行。')
     if year not in WB_HIGH_INCOME:
         sys.exit(f'✗ WB_HIGH_INCOME 缺少 {year} 年的高所得門檻，請補上後再執行。')
 

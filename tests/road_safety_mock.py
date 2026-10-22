@@ -38,6 +38,8 @@ def get_json(url):
     if 'api.worldbank.org/v2/country?' in url:
         return [{}, [{'id': i, 'region': {'value': 'X'}, 'incomeLevel': {'id': inc_of.get(i, 'LMC')}} for i in isos] +
                     [{'id': 'WLD', 'region': {'value': 'Aggregates'}, 'incomeLevel': {'id': 'NA'}}]]
+    if 'roadsafety.tw' in url:                     # 交通部道安資訊查詢網：各縣市加總
+        return [{'col': ['臺北市'], 'value': 1000}, {'col': ['國道'], 'value': 1962}]
     raise RuntimeError('unexpected url ' + url)
 b.get_json = get_json
 sys.argv = ['build', '--year', '2021'] if len(sys.argv) < 3 else ['build'] + sys.argv[2:]

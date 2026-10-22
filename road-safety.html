@@ -497,9 +497,13 @@ footer a { color: var(--ink-2); }
 
     // 格線與刻度
     const gx = sv('g', { class: 'tick' });
-    [100, 200, 500, 1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5, 2e5].filter(v => Math.log10(v) >= lx0 && Math.log10(v) <= lx1)
-      .filter(v => !mobile || [1, 1e1, 1e2, 1e3, 1e4, 1e5].some(p => v === p) || v === 5e3 || v === 5e4)
-      .forEach(v => {
+    const xticks = [];                               // 與前一個刻度相距不到 42px 就略過，避免標籤黏在一起
+    for (const v of [100, 200, 500, 1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5, 2e5]) {
+      if (Math.log10(v) < lx0 || Math.log10(v) > lx1) continue;
+      if (xticks.length && X(v) - X(xticks[xticks.length - 1]) < 42) continue;
+      xticks.push(v);
+    }
+    xticks.forEach(v => {
         gx.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t, y2: m.t + ph, class: 'gridline' }));
         const t = sv('text', { x: X(v), y: m.t + ph + 16, 'text-anchor': 'middle' });
         t.textContent = v >= 1e3 ? '$' + (v / 1e3) + 'k' : '$' + v;
