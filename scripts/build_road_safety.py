@@ -81,6 +81,10 @@ FOCUS = {
     'ISR': [],                # 人口密度相近
 }
 TAIWAN_TAGS = ['culture', 'climate', 'moto']
+
+# 一般讀者熟悉的主要國家：不屬於「相似國家」，只是讓圖上有熟悉的參照點（標上國名）。
+MAJOR = ['USA', 'CAN', 'MEX', 'BRA', 'GBR', 'DEU', 'FRA', 'ITA', 'ESP', 'RUS',
+         'IND', 'AUS', 'NZL', 'ZAF', 'NGA']
 DENSITY_BAND = (0.5, 2.0)     # 台灣密度的 0.5–2 倍視為「密度相近」
 
 # 大洲分組。只分 4 組，因為散佈圖上任兩點都可能相鄰，經色盲模擬驗證，
@@ -459,6 +463,8 @@ def main():
         tags = list(TAIWAN_TAGS if iso == 'TWN' else FOCUS.get(iso, []))
         if iso != 'TWN' and dens is not None and lo <= dens <= hi:
             tags.append('density')
+        if iso in MAJOR:
+            tags.append('major')
         out.append({
             'iso3': iso, 'zh': zh, 'en': en, 'group': group,
             'rate': rate, 'rate_low': low, 'rate_high': high, 'rate_source': src,

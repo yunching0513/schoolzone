@@ -4,6 +4,7 @@ const { chromium } = require('/tmp/claude-0/node_modules/playwright');
 const fs = require('fs');
 const DATA = fs.readFileSync(process.env.RS_FIXTURE || '/tmp/claude-0/rs/synthetic.json', 'utf8');
 const D = JSON.parse(DATA);
+const isReal = !D.meta.synthetic;   // 合成資料由 tests/road_safety_mock.py 標記
 
 const fail = [];
 const check = (name, cond, extra) => {
@@ -88,23 +89,23 @@ async function open(browser, opts = {}) {
 
   console.log('\n— 突顯切換 —');
   const hiCount = async () => page.evaluate(() => document.querySelectorAll('.focus-hit').length);
-  const focusN = D.countries.filter(c => c.focus).length;
-  check('預設突顯＝焦點國家＋台灣', await hiCount() === focusN, `${await hiCount()} / ${focusN}`);
-  await page.click('#chips .chip:has-text("人口密度相近")'); await page.waitForTimeout(150);
+  const focusN = D.countries.filter(c => c.focus || c.tags.includes('major')).length;
+  check('預設突顯＝焦點＋主要國家＋台灣', await hiCount() === focusN, `${await hiCount()} / ${focusN}`);
+  await page.click('#chips .chip[data-k="density"]'); await page.waitForTimeout(150);
   const densN = D.countries.filter(c => c.tags.includes('density')).length + 1;
   check('切到人口密度相近', await hiCount() === densN, `${await hiCount()} / ${densN}`);
   check('非突顯國家淡化', await page.locator('#chart path.pt.bg').count() > 0);
-  await page.click('#chips .chip:has-text("不突顯")'); await page.waitForTimeout(150);
+  await page.click('#chips .chip[data-k="none"]'); await page.waitForTimeout(150);
   check('不突顯時只剩台灣', await hiCount() === 1);
-  await page.click('#chips .chip:has-text("焦點國家")'); await page.waitForTimeout(150);
+  await page.click('#chips .chip[data-k="default"]'); await page.waitForTimeout(150);
 
   console.log('\n— 圖例隱藏大洲 —');
   const europeN = D.countries.filter(c => c.group === 'europe').length;
-  await page.click('#legend .lg-item:has-text("歐洲")'); await page.waitForTimeout(150);
+  await page.click('#legend .lg-item[data-g="europe"]'); await page.waitForTimeout(150);
   check('隱藏歐洲後點數減少', await page.locator('#chart path.pt').count() === n - europeN);
-  check('圖例標為未按下', (await page.locator('#legend .lg-item:has-text("歐洲")').getAttribute('aria-pressed')) === 'false');
+  check('圖例標為未按下', (await page.locator('#legend .lg-item[data-g="europe"]').getAttribute('aria-pressed')) === 'false');
   const asiaColor = await page.evaluate(() => getComputedStyle(document.querySelector('#chart path.g-asia')).fill);
-  await page.click('#legend .lg-item:has-text("歐洲")'); await page.waitForTimeout(150);
+  await page.click('#legend .lg-item[data-g="europe"]'); await page.waitForTimeout(150);
   const asiaColor2 = await page.evaluate(() => getComputedStyle(document.querySelector('#chart path.g-asia')).fill);
   check('篩選前後顏色跟著實體不變', asiaColor === asiaColor2, asiaColor);
 
@@ -196,6 +197,104 @@ async function open(browser, opts = {}) {
   await dm.page.screenshot({ path: '/tmp/claude-0/rs/dark.png', fullPage: false });
   check('暗色無 JS 錯誤', dm.errs.length === 0);
   await dm.ctx.close();
+
+  console.log('\n— 主要國家標籤 —');
+  {
+    const r = await open(browser);
+    const labels = await r.page.$$eval('#chart .plabel', t => t.map(x => x.textContent));
+    for (const iso of ['DEU', 'USA', 'AUS']) {
+      const c = D.countries.find(x => x.iso3 === iso);
+      if (!c) continue;
+      if (isReal) check(`桌機標出${c.zh}`, labels.includes(c.zh), labels.length + ' 個標籤');
+    }
+    check('主要國家在比較表中標示', (await r.page.locator('#table .tagchip', { hasText: '主要國家' }).count()) > 0);
+    const leaders = await r.page.locator('#chart .leader').count();
+    console.log(`        （引導線 ${leaders} 條，標籤 ${labels.length} 個）`);
+    await r.ctx.close();
+  }
+
+  console.log('\n— 放大富裕國家 —');
+  {
+    const r = await open(browser);
+    const before = await r.page.locator('#chart path.pt').count();
+    await r.page.click('#viewSeg .chip[data-view="rich"]'); await r.page.waitForTimeout(300);
+    const after = await r.page.locator('#chart path.pt').count();
+    check('放大後只畫富裕國家附近的點', after < before && after > 0, `${before} → ${after}`);
+    check('放大後台灣仍在圖上', await r.page.locator('#chart .tw-ring').count() === 1);
+    check('按鈕狀態同步', (await r.page.locator('#viewSeg .chip[data-view="rich"]').getAttribute('aria-pressed')) === 'true');
+    const qsum = await r.page.evaluate(() => [...document.querySelectorAll('.qcount')].reduce((s, t) => s + parseInt(t.textContent), 0));
+    check('象限國家數仍以全部國家計', qsum === n, `${qsum}`);
+    if (isReal) {
+      const labels = await r.page.$$eval('#chart .plabel', t => t.map(x => x.textContent));
+      for (const iso of ['DEU', 'USA', 'AUS', 'SWE', 'NLD', 'GBR', 'JPN']) {
+        const c = D.countries.find(x => x.iso3 === iso);
+        if (c) check(`放大後標出${c.zh}`, labels.includes(c.zh));
+      }
+    }
+    await r.page.click('#viewSeg .chip[data-view="all"]'); await r.page.waitForTimeout(300);
+    check('切回全部國家', await r.page.locator('#chart path.pt').count() === before);
+    check('放大檢視無 JS 錯誤', r.errs.length === 0, r.errs.join(' | '));
+    await r.ctx.close();
+  }
+
+  console.log('\n— 英文版 —');
+  {
+    const r = await open(browser);
+    await r.page.click('#langSeg button[data-lang="en"]'); await r.page.waitForTimeout(300);
+    const h1 = await r.page.locator('h1').textContent();
+    check('標題變英文', /where Taiwan stands/.test(h1), h1);
+    check('<html lang> 改為 en', (await r.page.evaluate(() => document.documentElement.lang)) === 'en');
+    const tile = (await r.page.locator('#tiles .tile').first().innerText()).replace(/\n/g, ' ');
+    check('統計卡為英文', /road traffic death rate/i.test(tile) && /per 100,000/.test(tile), tile);
+    const ql = await r.page.$$eval('.qlabel', t => t.map(x => x.textContent));
+    check('象限標籤為英文', ql.some(q => /High-income/.test(q)), ql.join(' / '));
+    check('台灣標籤為英文', await r.page.locator('#chart .plabel.tw', { hasText: 'Taiwan' }).count() === 1);
+    const th = await r.page.$$eval('#table th', t => t.map(x => x.textContent));
+    check('表頭為英文', th.includes('Country / area'), th.join(' | '));
+    const notes = await r.page.locator('#notes').innerText();
+    check('方法說明為英文', /Where death registration is incomplete/.test(notes));
+    check('語言存入共用設定', (await r.page.evaluate(() => localStorage.getItem('lang'))) === 'en');
+    check('切換語言無 JS 錯誤', r.errs.length === 0, r.errs.join(' | '));
+    await r.page.reload({ waitUntil: 'domcontentloaded' }); await r.page.waitForTimeout(700);
+    check('重新整理後仍是英文', /where Taiwan stands/.test(await r.page.locator('h1').textContent()));
+    await r.page.click('#langSeg button[data-lang="zh"]'); await r.page.waitForTimeout(300);
+    check('切回中文', /台灣在世界的位置/.test(await r.page.locator('h1').textContent()));
+    await r.ctx.close();
+  }
+  {
+    const c = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await c.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
+    await c.route('**/data/road_safety_gdp.json*', r => r.fulfill({ contentType: 'application/json', body: DATA }));
+    const p = await c.newPage();
+    await p.goto('http://127.0.0.1:8765/road-safety.html?lang=en', { waitUntil: 'domcontentloaded' }); await p.waitForTimeout(700);
+    check('?lang=en 直接開英文版', /where Taiwan stands/.test(await p.locator('h1').textContent()));
+    await c.close();
+  }
+
+  console.log('\n— 白底／深色 —');
+  {
+    const r = await open(browser, { dark: true });                // 系統是深色模式
+    const bg = () => r.page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    check('自動：跟隨系統深色', await bg() === 'rgb(13, 13, 13)', await bg());
+    await r.page.click('#themeSeg button[data-theme-opt="light"]'); await r.page.waitForTimeout(200);
+    check('白底：系統深色時仍是純白', await bg() === 'rgb(255, 255, 255)', await bg());
+    const asia = await r.page.evaluate(() => getComputedStyle(document.querySelector('#chart path.g-asia')).fill);
+    check('白底使用亮色版分類色', asia === 'rgb(42, 120, 214)', asia);
+    check('主題選擇已記住', (await r.page.evaluate(() => localStorage.getItem('rs_theme'))) === 'light');
+    await r.page.click('#themeSeg button[data-theme-opt="dark"]'); await r.page.waitForTimeout(200);
+    check('深色', await bg() === 'rgb(13, 13, 13)', await bg());
+    check('切換主題無 JS 錯誤', r.errs.length === 0, r.errs.join(' | '));
+    await r.ctx.close();
+  }
+  {
+    const c = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: 'dark' });
+    await c.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
+    await c.route('**/data/road_safety_gdp.json*', r => r.fulfill({ contentType: 'application/json', body: DATA }));
+    const p = await c.newPage();
+    await p.goto('http://127.0.0.1:8765/road-safety.html?theme=light', { waitUntil: 'domcontentloaded' }); await p.waitForTimeout(500);
+    check('?theme=light 直接開白底', (await p.evaluate(() => getComputedStyle(document.body).backgroundColor)) === 'rgb(255, 255, 255)');
+    await c.close();
+  }
 
   console.log('\n— 主頁入口（資料存在才顯示）—');
   const LJ = fs.readFileSync('/tmp/claude-0/vendor/dist/leaflet.js', 'utf8');

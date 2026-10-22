@@ -44,3 +44,6 @@ def get_json(url):
 b.get_json = get_json
 sys.argv = ['build', '--year', '2021'] if len(sys.argv) < 3 else ['build'] + sys.argv[2:]
 b.main()
+# 標記為合成資料，測試據此跳過只對真實資料有意義的檢查（例如特定國家的標籤位置）
+d = json.load(open(OUT, encoding='utf-8')); d['meta']['synthetic'] = True
+json.dump(d, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
