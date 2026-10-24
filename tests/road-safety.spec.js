@@ -321,6 +321,49 @@ async function open(browser, opts = {}) {
     await c.close();
   }
 
+  console.log('\n— 返回連結看來源 —');
+  {
+    const c = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await c.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
+    await c.route('**/data/road_safety_gdp.json*', r => r.fulfill({ contentType: 'application/json', body: DATA }));
+    // 假的 atlas 首頁：同源、路徑在 /taiwan-mobility-atlas/ 底下，入口不帶參數，只靠 referrer
+    await c.route('**/taiwan-mobility-atlas/index.html', r => r.fulfill({ contentType: 'text/html',
+      body: '<a id="go" href="/road-safety.html">go</a>' }));
+    const pg = await c.newPage();
+    const back = () => pg.evaluate(() => [document.querySelector('header a.back').getAttribute('href'),
+      document.querySelector('header a.back').textContent, document.querySelector('footer a[data-i18n=footBack]').getAttribute('href')]);
+    await pg.goto('http://127.0.0.1:8765/taiwan-mobility-atlas/index.html');
+    await pg.click('#go'); await pg.waitForURL(/road-safety/); await pg.waitForTimeout(300);
+    let [h, t, f] = await back();
+    check('從 atlas 來 → 返回 atlas（header＋footer）', h === '/taiwan-mobility-atlas/index.html' && f === h && t === '← 全國交通安全地圖', `${h} ${t}`);
+    await pg.locator('#langSeg button[data-lang=en]').click();
+    [h, t] = await back();
+    check('切英文後仍回 atlas', h === '/taiwan-mobility-atlas/index.html' && t === '← Taiwan Mobility Atlas', `${h} ${t}`);
+    await pg.locator('#langSeg button[data-lang=zh]').click();
+    await pg.goto('http://127.0.0.1:8765/road-safety.html'); await pg.waitForTimeout(300);   // 同分頁、無 referrer
+    [h] = await back();
+    check('同分頁再開仍記得來源', h === '/taiwan-mobility-atlas/index.html', h);
+    await pg.goto('http://127.0.0.1:8765/index.html', { waitUntil: 'commit' });
+    await pg.goto('http://127.0.0.1:8765/road-safety.html', { referer: 'http://127.0.0.1:8765/index.html' });
+    await pg.waitForTimeout(300);
+    [h, t] = await back();
+    check('從打造夢想街道來 → 回主頁', h === './' && t === '← 打造夢想街道', `${h} ${t}`);
+    await c.close();
+
+    const c2 = await browser.newContext();
+    await c2.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
+    await c2.route('**/data/road_safety_gdp.json*', r => r.fulfill({ contentType: 'application/json', body: DATA }));
+    const p2 = await c2.newPage();
+    await p2.goto('http://127.0.0.1:8765/road-safety.html?from=atlas'); await p2.waitForTimeout(300);
+    h = await p2.locator('header a.back').getAttribute('href');
+    check('?from=atlas（無 referrer）→ 回 atlas', h === '/taiwan-mobility-atlas/', h);
+    const p3 = await (await browser.newContext()).newPage();
+    await p3.goto('http://127.0.0.1:8765/road-safety.html'); await p3.waitForTimeout(300);
+    h = await p3.locator('header a.back').getAttribute('href');
+    check('直接開啟 → 回打造夢想街道', h === './', h);
+    await c2.close();
+  }
+
   await browser.close();
   console.log(`\n${fail.length ? '✗ ' + fail.length + ' 項失敗:\n   - ' + fail.join('\n   - ') : '✓ 全部通過'}`);
   process.exit(fail.length ? 1 : 0);

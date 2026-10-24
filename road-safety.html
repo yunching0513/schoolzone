@@ -21,6 +21,23 @@
     if (th !== 'auto') d.setAttribute('data-theme', th);
     d.setAttribute('lang', lg === 'en' ? 'en' : 'zh-Hant');
     window.__RS_LANG = lg; window.__RS_THEME = th;
+
+    // 返回連結看來源：從 Taiwan Mobility Atlas 點進來就回 atlas，其餘回打造夢想街道。
+    // 兩站同在 yunching0513.github.io，靠 referrer 判斷；atlas 的入口另帶 ?from=atlas，
+    // 以防瀏覽器不送 referrer。記在 sessionStorage，切換語言、重新整理都不會跑掉。
+    var ATLAS = '/taiwan-mobility-atlas/', back = null;
+    function sget(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+    function sset(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+    try {
+      var r = document.referrer ? new URL(document.referrer) : null;
+      if (r && r.origin === location.origin && r.pathname !== location.pathname) {
+        back = r.pathname.indexOf(ATLAS) === 0 ? r.pathname + r.search : '';   // 從站內其他頁來
+      }
+    } catch (e) {}
+    if (back === null && q.get('from') === 'atlas') back = ATLAS;
+    if (back === null) back = sget('rs_back');
+    else sset('rs_back', back);
+    window.__RS_BACK = back || '';                                   // '' ＝ 回打造夢想街道
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -323,6 +340,7 @@ footer a { color: var(--ink-2); }
       desc: '以 WHO 道路交通死亡率與 IMF 人均 GDP 繪製的四象限比較，聚焦台灣與人口密度、氣候、文化相近的國家。',
       h1: '道路安全 × 國家所得｜台灣在世界的位置',
       back: '← 打造夢想街道', footBack: '打造夢想街道',
+      backAtlas: '← 全國交通安全地圖', footBackAtlas: '全國交通安全地圖',
       langAria: '語言', themeAria: '顏色主題', thAuto: '自動', thLight: '白底', thDark: '深色',
       s1: '01 — 台灣在哪裡', s2: '02 — 四象限：道路安全 × 人均 GDP', s3: '03 — 比較表', s4: '04 — 資料與方法',
       hlAria: '突顯國家', hlLabel: '突顯', thrAria: '象限門檻', thrLabel: '門檻',
@@ -370,6 +388,7 @@ footer a { color: var(--ink-2); }
       desc: 'A four-quadrant comparison of WHO road traffic death rates and IMF GDP per capita, focusing on Taiwan and countries similar in density, climate and culture.',
       h1: 'Road safety × national income: where Taiwan stands',
       back: '← Build Dream Streets', footBack: 'Build Dream Streets',
+      backAtlas: '← Taiwan Mobility Atlas', footBackAtlas: 'Taiwan Mobility Atlas',
       langAria: 'Language', themeAria: 'Colour theme', thAuto: 'Auto', thLight: 'Light', thDark: 'Dark',
       s1: '01 — Where Taiwan stands', s2: '02 — Four quadrants: road safety × GDP per capita', s3: '03 — Comparison table', s4: '04 — Data & method',
       hlAria: 'Highlighted countries', hlLabel: 'Highlight', thrAria: 'Quadrant thresholds', thrLabel: 'Thresholds',
@@ -488,11 +507,13 @@ footer a { color: var(--ink-2); }
     document.documentElement.setAttribute('lang', t.htmlLang);
     document.title = t.title;
     const md = document.querySelector('meta[name=description]'); if (md) md.setAttribute('content', t.desc);
-    document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t[e.dataset.i18n]; });
+    const src = window.__RS_BACK ? 'Atlas' : '';                   // back／footBack 依來源換字
+    document.querySelectorAll('[data-i18n]').forEach(e => { const k = e.dataset.i18n; e.textContent = t[k + src] || t[k]; });
     document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
     document.querySelectorAll('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
     document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeOpt === state.theme)));
     $('empty').innerHTML = t.empty;                                // 靜態字串，非資料內容
+    if (window.__RS_BACK) document.querySelectorAll('a[data-i18n="back"], a[data-i18n="footBack"]').forEach(a => { a.href = window.__RS_BACK; });
   }
   function setLang(l) {
     state.lang = l;
