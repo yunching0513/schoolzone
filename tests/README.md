@@ -41,3 +41,4 @@ node tests/inequality.spec.js               # 頁面端對端測試（讀 data/r
 臺灣內部（第03節）的資料由 `scripts/build_taiwan_inequality.py` 產生 `data/road_safety_inequality_tw.json`
 （財政部綜所稅鄉鎮統計、內政部鄉鎮人口、道安資訊查詢網30日死亡；約需3–4分鐘，`--cache` 可重用下載）。
 端對端測試也檢查這份資料缺少時，第03節會隱藏而國際比較照常顯示。
+縣市依國發會區域（北、中、南、東、離島）上色並配不同形狀；測試檢查五組數量、圖例隱藏時三張圖同步，以及縣市表的區域欄。

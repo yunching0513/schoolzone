@@ -7,6 +7,13 @@ const D = JSON.parse(DATA);
 const TWDATA = fs.readFileSync('data/road_safety_inequality_tw.json', 'utf8');
 const TW = JSON.parse(TWDATA);
 const URL = 'http://127.0.0.1:8765/road-safety-inequality.html';
+const REGION_OF = {
+  臺北市: 'north', 新北市: 'north', 基隆市: 'north', 桃園市: 'north', 新竹市: 'north', 新竹縣: 'north', 宜蘭縣: 'north',
+  苗栗縣: 'central', 臺中市: 'central', 彰化縣: 'central', 南投縣: 'central', 雲林縣: 'central',
+  嘉義市: 'south', 嘉義縣: 'south', 臺南市: 'south', 高雄市: 'south', 屏東縣: 'south',
+  花蓮縣: 'east', 臺東縣: 'east', 澎湖縣: 'island', 金門縣: 'island', 連江縣: 'island',
+};
+const REGION_ZH = { north: '北部', central: '中部', south: '南部', east: '東部', island: '離島' };
 
 const fail = [];
 const check = (name, cond, extra) => {
@@ -151,7 +158,27 @@ const labels = (page, n) => page.$$eval(`#chart${n} .plabel`, a => a.map(e => e.
     const b = await p.boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.waitForTimeout(30);
     const s = await page.locator('#twc1 .tip').textContent(); if (s.includes('臺東縣')) { hitTip = s; break; }
   }
-  check('滑過臺東縣顯示縣市 tooltip', hitTip.includes(taitung.rate.toFixed(1)) && hitTip.includes('Taitung County'), hitTip.slice(0, 30));
+  check('滑過臺東縣顯示縣市 tooltip（含區域）', hitTip.includes(taitung.rate.toFixed(1)) && hitTip.includes('Taitung County') && hitTip.includes('東部'), hitTip.slice(0, 30));
+
+  // 區域：五組顏色＋形狀，圖例可隱藏，三張圖同步
+  const lg = await page.$$eval('#twLegend .lg-item', a => a.map(b => [b.dataset.group, +b.querySelector('.n').textContent]));
+  const want = Object.entries(TW.counties.reduce((m, c) => (m[REGION_OF[c.county]] = (m[REGION_OF[c.county]] || 0) + 1, m), {}));
+  check('區域圖例：北中南東離島五組，數量正確', JSON.stringify(lg) === JSON.stringify(['north', 'central', 'south', 'east', 'island'].map(k => [k, Object.fromEntries(want)[k]])), JSON.stringify(lg));
+  check('每個縣市都有區域', TW.counties.every(c => REGION_OF[c.county]));
+  const cls = await page.$$eval('#twc1 .pt', a => [...new Set(a.map(p => [...p.classList].find(c => c.startsWith('g-'))))].sort());
+  check('點依區域上色', JSON.stringify(cls) === JSON.stringify(['g-central', 'g-east', 'g-island', 'g-north', 'g-south']), cls.join(','));
+  const fills = await page.evaluate(() => ['north', 'central', 'south', 'east', 'island'].map(k => {
+    const e = document.createElementNS('http://www.w3.org/2000/svg', 'path'); e.setAttribute('class', 'g-' + k);
+    document.querySelector('#twc1 svg').appendChild(e); const f = getComputedStyle(e).fill; e.remove(); return f; }));
+  check('五個區域顏色都不同', new Set(fills).size === 5, fills.join(' '));
+  await page.locator('#twLegend .lg-item[data-group="east"]').click();
+  const nEast = TW.counties.filter(c => REGION_OF[c.county] === 'east').length;
+  const counts = await Promise.all(['twc1', 'twc2', 'twc3'].map(id => page.locator(`#${id} .pt`).count()));
+  check('隱藏東部：三張圖同步少掉東部縣市', counts.every(n => n === NC - nEast), counts.join(','));
+  check('區域圖例按鈕保留焦點且標為未按下', await page.evaluate(() => document.activeElement.dataset.group === 'east'
+    && document.activeElement.getAttribute('aria-pressed') === 'false'));
+  await page.locator('#twLegend .lg-item[data-group="east"]').click();
+  check('再按一次恢復', (await page.locator('#twc1 .pt').count()) === NC);
   check('鄉鎮模型表 4 列', (await page.locator('#twMtable tbody tr').count()) === 4);
   const t3 = await page.$$eval('#twMtable tbody tr:nth-child(3) td', a => a.map(e => e.textContent));
   check('T3：所得差距不顯著、密度顯著', t3[3].includes('不顯著') === ciCross(tm.models.T3.effects.iqr.pct_ci)
@@ -160,8 +187,9 @@ const labels = (page, n) => page.$$eval(`#chart${n} .plabel`, a => a.map(e => e.
   check('縣市表 22 列', (await page.locator('#twCtable tbody tr').count()) === NC);
   const topC = TW.counties.slice().sort((a, b) => b.rate - a.rate)[0].county;
   check('縣市表預設依死亡率由高到低', (await page.locator('#twCtable tbody tr:first-child td:first-child').textContent()) === topC, topC);
-  await page.locator('#twCtable th:nth-child(3) button').click();
-  const gTop = parseFloat(await page.locator('#twCtable tbody tr:first-child td:nth-child(3)').textContent());
+  check('縣市表列出區域', (await page.locator('#twCtable tbody tr:first-child td:nth-child(2)').textContent()) === REGION_ZH[REGION_OF[topC]]);
+  await page.locator('#twCtable th:nth-child(4) button').click();
+  const gTop = parseFloat(await page.locator('#twCtable tbody tr:first-child td:nth-child(4)').textContent());
   check('縣市表依吉尼排序', Math.abs(gTop - Math.max(...TW.counties.map(c => c.gini_est))) < 0.001, gTop);
   check('方法說明含臺灣內部資料', (await page.locator('#notes').textContent()).includes('財政部財政資訊中心'));
   check('沒有 JS 錯誤', errs.length === 0, errs.join(' | '));

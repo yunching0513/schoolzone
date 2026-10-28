@@ -34,6 +34,7 @@
   --grid: #e1e0d9; --axis: #c3c2b7; --rule: #1A1A1A;
   --hair: rgba(11,11,11,0.10);
   --c-asia: #2a78d6; --c-europe: #eda100; --c-americas: #e87ba4; --c-africa: #008300;
+  --c-north: #2a78d6; --c-central: #008300; --c-south: #e34948; --c-east: #eda100; --c-island: #1baf7a;
   --font-zh: 'Noto Sans TC', system-ui, sans-serif;
   --font-en: 'Space Grotesk', system-ui, sans-serif;
 }
@@ -45,6 +46,7 @@
     --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
     --hair: rgba(255,255,255,0.10);
     --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+    --c-north: #3987e5; --c-central: #008300; --c-south: #e66767; --c-east: #c98500; --c-island: #199e70;
   }
 }
 :root[data-theme="dark"] {
@@ -54,6 +56,7 @@
   --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
   --hair: rgba(255,255,255,0.10);
   --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+  --c-north: #3987e5; --c-central: #008300; --c-south: #e66767; --c-east: #c98500; --c-island: #199e70;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -128,6 +131,8 @@ h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; 
 .pt.hot { stroke: var(--ink); opacity: 1; }
 .g-asia { fill: var(--c-asia); } .g-europe { fill: var(--c-europe); }
 .g-americas { fill: var(--c-americas); } .g-africa { fill: var(--c-africa); }
+.g-north { fill: var(--c-north); } .g-central { fill: var(--c-central); } .g-south { fill: var(--c-south); }
+.g-east { fill: var(--c-east); } .g-island { fill: var(--c-island); }
 .tw-ring { fill: none; stroke: var(--ink); stroke-width: 2; }
 .plabel { font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
 .plabel.tw { font-size: 13px; font-weight: 900; }
@@ -141,7 +146,8 @@ h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; 
 .tip dd { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
 .tip .tsrc { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grid); font-size: 11px; color: var(--muted); }
 .caption { font-size: 11.5px; color: var(--muted); margin: 8px 4px 2px; }
-.sm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.tw-legend { margin-top: 18px; }
+.sm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 4px; }
 .sm .card + .card { margin-top: 0; }
 .subhead { font-size: 13px; font-weight: 700; color: var(--ink); margin: 26px 0 10px; }
 #twMtable { min-width: 760px; } #twCtable { min-width: 760px; }
@@ -254,6 +260,7 @@ footer a { color: var(--ink-2); }
   <p class="kicker" id="twKicker"></p>
   <div class="tiles" id="twTiles"></div>
   <p class="lead" id="twLead"></p>
+  <div class="legend tw-legend" id="twLegend"></div>
   <div class="sm">
     <div class="card"><div class="card-title" id="twc1t"></div><div class="card-sub" id="twc1s"></div>
       <div class="chart" id="twc1"><div class="tip" role="status" aria-live="polite"></div></div></div>
@@ -359,13 +366,15 @@ footer a { color: var(--ink-2); }
       twX3: '人口密度（人／km²，對數尺度）→ 越往右越都市', twY: '道路交通死亡率（每十萬人）',
       twRho: (r, lo, hi) => `等級相關 ${r}（95%區間 ${lo}～${hi}）`, twNs: '，不顯著',
       twAria: ti => `散佈圖：${ti} × 道路交通死亡率，22縣市。數值見下方縣市表。`,
-      twCap: n => `每個點是一個縣市，三張圖的縱軸相同；虛線為線性趨勢。死亡率不含國道與無法歸屬鄉鎮的事故（2023年${n}人）。滑過或點選任一點看詳細數字。`,
+      twCap: n => `每個點是一個縣市，顏色與形狀代表區域，三張圖的縱軸相同；虛線為22縣市的線性趨勢。死亡率不含國道與無法歸屬鄉鎮的事故（2023年${n}人）。滑過或點選任一點看詳細數字。`,
+      regions: { north: '北部', central: '中部', south: '南部', east: '東部', island: '離島' },
+      twLegendAria: '區域分組（點擊可隱藏，三張圖同步）', twRegion: '區域',
       twGini: '吉尼係數（推估）', twIqr: 'Q3 ÷ Q1（推估）', twMed: '所得中位數（推估）', twMean: '所得平均數', twDens: '人口密度',
       kNtd: '千元', perKm2: '／km²', twTipSrc: (d, n) => `2022–2024年30日死亡共${d}人；${n}個鄉鎮市區`,
       twMkicker: '鄉鎮模型為準Poisson迴歸：依變數為三年死亡人數，以人口為暴露量。各欄為「該變項增加後，死亡率增減幾%」；95%區間以縣市為單位重抽1,000次（同一縣市的鄉鎮彼此不獨立）。',
       twMcols: { model: '模型', spec: '控制變項', n: '鄉鎮數', iqr: 'Q3÷Q1 +10%', median: '所得中位數 +10%', density: '人口密度加倍' },
       twModels: { T1: '只有所得差距', T2: '所得中位數＋人口密度', T3: '所得中位數＋人口密度＋所得差距', T4: '同T3，再加縣市固定效果' },
-      twCcols: { county: '縣市', rate: '死亡率', gini: '吉尼（推估）', iqr: 'Q3÷Q1（推估）', med: '中位數（千元）', mean: '平均數（千元）', dens: '人口密度', towns: '鄉鎮數' },
+      twCcols: { county: '縣市', region: '區域', rate: '死亡率', gini: '吉尼（推估）', iqr: 'Q3÷Q1（推估）', med: '中位數（千元）', mean: '平均數（千元）', dens: '人口密度', towns: '鄉鎮數' },
       twCcount: '死亡率為每十萬人；所得單位為千元／納稅單位。點欄位標題可排序。',
       empty: '<p><strong>資料尚未建置。</strong>這一頁需要 <code>data/road_safety_inequality.json</code>，請在專案根目錄依序執行 <code>python3 scripts/build_road_safety.py</code> 與 <code>python3 scripts/build_inequality.py</code>，完成後重新整理即可。</p>',
     },
@@ -418,13 +427,15 @@ footer a { color: var(--ink-2); }
       twX3: 'People per km² (log scale) → more urban', twY: 'Road traffic deaths per 100,000',
       twRho: (r, lo, hi) => `Rank correlation ${r} (95% CI ${lo} to ${hi})`, twNs: ', not significant',
       twAria: ti => `Scatter plot: ${ti} × road traffic death rate, 22 counties. Values are in the county table below.`,
-      twCap: n => `Each point is a county; all three charts share the vertical axis. Dashed lines are linear trends. Rates exclude freeway crashes and deaths that cannot be assigned to a township (${n} in 2023). Hover or tap any point for details.`,
+      twCap: n => `Each point is a county, coloured and shaped by region; all three charts share the vertical axis. Dashed lines are linear trends across all 22 counties. Rates exclude freeway crashes and deaths that cannot be assigned to a township (${n} in 2023). Hover or tap any point for details.`,
+      regions: { north: 'North', central: 'Central', south: 'South', east: 'East', island: 'Outlying islands' },
+      twLegendAria: 'Regions (click to hide; applies to all three charts)', twRegion: 'Region',
       twGini: 'Gini (estimated)', twIqr: 'Q3 ÷ Q1 (estimated)', twMed: 'Median income (estimated)', twMean: 'Mean income', twDens: 'Density',
       kNtd: 'k NT$', perKm2: ' /km²', twTipSrc: (d, n) => `${d} 30-day deaths in 2022–2024; ${n} townships`,
       twMkicker: 'Township models are quasi-Poisson regressions of three-year death counts with population as exposure. Each column shows the % change in death rate for the stated change; 95% intervals come from 1,000 resamples of whole counties (townships in the same county are not independent).',
       twMcols: { model: 'Model', spec: 'Controls', n: 'Townships', iqr: 'Q3÷Q1 +10%', median: 'Median income +10%', density: 'Density doubled' },
       twModels: { T1: 'Income gap only', T2: 'Median income + density', T3: 'Median income + density + income gap', T4: 'As T3, plus county fixed effects' },
-      twCcols: { county: 'County', rate: 'Death rate', gini: 'Gini (est.)', iqr: 'Q3÷Q1 (est.)', med: 'Median (k NT$)', mean: 'Mean (k NT$)', dens: 'Density', towns: 'Townships' },
+      twCcols: { county: 'County', region: 'Region', rate: 'Death rate', gini: 'Gini (est.)', iqr: 'Q3÷Q1 (est.)', med: 'Median (k NT$)', mean: 'Mean (k NT$)', dens: 'Density', towns: 'Townships' },
       twCcount: 'Death rates per 100,000; income in NT$ thousand per tax unit. Click a column heading to sort.',
       empty: '<p><strong>Data not built yet.</strong> This page needs <code>data/road_safety_inequality.json</code>. From the project root run <code>python3 scripts/build_road_safety.py</code>, then <code>python3 scripts/build_inequality.py</code>, and reload.</p>',
     },
@@ -438,7 +449,18 @@ footer a { color: var(--ink-2); }
     { key: 'asia', shape: 'circle' }, { key: 'europe', shape: 'square' },
     { key: 'americas', shape: 'triangle' }, { key: 'africa', shape: 'diamond' },
   ];
-  const GROUP = Object.fromEntries(GROUPS.map(g => [g.key, g]));
+  // 臺灣縣市依國發會區域劃分（宜蘭歸北部）；五組各有顏色與形狀
+  const REGIONS = [
+    { key: 'north', shape: 'circle' }, { key: 'central', shape: 'square' }, { key: 'south', shape: 'triangle' },
+    { key: 'east', shape: 'diamond' }, { key: 'island', shape: 'tri-down' },
+  ];
+  const REGION_OF = {
+    臺北市: 'north', 新北市: 'north', 基隆市: 'north', 桃園市: 'north', 新竹市: 'north', 新竹縣: 'north', 宜蘭縣: 'north',
+    苗栗縣: 'central', 臺中市: 'central', 彰化縣: 'central', 南投縣: 'central', 雲林縣: 'central',
+    嘉義市: 'south', 嘉義縣: 'south', 臺南市: 'south', 高雄市: 'south', 屏東縣: 'south',
+    花蓮縣: 'east', 臺東縣: 'east', 澎湖縣: 'island', 金門縣: 'island', 連江縣: 'island',
+  };
+  const GROUP = Object.fromEntries(GROUPS.concat(REGIONS).map(g => [g.key, g]));
 
   const state = {
     data: null, meta: null,
@@ -446,7 +468,7 @@ footer a { color: var(--ink-2); }
     theme: window.__RS_THEME || 'auto',
     view: 'all', hidden: new Set(),
     sort: { key: 'ratio', dir: -1 },
-    tw: null, twSort: { key: 'rate', dir: -1 },
+    tw: null, twSort: { key: 'rate', dir: -1 }, twHidden: new Set(),
   };
   const T = () => I18N[state.lang];
   const zhName = c => (c.iso3 === 'TWN' ? '臺灣' : c.zh);
@@ -468,19 +490,22 @@ footer a { color: var(--ink-2); }
   const sv = (tag, attrs) => { const e = document.createElementNS(NS, tag);
     if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
 
-  // 同面積的四種形狀
+  // 同面積的五種形狀
   function shapePath(shape, x, y, r) {
     switch (shape) {
       case 'square': { const h = r * 0.886; return `M${x - h},${y - h}h${2 * h}v${2 * h}h${-2 * h}Z`; }
       case 'triangle': { const a = r * 2.694, H = a * 0.866;
         return `M${x},${y - 2 * H / 3}L${x + a / 2},${y + H / 3}L${x - a / 2},${y + H / 3}Z`; }
+      case 'tri-down': { const a = r * 2.694, H = a * 0.866;
+        return `M${x},${y + 2 * H / 3}L${x - a / 2},${y - H / 3}L${x + a / 2},${y - H / 3}Z`; }
       case 'diamond': { const d = r * 1.2533; return `M${x},${y - d}L${x + d},${y}L${x},${y + d}L${x - d},${y}Z`; }
       default: return `M${x - r},${y}a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`;
     }
   }
   function keySwatch(group, size) {
     const s = sv('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}`, 'aria-hidden': 'true' });
-    s.appendChild(sv('path', { d: shapePath(GROUP[group].shape, size / 2, size / 2 + (GROUP[group].shape === 'triangle' ? 1 : 0), size * 0.36), class: 'g-' + group }));
+    const nudge = { triangle: 1, 'tri-down': -1 }[GROUP[group].shape] || 0;
+    s.appendChild(sv('path', { d: shapePath(GROUP[group].shape, size / 2, size / 2 + nudge, size * 0.36), class: 'g-' + group }));
     return s;
   }
 
@@ -600,23 +625,28 @@ footer a { color: var(--ink-2); }
     $('cap2').textContent = t.cap2(rows.length, p(f2));
     if (state.tw) renderTwCharts();
   }
-  function renderLegend(id) {
-    const t = T(), box = $(id); box.textContent = '';
-    box.setAttribute('role', 'group'); box.setAttribute('aria-label', t.legendAria);
-    const base = state.data.filter(c => state.view === 'all' || c.hic);
-    GROUPS.forEach(g => {
-      const n = base.filter(c => c.group === g.key).length; if (!n) return;
-      const b = el('button', { type: 'button', class: 'lg-item', 'aria-pressed': String(!state.hidden.has(g.key)) });
+  // 可點選的圖例：點一下隱藏／顯示該組，重繪後把焦點還給同一個按鈕
+  function legendButtons(id, groups, count, names, hidden, ariaLabel, rerender) {
+    const box = $(id); box.textContent = '';
+    box.setAttribute('role', 'group'); box.setAttribute('aria-label', ariaLabel);
+    groups.forEach(g => {
+      const n = count(g.key); if (!n) return;
+      const b = el('button', { type: 'button', class: 'lg-item', 'data-group': g.key, 'aria-pressed': String(!hidden.has(g.key)) });
       b.appendChild(keySwatch(g.key, 14));
-      b.appendChild(el('span', null, t.groups[g.key]));
+      b.appendChild(el('span', null, names[g.key]));
       b.appendChild(el('span', { class: 'n' }, String(n)));
       b.addEventListener('click', () => {
-        if (state.hidden.has(g.key)) state.hidden.delete(g.key); else state.hidden.add(g.key);
-        renderCharts();
-        const again = document.querySelector(`#${id} .lg-item:nth-child(${GROUPS.indexOf(g) + 1})`); if (again) again.focus();
+        if (hidden.has(g.key)) hidden.delete(g.key); else hidden.add(g.key);
+        rerender();
+        const again = document.querySelector(`#${id} .lg-item[data-group="${g.key}"]`); if (again) again.focus();
       });
       box.appendChild(b);
     });
+    return box;
+  }
+  function renderLegend(id) {
+    const t = T(), base = state.data.filter(c => state.view === 'all' || c.hic);
+    const box = legendButtons(id, GROUPS, k => base.filter(c => c.group === k).length, t.groups, state.hidden, t.legendAria, renderCharts);
     const note = el('span', { class: 'lg-note' });
     const ring = sv('svg', { width: 14, height: 14, viewBox: '0 0 14 14', 'aria-hidden': 'true' });
     ring.appendChild(sv('circle', { cx: 7, cy: 7, r: 5.5, class: 'tw-ring' }));
@@ -803,6 +833,9 @@ footer a { color: var(--ink-2); }
   };
   function renderTwCharts() {
     const t = T(), tw = state.tw, C = tw.counties, cc = tw.meta.county_corr;
+    const rows = C.filter(c => !state.twHidden.has(REGION_OF[c.county]));
+    legendButtons('twLegend', REGIONS, k => C.filter(c => REGION_OF[c.county] === k).length, t.regions, state.twHidden,
+      t.twLegendAria, renderTwCharts);
     const panels = [
       { id: 'twc1', key: 'gini_est', title: t.twP1, xTitle: t.twX1, xTicks: [0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7], xFmt: v => v.toFixed(2), xNarrowEvery: 2 },
       { id: 'twc2', key: 'median_est', title: t.twP2, xTitle: t.twX2, xTicks: [400, 500, 600, 700, 800], xFmt: v => String(v) },
@@ -814,22 +847,24 @@ footer a { color: var(--ink-2); }
       $(pn.id + 't').textContent = pn.title;
       $(pn.id + 's').textContent = t.twRho(fmtR(r.spearman), fmtR(r.ci[0]), fmtR(r.ci[1])) + (sig ? '' : t.twNs);
       scatter($(pn.id), {
-        all: C, rows: C, xk: pn.key, xLog: pn.xLog, xTicks: pn.xTicks, xFmt: pn.xFmt, xTitle: pn.xTitle, xNarrowEvery: pn.xNarrowEvery,
+        all: C, rows, xk: pn.key, xLog: pn.xLog, xTicks: pn.xTicks, xFmt: pn.xFmt, xTitle: pn.xTitle, xNarrowEvery: pn.xNarrowEvery,
         yk: 'rate', yTicks: [0, 5, 10, 15, 20, 25, 30, 35], yFmt: String, yTitle: t.twY,
-        height: () => 340, groupOf: () => 'asia', id: c => c.county, label: cName, order: TW_ORDER, must: ['臺北市', '臺東縣'],
+        height: () => 340, groupOf: c => REGION_OF[c.county], id: c => c.county, label: cName, order: TW_ORDER, must: ['臺北市', '臺東縣'],
         maxLabels: [8, 10], ring: null, tip: fillTwTip, aria: () => t.twAria(pn.title),
-        trend: linFit(C, pn.key, 'rate', pn.xLog),
+        trend: linFit(C, pn.key, 'rate', pn.xLog),              // 趨勢線固定用全部22縣市，與上方相關係數一致
       });
     });
   }
   function fillTwTip(tip, c) {
     const t = T(); tip.textContent = '';
     const head = el('div', { class: 'tn' });
+    head.appendChild(keySwatch(REGION_OF[c.county], 12));
     head.appendChild(el('span', null, state.lang === 'en' ? c.en : c.county));
     head.appendChild(el('span', { class: 'ten' }, cAlt(c)));
     tip.appendChild(head);
     const dl = el('dl');
     const row = (k, v) => { dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, v)); };
+    row(t.twRegion, t.regions[REGION_OF[c.county]]);
     row(t.tipRate, fmt1(c.rate) + t.per100k);
     row(t.twGini, c.gini_est.toFixed(3));
     row(t.twIqr, c.iqr_est.toFixed(2) + '×');
@@ -914,8 +949,8 @@ footer a { color: var(--ink-2); }
   }
   function renderTwTable() {
     const t = T(), tb = $('twCtable'); tb.textContent = '';
-    const cols = [['county', ''], ['rate', 'num'], ['gini', 'num'], ['iqr', 'num'], ['med', 'num'], ['mean', 'num'], ['dens', 'num'], ['towns', 'num']];
-    const val = (c, k) => ({ county: cName(c), rate: c.rate, gini: c.gini_est, iqr: c.iqr_est, med: c.median_est, mean: c.mean,
+    const cols = [['county', ''], ['region', ''], ['rate', 'num'], ['gini', 'num'], ['iqr', 'num'], ['med', 'num'], ['mean', 'num'], ['dens', 'num'], ['towns', 'num']];
+    const val = (c, k) => ({ county: cName(c), region: REGIONS.findIndex(g => g.key === REGION_OF[c.county]), rate: c.rate, gini: c.gini_est, iqr: c.iqr_est, med: c.median_est, mean: c.mean,
       dens: c.density, towns: c.n_towns })[k];
     const head = tb.appendChild(el('thead')).appendChild(el('tr'));
     cols.forEach(([k, cl]) => {
@@ -936,7 +971,9 @@ footer a { color: var(--ink-2); }
     const body = tb.appendChild(el('tbody'));
     rows.forEach(c => {
       const tr = body.appendChild(el('tr'));
-      tr.appendChild(el('td', null, cName(c)));
+      const nm = el('td'); const sw = el('span', { class: 'swatch' }); sw.appendChild(keySwatch(REGION_OF[c.county], 12));
+      sw.appendChild(el('span', null, cName(c))); nm.appendChild(sw); tr.appendChild(nm);
+      tr.appendChild(el('td', null, t.regions[REGION_OF[c.county]]));
       tr.appendChild(el('td', { class: 'num' }, fmt1(c.rate)));
       tr.appendChild(el('td', { class: 'num' }, c.gini_est.toFixed(3)));
       tr.appendChild(el('td', { class: 'num' }, c.iqr_est.toFixed(2) + '×'));
@@ -1037,6 +1074,7 @@ footer a { color: var(--ink-2); }
           `Population and land area: Ministry of the Interior, end of ${w.income_year}. Deaths: MOTC road safety portal, 30-day deaths ${w.death_years[0]}–${w.death_years[2]}; freeway crashes and deaths not assignable to a township are excluded (${un} in ${w.death_years[1]}). Township sums were checked against county totals.`,
           `County Gini, median and Q3÷Q1 are <strong>estimates</strong>: each township is treated as log-normal (fitted to its median and quartiles) and the townships are mixed by number of tax units. Check: the mean implied by that fit is ${lc.p50.toFixed(2)}× the actual township mean (median; 10–90% range ${lc.p10.toFixed(2)}–${lc.p90.toFixed(2)}), so the top tail is a little heavier than log-normal and the estimated Gini is probably slightly low. Township models use the published quartiles directly, with no distributional assumption.`,
           `With only 22 counties, county-level correlations have wide intervals; the township models (n=${w.n_towns}) carry the inference.`,
+          'Regions follow the National Development Council: North includes Yilan; Central includes Yunlin; South includes Chiayi City and County; East is Hualien and Taitung; outlying islands are Penghu, Kinmen and Lienchiang. Colour and shape both mark the region, and the table lists it, so the charts do not rely on colour alone.',
         ],
       } : {
         h: '臺灣內部：資料與方法',
@@ -1045,6 +1083,7 @@ footer a { color: var(--ink-2); }
           `人口與面積：內政部${w.income_year - 1911}年底資料。死亡：交通部道安資訊查詢網${w.death_years[0] - 1911}–${w.death_years[2] - 1911}年30日死亡人數；國道與無法歸屬鄉鎮的事故不計入（${w.death_years[1]}年${un}人）。各鄉鎮加總已與縣市總數核對。`,
           `縣市的吉尼係數、中位數與Q3÷Q1為<strong>推估值</strong>：把每個鄉鎮視為對數常態分配（以中位數與四分位數定參數），再依納稅單位數混合。檢核：由此推得的平均數為鄉鎮實際平均數的${lc.p50.toFixed(2)}倍（中位數；10%–90%為${lc.p10.toFixed(2)}–${lc.p90.toFixed(2)}），代表高所得尾端比對數常態略厚，推估的吉尼係數可能略為偏低。鄉鎮模型直接使用財政部公布的分位數，不需要分配假設。`,
           `縣市只有22個，縣市層級的相關係數區間很寬；推論主要依靠${w.n_towns}個鄉鎮的模型。`,
+          '區域依國發會劃分：北部含宜蘭縣，中部含雲林縣，南部含嘉義市、嘉義縣，東部為花蓮縣、臺東縣，離島為澎湖縣、金門縣、連江縣。圖中區域同時以顏色與形狀區分，縣市表也列出區域，不只靠顏色辨識。',
         ],
       };
       twHtml = `<h3>${W.h}</h3>${ul(W.li)}`;
