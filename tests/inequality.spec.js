@@ -4,6 +4,8 @@ const { chromium } = require('/tmp/claude-0/node_modules/playwright');
 const fs = require('fs');
 const DATA = fs.readFileSync(process.env.INEQ_FIXTURE || 'data/road_safety_inequality.json', 'utf8');
 const D = JSON.parse(DATA);
+const TWDATA = fs.readFileSync('data/road_safety_inequality_tw.json', 'utf8');
+const TW = JSON.parse(TWDATA);
 const URL = 'http://127.0.0.1:8765/road-safety-inequality.html';
 
 const fail = [];
@@ -18,6 +20,9 @@ async function open(browser, opts = {}) {
   await ctx.route('**/data/road_safety_inequality.json*', r => opts.missing
     ? r.fulfill({ status: 404, body: 'not found' })
     : r.fulfill({ contentType: 'application/json', body: DATA }));
+  await ctx.route('**/data/road_safety_inequality_tw.json*', r => opts.twMissing
+    ? r.fulfill({ status: 404, body: 'not found' })
+    : r.fulfill({ contentType: 'application/json', body: TWDATA }));
   const page = await ctx.newPage();
   const errs = [];
   page.on('pageerror', e => errs.push(e.message));
@@ -86,6 +91,7 @@ const labels = (page, n) => page.$$eval(`#chart${n} .plabel`, a => a.map(e => e.
   check('圖例隱藏歐洲：兩張圖同步減少', (await page.locator('#chart1 .pt').count()) === N - nEu && (await page.locator('#chart2 .pt').count()) === N - nEu);
   check('圖例按鈕保留焦點', await page.evaluate(() => document.activeElement.classList.contains('lg-item')));
   await page.locator('#legend1 .lg-item').nth(1).click();
+  await page.locator('#chart1 .tw-ring').scrollIntoViewIfNeeded();            // 先捲到圖表，滑鼠才點得到
   const ring = await page.locator('#chart1 .tw-ring').boundingBox();
   await page.mouse.move(ring.x + ring.width / 2, ring.y + ring.height / 2);
   await page.waitForTimeout(100);
@@ -106,6 +112,58 @@ const labels = (page, n) => page.$$eval(`#chart${n} .plabel`, a => a.map(e => e.
   const g1 = parseFloat(await page.locator('#ctable tbody tr:first-child td:nth-child(3)').textContent());
   check('點吉尼係數排序（由高到低）', g1 === Math.max(...D.countries.map(c => c.gini)), g1);
   check('排序後焦點留在標題', await page.evaluate(() => document.activeElement.closest('th') !== null));
+
+  console.log('\n— 臺灣內部 —');
+  const tm = TW.meta, NC = TW.counties.length;
+  check('第03節顯示', await page.locator('#twSec').isVisible());
+  for (const id of ['twc1', 'twc2', 'twc3']) {
+    const L = await page.$$eval(`#${id} .plabel`, a => a.map(e => e.textContent));
+    check(`${id}：22個點，臺東縣與臺北市有標籤`, (await page.locator(`#${id} .pt`).count()) === NC && L.includes('臺東縣') && L.includes('臺北市'), L.length + ' 個標籤');
+  }
+  const twt = await page.$$eval('#twTiles .value', a => a.map(e => e.firstChild.textContent));
+  const R = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2);
+  check('磚：縣市吉尼相關', twt[0] === R(tm.county_corr.gini_est.spearman), twt[0]);
+  check('磚：縣市中位數相關', twt[1] === R(tm.county_corr.median_est.spearman), twt[1]);
+  check('磚：鄉鎮 Q3/Q1 效果', twt[2] === '−' + Math.abs(tm.models.T3.effects.iqr.pct).toFixed(1) + '%', twt[2]);
+  const ciCross = ci => ci[0] <= 0 && ci[1] >= 0;
+  check('不顯著標記與區間一致（吉尼／中位數／Q3Q1／密度）',
+    (await page.locator('#twTiles .tile:nth-child(1) .badge').count()) === +ciCross(tm.county_corr.gini_est.ci)
+    && (await page.locator('#twTiles .tile:nth-child(2) .badge').count()) === +ciCross(tm.county_corr.median_est.ci)
+    && (await page.locator('#twTiles .tile:nth-child(3) .badge').count()) === +ciCross(tm.models.T3.effects.iqr.pct_ci)
+    && (await page.locator('#twTiles .tile:nth-child(4) .badge').count()) === +ciCross(tm.models.T3.effects.density.pct_ci));
+  const tpos = await page.evaluate(() => {
+    const svg = document.querySelector('#twc2 svg');
+    const ticks = [...svg.querySelectorAll('.tick text')].filter(t => t.getAttribute('text-anchor') === 'end');
+    const yOf = v => +ticks.find(t => t.textContent === String(v)).getAttribute('y') - 4;
+    const ys = [...svg.querySelectorAll('.pt')].map(p => p.getBBox()).map(b => b.y + b.height / 2);
+    return { y0: yOf(0), y30: yOf(30), top: Math.min(...ys) };
+  });
+  const maxRate = Math.max(...TW.counties.map(c => c.rate));
+  const expTop = tpos.y0 + (tpos.y30 - tpos.y0) * maxRate / 30;
+  check('縣市圖：最高死亡率的縱軸位置正確（線性軸）', Math.abs(tpos.top - expTop) < 1.5, `${tpos.top.toFixed(1)} vs ${expTop.toFixed(1)}`);
+  const tt = await page.locator('#twc1 .tw-ring').count();
+  check('縣市圖沒有臺灣圈（只有國際圖有）', tt === 0);
+  const taitung = TW.counties.find(c => c.county === '臺東縣');
+  await page.locator('#twc1').scrollIntoViewIfNeeded();
+  const pts = await page.locator('#twc1 .pt').all();
+  let hitTip = '';
+  for (const p of pts) {
+    const b = await p.boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.waitForTimeout(30);
+    const s = await page.locator('#twc1 .tip').textContent(); if (s.includes('臺東縣')) { hitTip = s; break; }
+  }
+  check('滑過臺東縣顯示縣市 tooltip', hitTip.includes(taitung.rate.toFixed(1)) && hitTip.includes('Taitung County'), hitTip.slice(0, 30));
+  check('鄉鎮模型表 4 列', (await page.locator('#twMtable tbody tr').count()) === 4);
+  const t3 = await page.$$eval('#twMtable tbody tr:nth-child(3) td', a => a.map(e => e.textContent));
+  check('T3：所得差距不顯著、密度顯著', t3[3].includes('不顯著') === ciCross(tm.models.T3.effects.iqr.pct_ci)
+    && t3[5].includes('不顯著') === ciCross(tm.models.T3.effects.density.pct_ci), t3.slice(3).join(' / '));
+  check('T1 沒有中位數／密度欄位值', t3.length === 6 && (await page.locator('#twMtable tbody tr:nth-child(1) td:nth-child(5)').textContent()) === '—');
+  check('縣市表 22 列', (await page.locator('#twCtable tbody tr').count()) === NC);
+  const topC = TW.counties.slice().sort((a, b) => b.rate - a.rate)[0].county;
+  check('縣市表預設依死亡率由高到低', (await page.locator('#twCtable tbody tr:first-child td:first-child').textContent()) === topC, topC);
+  await page.locator('#twCtable th:nth-child(3) button').click();
+  const gTop = parseFloat(await page.locator('#twCtable tbody tr:first-child td:nth-child(3)').textContent());
+  check('縣市表依吉尼排序', Math.abs(gTop - Math.max(...TW.counties.map(c => c.gini_est))) < 0.001, gTop);
+  check('方法說明含臺灣內部資料', (await page.locator('#notes').textContent()).includes('財政部財政資訊中心'));
   check('沒有 JS 錯誤', errs.length === 0, errs.join(' | '));
   await ctx.close();
 
@@ -116,6 +174,8 @@ const labels = (page, n) => page.$$eval(`#chart${n} .plabel`, a => a.map(e => e.
     const L = await labels(page, 1);
     check('英文標籤', L.includes('Taiwan') && L.includes('United States'));
     check('英文段落', (await page.locator('#lead').textContent()).includes('Saudi Arabia'));
+    const twL = await page.$$eval('.sm .plabel', a => a.map(e => e.textContent));
+    check('英文縣市名：新竹／嘉義保留 City／County', !twL.includes('Hsinchu') && !twL.includes('Chiayi') && twL.includes('Taitung'), twL.slice(0, 8).join(', '));
     const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     check('深色主題背景', bg === 'rgb(13, 13, 13)', bg);
     await page.locator('#themeSeg [data-theme-opt=light]').click();
@@ -144,6 +204,14 @@ const labels = (page, n) => page.$$eval(`#chart${n} .plabel`, a => a.map(e => e.
   {
     const { ctx, page } = await open(browser, { missing: true });
     check('沒有資料時顯示建置說明', await page.locator('#empty').isVisible() && (await page.locator('#empty').textContent()).includes('build_inequality.py'));
+    await ctx.close();
+  }
+
+  {
+    const { ctx, page, errs } = await open(browser, { twMissing: true });
+    check('臺灣資料缺少：第03節與相關表格隱藏，國際部分照常', !(await page.locator('#twSec').isVisible())
+      && !(await page.locator('#twMtable').isVisible()) && (await page.locator('#chart1 .pt').count()) === N
+      && !(await page.locator('#empty').isVisible()) && errs.length === 0);
     await ctx.close();
   }
 

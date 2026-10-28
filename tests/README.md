@@ -30,10 +30,14 @@ RS_FIXTURE=/tmp/rs.json node tests/road-safety.spec.js
 ## 道路安全 × 所得分配
 
 ```bash
-python3 tests/test_build_inequality.py      # 迴歸、等級相關、bootstrap 的單元測試
+python3 tests/test_build_inequality.py      # 迴歸、等級相關、bootstrap、對數常態混合、準Poisson 的單元測試
 node tests/inequality.spec.js               # 頁面端對端測試（讀 data/road_safety_inequality.json）
 ```
 
 `inequality.spec.js` 用真實資料檔，檢查頁面上的數字與資料檔一致、臺灣在對數軸上的位置正確、
 臺灣與美國在兩張圖都有標籤且標籤不重疊、篩選與圖例同步兩張圖、表格排序，以及 320／390px
 手機版不出界。資料檔由 `scripts/build_inequality.py` 產生（需先有 `data/road_safety_gdp.json`）。
+
+臺灣內部（第03節）的資料由 `scripts/build_taiwan_inequality.py` 產生 `data/road_safety_inequality_tw.json`
+（財政部綜所稅鄉鎮統計、內政部鄉鎮人口、道安資訊查詢網30日死亡；約需3–4分鐘，`--cache` 可重用下載）。
+端對端測試也檢查這份資料缺少時，第03節會隱藏而國際比較照常顯示。

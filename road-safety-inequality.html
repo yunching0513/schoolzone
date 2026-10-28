@@ -141,6 +141,10 @@ h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; 
 .tip dd { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
 .tip .tsrc { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grid); font-size: 11px; color: var(--muted); }
 .caption { font-size: 11.5px; color: var(--muted); margin: 8px 4px 2px; }
+.sm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.sm .card + .card { margin-top: 0; }
+.subhead { font-size: 13px; font-weight: 700; color: var(--ink); margin: 26px 0 10px; }
+#twMtable { min-width: 760px; } #twCtable { min-width: 760px; }
 
 .twrap { overflow: auto; border: 1px solid var(--hair); background: var(--surface); -webkit-overflow-scrolling: touch; }
 .twrap.tall { max-height: 520px; }
@@ -173,6 +177,7 @@ footer { border-top: 2px solid var(--rule); padding-top: 18px; margin-top: 40px;
 footer a { color: var(--ink-2); }
 
 @media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 980px) { .sm { grid-template-columns: 1fr; } }
 @media (max-width: 700px) {
   .shell { padding: 28px 16px 56px; }
   .page-header { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 32px; }
@@ -244,20 +249,48 @@ footer a { color: var(--ink-2); }
   </div>
 </section>
 
-<section class="section" aria-labelledby="s3">
-  <div class="section-label" id="s3" data-i18n="s3">03 — 模型摘要</div>
-  <p class="kicker" id="mkicker"></p>
-  <div class="twrap"><table id="mtable"></table></div>
+<section class="section" id="twSec" aria-labelledby="s3" hidden>
+  <div class="section-label" id="s3" data-i18n="s3">03 — 臺灣內部：22縣市與368鄉鎮</div>
+  <p class="kicker" id="twKicker"></p>
+  <div class="tiles" id="twTiles"></div>
+  <p class="lead" id="twLead"></p>
+  <div class="sm">
+    <div class="card"><div class="card-title" id="twc1t"></div><div class="card-sub" id="twc1s"></div>
+      <div class="chart" id="twc1"><div class="tip" role="status" aria-live="polite"></div></div></div>
+    <div class="card"><div class="card-title" id="twc2t"></div><div class="card-sub" id="twc2s"></div>
+      <div class="chart" id="twc2"><div class="tip" role="status" aria-live="polite"></div></div></div>
+    <div class="card"><div class="card-title" id="twc3t"></div><div class="card-sub" id="twc3s"></div>
+      <div class="chart" id="twc3"><div class="tip" role="status" aria-live="polite"></div></div></div>
+  </div>
+  <p class="caption" id="twCap"></p>
 </section>
 
 <section class="section" aria-labelledby="s4">
-  <div class="section-label" id="s4" data-i18n="s4">04 — 各國數值</div>
-  <div class="twrap tall"><table id="ctable"></table></div>
-  <p class="caption" id="ccount"></p>
+  <div class="section-label" id="s4" data-i18n="s4">04 — 模型摘要</div>
+  <div class="subhead" data-i18n="mIntl">國際：139國</div>
+  <p class="kicker" id="mkicker"></p>
+  <div class="twrap"><table id="mtable"></table></div>
+  <div class="tw-only" hidden>
+    <div class="subhead" data-i18n="mTw">臺灣：368鄉鎮</div>
+    <p class="kicker" id="twMkicker"></p>
+    <div class="twrap"><table id="twMtable"></table></div>
+  </div>
 </section>
 
 <section class="section" aria-labelledby="s5">
-  <div class="section-label" id="s5" data-i18n="s5">05 — 資料與方法</div>
+  <div class="section-label" id="s5" data-i18n="s5">05 — 各國與各縣市數值</div>
+  <div class="subhead" data-i18n="cIntl">各國</div>
+  <div class="twrap tall"><table id="ctable"></table></div>
+  <p class="caption" id="ccount"></p>
+  <div class="tw-only" hidden>
+    <div class="subhead" data-i18n="cTw">臺灣各縣市</div>
+    <div class="twrap"><table id="twCtable"></table></div>
+    <p class="caption" id="twCcount"></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="s6">
+  <div class="section-label" id="s6" data-i18n="s6">06 — 資料與方法</div>
   <div class="notes" id="notes"></div>
 </section>
 
@@ -284,7 +317,8 @@ footer a { color: var(--ink-2); }
       h1: '道路安全 × 所得分配｜不平等的國家，道路比較危險嗎？',
       back: '← 道路安全 × 國家所得', footBack: '道路安全 × 國家所得', footHome: '打造夢想街道',
       langAria: '語言', themeAria: '顏色主題', thAuto: '自動', thLight: '白底', thDark: '深色',
-      s1: '01 — 先說結論', s2: '02 — 吉尼係數 × 道路死亡率', s3: '03 — 模型摘要', s4: '04 — 各國數值', s5: '05 — 資料與方法',
+      s1: '01 — 先說結論', s2: '02 — 國際：吉尼係數 × 道路死亡率', s3: '03 — 臺灣內部：22縣市與368鄉鎮', s4: '04 — 模型摘要',
+      s5: '05 — 各國與各縣市數值', s6: '06 — 資料與方法', mIntl: '國際：139國', mTw: '臺灣：368鄉鎮', cIntl: '各國', cTw: '臺灣各縣市',
       viewAria: '顯示範圍', viewLabel: '範圍', viewAll: '全部國家', viewHic: '只看高所得國家',
       c1Title: '粗看：所得越不平均，道路越致命', c1Sub: '還沒扣掉國家貧富的影響',
       c2Title: '扣掉所得之後：誰比「同樣富裕的國家」更致命？',
@@ -313,6 +347,26 @@ footer a { color: var(--ink-2); }
       sigNo: '不顯著', na: '—',
       ccols: { name: '國家／地區', group: '大洲', gini: '吉尼係數', gy: '年份', rate: '死亡率', gdp: '人均GDP', exp: '所得預期', ratio: '實際÷預期' },
       ccount: n => `共${n}國，點欄位標題可排序。`,
+      leadTw: ' 臺灣內部的比較也指向同一件事：與道路死亡同步變動的是城鄉差距，而不是貧富差距（見第03節）。',
+      twKicker: (n, y0, y2, iy) => `財政部只公布到鄉鎮層級的所得分位數，因此這一節以${n}個鄉鎮市區為基礎：死亡率為${y0}–${y2}年30日死亡人數的年平均，所得為${iy}年度綜合所得稅申報資料。縣市的吉尼係數由鄉鎮資料推估，口徑是稅前的申報所得，不能與上方國際比較的吉尼係數直接相比。`,
+      twT1: '縣市：所得不均 × 死亡率', twRhoUnit: '等級相關', twT1note: (lo, hi) => `22縣市，95%區間 ${lo}～${hi}；所得最不平均的是新竹市、新竹縣與臺北市`,
+      twT2: '縣市：所得水準 × 死亡率', twT2note: (lo, hi) => `所得中位數越低的縣市，道路越致命（95%區間 ${lo}～${hi}）`,
+      twT3: '鄉鎮：扣掉所得與密度後的所得差距', twT3unit: '／Q3÷Q1每+10%', twT3note: (lo, hi) => `95%區間 ${lo}～${hi}，跨過0：看不出所得差距本身的影響`,
+      twT4: '鄉鎮：人口密度加倍', twT4unit: '死亡率', twT4note: (lo, hi) => `同樣的所得水準下（95%區間 ${lo}～${hi}）`,
+      twLead: '<strong>臺灣內部的圖像，與國際比較正好相反。</strong>所得最不平均的是新竹市、新竹縣與臺北市這些高所得地區，它們的道路死亡率都不到臺東縣的一半；死亡率最高的臺東、屏東、雲林與嘉義縣，所得分配反而相對平均，但所得水準低、人口稀疏。把所得水準與人口密度放進鄉鎮模型後，所得差距的效果接近0，<strong>與道路死亡同步變動的是城鄉差距，而不是貧富差距。</strong>人口密度恐怕只是代理變數：它同時反映大眾運輸的可及性、日常移動的距離與車速、急救資源，以及人口老化，需要另外的資料才能拆開。',
+      twP1: '所得不均（吉尼係數，推估）', twP2: '所得水準（中位數，推估）', twP3: '城鄉程度（人口密度）',
+      twX1: '吉尼係數（申報所得，推估）→ 越往右越不平均', twX2: '每納稅單位所得中位數（千元）→ 越往右越高',
+      twX3: '人口密度（人／km²，對數尺度）→ 越往右越都市', twY: '道路交通死亡率（每十萬人）',
+      twRho: (r, lo, hi) => `等級相關 ${r}（95%區間 ${lo}～${hi}）`, twNs: '，不顯著',
+      twAria: ti => `散佈圖：${ti} × 道路交通死亡率，22縣市。數值見下方縣市表。`,
+      twCap: n => `每個點是一個縣市，三張圖的縱軸相同；虛線為線性趨勢。死亡率不含國道與無法歸屬鄉鎮的事故（2023年${n}人）。滑過或點選任一點看詳細數字。`,
+      twGini: '吉尼係數（推估）', twIqr: 'Q3 ÷ Q1（推估）', twMed: '所得中位數（推估）', twMean: '所得平均數', twDens: '人口密度',
+      kNtd: '千元', perKm2: '／km²', twTipSrc: (d, n) => `2022–2024年30日死亡共${d}人；${n}個鄉鎮市區`,
+      twMkicker: '鄉鎮模型為準Poisson迴歸：依變數為三年死亡人數，以人口為暴露量。各欄為「該變項增加後，死亡率增減幾%」；95%區間以縣市為單位重抽1,000次（同一縣市的鄉鎮彼此不獨立）。',
+      twMcols: { model: '模型', spec: '控制變項', n: '鄉鎮數', iqr: 'Q3÷Q1 +10%', median: '所得中位數 +10%', density: '人口密度加倍' },
+      twModels: { T1: '只有所得差距', T2: '所得中位數＋人口密度', T3: '所得中位數＋人口密度＋所得差距', T4: '同T3，再加縣市固定效果' },
+      twCcols: { county: '縣市', rate: '死亡率', gini: '吉尼（推估）', iqr: 'Q3÷Q1（推估）', med: '中位數（千元）', mean: '平均數（千元）', dens: '人口密度', towns: '鄉鎮數' },
+      twCcount: '死亡率為每十萬人；所得單位為千元／納稅單位。點欄位標題可排序。',
       empty: '<p><strong>資料尚未建置。</strong>這一頁需要 <code>data/road_safety_inequality.json</code>，請在專案根目錄依序執行 <code>python3 scripts/build_road_safety.py</code> 與 <code>python3 scripts/build_inequality.py</code>，完成後重新整理即可。</p>',
     },
     en: {
@@ -322,7 +376,8 @@ footer a { color: var(--ink-2); }
       h1: 'Road safety × income inequality: are unequal countries’ roads deadlier?',
       back: '← Road safety × national income', footBack: 'Road safety × national income', footHome: 'Build Dream Streets',
       langAria: 'Language', themeAria: 'Colour theme', thAuto: 'Auto', thLight: 'Light', thDark: 'Dark',
-      s1: '01 — The short answer', s2: '02 — Gini × road deaths', s3: '03 — Model summary', s4: '04 — Country values', s5: '05 — Data & method',
+      s1: '01 — The short answer', s2: '02 — Countries: Gini × road deaths', s3: '03 — Within Taiwan: 22 counties, 368 townships', s4: '04 — Model summary',
+      s5: '05 — Country and county values', s6: '06 — Data & method', mIntl: 'Countries: 139', mTw: 'Taiwan: 368 townships', cIntl: 'Countries', cTw: 'Taiwan’s counties',
       viewAria: 'View', viewLabel: 'View', viewAll: 'All countries', viewHic: 'High-income only',
       c1Title: 'At first glance: more unequal, deadlier roads', c1Sub: 'Not yet adjusted for how rich a country is',
       c2Title: 'After adjusting for income: who is deadlier than equally rich countries?',
@@ -351,6 +406,26 @@ footer a { color: var(--ink-2); }
       sigNo: 'n.s.', na: '—',
       ccols: { name: 'Country / area', group: 'Continent', gini: 'Gini', gy: 'Year', rate: 'Death rate', gdp: 'GDP per capita', exp: 'Expected', ratio: 'Actual÷expected' },
       ccount: n => `${n} countries. Click a column heading to sort.`,
+      leadTw: ' Inside Taiwan the comparison points the same way: road deaths move with the urban–rural divide, not with income inequality (see section 03).',
+      twKicker: (n, y0, y2, iy) => `The Ministry of Finance publishes income quartiles only down to township level, so this section builds on ${n} townships: death rates are the ${y0}–${y2} annual average of 30-day deaths, and income comes from ${iy} income-tax filings. County Gini coefficients are estimated from township data, on pre-tax filed income, so they cannot be compared with the international Gini above.`,
+      twT1: 'Counties: inequality × death rate', twRhoUnit: 'rank correlation', twT1note: (lo, hi) => `22 counties, 95% CI ${lo} to ${hi}; the most unequal are Hsinchu City, Hsinchu County and Taipei`,
+      twT2: 'Counties: income level × death rate', twT2note: (lo, hi) => `The lower the median income, the deadlier the roads (95% CI ${lo} to ${hi})`,
+      twT3: 'Townships: income gap, adjusted for income and density', twT3unit: 'per +10% Q3÷Q1', twT3note: (lo, hi) => `95% CI ${lo} to ${hi} crosses zero: no detectable effect of the income gap itself`,
+      twT4: 'Townships: density doubled', twT4unit: 'death rate', twT4note: (lo, hi) => `At the same income level (95% CI ${lo} to ${hi})`,
+      twLead: '<strong>Inside Taiwan the picture is the reverse of the international one.</strong> The most unequal places are rich Hsinchu City, Hsinchu County and Taipei, whose road death rates are all less than half of Taitung’s; the deadliest counties, Taitung, Pingtung, Yunlin and Chiayi County, have relatively even incomes but low income levels and sparse populations. Once income level and density enter the township model, the effect of the income gap is close to zero: <strong>road deaths track the urban–rural divide, not the gap between rich and poor.</strong> Density is likely a proxy for several things at once (access to public transport, everyday travel distances and speeds, emergency care, and population ageing) that need further data to separate.',
+      twP1: 'Inequality (Gini, estimated)', twP2: 'Income level (median, estimated)', twP3: 'Urbanisation (population density)',
+      twX1: 'Gini (filed income, estimated) → more unequal', twX2: 'Median income per tax unit (NT$ thousand) → higher',
+      twX3: 'People per km² (log scale) → more urban', twY: 'Road traffic deaths per 100,000',
+      twRho: (r, lo, hi) => `Rank correlation ${r} (95% CI ${lo} to ${hi})`, twNs: ', not significant',
+      twAria: ti => `Scatter plot: ${ti} × road traffic death rate, 22 counties. Values are in the county table below.`,
+      twCap: n => `Each point is a county; all three charts share the vertical axis. Dashed lines are linear trends. Rates exclude freeway crashes and deaths that cannot be assigned to a township (${n} in 2023). Hover or tap any point for details.`,
+      twGini: 'Gini (estimated)', twIqr: 'Q3 ÷ Q1 (estimated)', twMed: 'Median income (estimated)', twMean: 'Mean income', twDens: 'Density',
+      kNtd: 'k NT$', perKm2: ' /km²', twTipSrc: (d, n) => `${d} 30-day deaths in 2022–2024; ${n} townships`,
+      twMkicker: 'Township models are quasi-Poisson regressions of three-year death counts with population as exposure. Each column shows the % change in death rate for the stated change; 95% intervals come from 1,000 resamples of whole counties (townships in the same county are not independent).',
+      twMcols: { model: 'Model', spec: 'Controls', n: 'Townships', iqr: 'Q3÷Q1 +10%', median: 'Median income +10%', density: 'Density doubled' },
+      twModels: { T1: 'Income gap only', T2: 'Median income + density', T3: 'Median income + density + income gap', T4: 'As T3, plus county fixed effects' },
+      twCcols: { county: 'County', rate: 'Death rate', gini: 'Gini (est.)', iqr: 'Q3÷Q1 (est.)', med: 'Median (k NT$)', mean: 'Mean (k NT$)', dens: 'Density', towns: 'Townships' },
+      twCcount: 'Death rates per 100,000; income in NT$ thousand per tax unit. Click a column heading to sort.',
       empty: '<p><strong>Data not built yet.</strong> This page needs <code>data/road_safety_inequality.json</code>. From the project root run <code>python3 scripts/build_road_safety.py</code>, then <code>python3 scripts/build_inequality.py</code>, and reload.</p>',
     },
   };
@@ -371,6 +446,7 @@ footer a { color: var(--ink-2); }
     theme: window.__RS_THEME || 'auto',
     view: 'all', hidden: new Set(),
     sort: { key: 'ratio', dir: -1 },
+    tw: null, twSort: { key: 'rate', dir: -1 },
   };
   const T = () => I18N[state.lang];
   const zhName = c => (c.iso3 === 'TWN' ? '臺灣' : c.zh);
@@ -381,6 +457,7 @@ footer a { color: var(--ink-2); }
   const fmt1 = v => (v == null ? '—' : Number(v).toFixed(1));
   const fmt2 = v => (v == null ? '—' : Number(v).toFixed(2));
   const fmtPct = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1) + '%';
+  const fmtR = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2);           // 相關係數：用真正的減號
   const el = (tag, attrs, text) => {            // 名稱一律走 textContent（資料視為不受信任）
     const e = document.createElement(tag);
     if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
@@ -447,14 +524,15 @@ footer a { color: var(--ink-2); }
   applyStatic();
 
   // ================================================================ 載入
-  fetch('data/road_safety_inequality.json', { cache: 'no-cache' })
-    .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
-    .then(init)
-    .catch(() => { $('empty').hidden = false; });
+  const getJSON = u => fetch(u, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))));
+  Promise.all([getJSON('data/road_safety_inequality.json'), getJSON('data/road_safety_inequality_tw.json').catch(() => null)])
+    .then(([d, tw]) => init(d, tw), () => { $('empty').hidden = false; });   // 只有下載失敗才顯示建置說明
 
-  function init(d) {
+  function init(d, tw) {
     state.data = d.countries;
     state.meta = d.meta;
+    state.tw = tw;                                              // 臺灣內部資料缺少時，只隱藏第03節
+    if (tw) { $('twSec').hidden = false; document.querySelectorAll('.tw-only').forEach(e => { e.hidden = false; }); }
     $('app').hidden = false;
     document.querySelectorAll('#viewSeg .chip').forEach(b => b.addEventListener('click', () => {
       state.view = b.dataset.view; renderCharts();
@@ -466,6 +544,7 @@ footer a { color: var(--ink-2); }
   function renderAll() {
     const t = T(), m = state.meta;
     $('subline').textContent = t.subline(m.year, state.data.length, m.swiid_version);
+    if (state.tw) { renderTwStatic(); renderTwModels(); renderTwTable(); }
     renderTiles(); renderCharts(); renderModels(); renderTable(); renderNotes();
   }
 
@@ -474,8 +553,8 @@ footer a { color: var(--ink-2); }
     const t = T(), m = state.meta, M = m.models, tw = m.taiwan;
     const ci = a => a.map(fmtPct);
     const tiles = [
-      { label: t.t1, value: m.corr_all.spearman.toFixed(2), unit: t.t1unit,
-        note: t.t1note(m.corr_all.n, m.corr_all.spearman_ci[0].toFixed(2), m.corr_all.spearman_ci[1].toFixed(2)) },
+      { label: t.t1, value: fmtR(m.corr_all.spearman), unit: t.t1unit,
+        note: t.t1note(m.corr_all.n, fmtR(m.corr_all.spearman_ci[0]), fmtR(m.corr_all.spearman_ci[1])) },
       { label: t.t2, value: fmtPct(M.M1.gini_pct), unit: t.t2unit, note: t.t2note(...ci(M.M1.gini_pct_ci)) },
       { label: t.t3, value: fmtPct(M.M2.gini_pct), unit: t.t3unit, badge: t.t3badge, note: t.t3note(...ci(M.M2.gini_pct_ci)) },
       { label: t.t4, value: tw.ratio.toFixed(1), unit: t.t4unit, lead: true,
@@ -494,7 +573,8 @@ footer a { color: var(--ink-2); }
     });
     const byIso = Object.fromEntries(state.data.map(c => [c.iso3, c]));
     const above = tw.above_in_hic.map(i => byIso[i] ? nameOf(byIso[i]) : i).join(state.lang === 'en' ? ', ' : '、');
-    $('lead').innerHTML = t.lead({ ratio: tw.ratio.toFixed(1), rank: tw.ratio_rank_hic, rankEn: ordinal(tw.ratio_rank_hic), above });
+    $('lead').innerHTML = t.lead({ ratio: tw.ratio.toFixed(1), rank: tw.ratio_rank_hic, rankEn: ordinal(tw.ratio_rank_hic), above })
+      + (state.tw ? t.leadTw : '');
   }
 
   // ================================================================ 02 散佈圖
@@ -506,12 +586,19 @@ footer a { color: var(--ink-2); }
     const t = T(), rows = visibleRows();
     renderLegend('legend1'); renderLegend('legend2');
     const f1 = logFit(rows, 'gini', 'rate'), f2 = logFit(rows, 'gini', 'ratio');
-    scatter($('chart1'), rows, { yk: 'rate', yTitle: t.y1Title, fit: f1, ticks: [0.5, 1, 2, 5, 10, 20, 50], yFmt: v => String(v) });
-    scatter($('chart2'), rows, { yk: 'ratio', yTitle: t.y2Title, fit: f2, ref: 1, zones: true,
-      ticks: [0.1, 0.2, 0.5, 1, 2, 5], yFmt: v => (v < 1 ? v.toFixed(1) : String(v)) + '×' });
+    const base = {
+      all: state.data, rows, xk: 'gini', xTicks: [20, 25, 30, 35, 40, 45, 50, 55, 60, 65], xFmt: String, xTitle: t.xTitle,
+      xNarrowEvery: 2, yLog: true, groupOf: c => c.group, id: c => c.iso3, label: nameOf, order: LABEL_PRIORITY,
+      must: ['TWN', 'USA'], maxLabels: [7, 15], ring: 'TWN', tip: fillTip, aria: t.chartAria,
+    };
+    scatter($('chart1'), Object.assign({}, base, { yk: 'rate', yTitle: t.y1Title, yTicks: [0.5, 1, 2, 5, 10, 20, 50], yFmt: String,
+      trend: f1 && (v => Math.exp(f1.a + f1.b * v)) }));
+    scatter($('chart2'), Object.assign({}, base, { yk: 'ratio', yTitle: t.y2Title, yTicks: [0.1, 0.2, 0.5, 1, 2, 5],
+      yFmt: v => (v < 1 ? v.toFixed(1) : String(v)) + '×', ref: 1, zones: true, trend: f2 && (v => Math.exp(f2.a + f2.b * v)) }));
     const p = f => (f ? fmtPct((Math.exp(f.b) - 1) * 100) : '—');
     $('cap1').textContent = t.cap1(rows.length, p(f1));
     $('cap2').textContent = t.cap2(rows.length, p(f2));
+    if (state.tw) renderTwCharts();
   }
   function renderLegend(id) {
     const t = T(), box = $(id); box.textContent = '';
@@ -537,97 +624,104 @@ footer a { color: var(--ink-2); }
     box.appendChild(note);
   }
 
-  function scatter(host, rows, o) {
-    const t = T();
+  // 刻度定義域：不大於最小值的最大刻度 ～ 不小於最大值的最小刻度
+  function tickDomain(ticks, vals) {
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    const below = ticks.filter(v => v <= lo), above = ticks.filter(v => v >= hi);
+    return [below.length ? below[below.length - 1] : ticks[0], above.length ? above[0] : ticks[ticks.length - 1]];
+  }
+  const scale = (lo, hi, a, b, log) => {
+    const f = log ? Math.log : (v => v), f0 = f(lo), f1 = f(hi);
+    return v => a + (f(v) - f0) / (f1 - f0) * (b - a);
+  };
+
+  // 通用散佈圖：x／y 可各自為線性或對數；軸範圍依 o.all 固定，篩選時點的位置不跳動
+  function scatter(host, o) {
+    const t = T(), rows = o.rows;
     host.querySelectorAll('svg').forEach(s => s.remove());
     const tip = host.querySelector('.tip'); tip.style.display = 'none';
-    const W = Math.max(300, host.clientWidth), narrow = W < 560;
-    const H = narrow ? 380 : 470;
+    const W = Math.max(260, host.clientWidth), narrow = W < 560;
+    const H = o.height ? o.height(narrow) : (narrow ? 380 : 470);
     const m = { l: narrow ? 44 : 56, r: narrow ? 10 : 18, t: 18, b: narrow ? 58 : 50 };
     const iw = W - m.l - m.r, ih = H - m.t - m.b;
-    const all = state.data;                                     // 軸範圍固定在全部國家，切換時位置不跳動
-    const gMin = Math.floor(Math.min(...all.map(c => c.gini)) / 5) * 5, gMax = Math.ceil(Math.max(...all.map(c => c.gini)) / 5) * 5;
-    const ys = all.map(c => c[o.yk]);
-    const below = o.ticks.filter(v => v <= Math.min(...ys)), above = o.ticks.filter(v => v >= Math.max(...ys));
-    const yLo = below.length ? below[below.length - 1] : o.ticks[0];         // 不大於最小值的最大刻度
-    const yHi = above.length ? above[0] : o.ticks[o.ticks.length - 1];       // 不小於最大值的最小刻度
-    const X = v => m.l + (v - gMin) / (gMax - gMin) * iw;
-    const Y = v => m.t + ih - (Math.log(v) - Math.log(yLo)) / (Math.log(yHi) - Math.log(yLo)) * ih;
+    const [xLo, xHi] = tickDomain(o.xTicks, o.all.map(c => c[o.xk]));
+    const [yLo, yHi] = tickDomain(o.yTicks, o.all.map(c => c[o.yk]));
+    const X = scale(xLo, xHi, m.l, m.l + iw, o.xLog), Y = scale(yLo, yHi, m.t + ih, m.t, o.yLog);
+    const clampY = v => Math.min(yHi, Math.max(yLo, v));
 
-    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': t.chartAria(rows.length, o.yTitle) });
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.aria(rows.length, o.yTitle) });
     host.insertBefore(svg, tip);
     const gGrid = svg.appendChild(sv('g'));
-    o.ticks.filter(v => v >= yLo && v <= yHi).forEach(v => {
+    o.yTicks.filter(v => v >= yLo && v <= yHi).forEach(v => {
       gGrid.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'gridline' }));
-      const g = gGrid.appendChild(sv('g', { class: 'tick' }));
-      const tx = g.appendChild(sv('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' })); tx.textContent = o.yFmt(v);
+      const tx = gGrid.appendChild(sv('g', { class: 'tick' })).appendChild(sv('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }));
+      tx.textContent = o.yFmt(v);
     });
-    for (let v = gMin; v <= gMax; v += 5) {
-      if (narrow && v % 10) continue;
+    o.xTicks.filter(v => v >= xLo && v <= xHi).forEach((v, i) => {
+      if (narrow && o.xNarrowEvery && i % o.xNarrowEvery) return;
       gGrid.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t, y2: m.t + ih, class: 'gridline' }));
-      const g = gGrid.appendChild(sv('g', { class: 'tick' }));
-      const tx = g.appendChild(sv('text', { x: X(v), y: m.t + ih + 18, 'text-anchor': 'middle' })); tx.textContent = String(v);
-    }
+      const tx = gGrid.appendChild(sv('g', { class: 'tick' })).appendChild(sv('text', { x: X(v), y: m.t + ih + 18, 'text-anchor': 'middle' }));
+      tx.textContent = o.xFmt(v);
+    });
     svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih, class: 'axisline' }));
-    const xt = svg.appendChild(sv('text', { x: m.l + iw / 2, y: H - (narrow ? 22 : 10), 'text-anchor': 'middle', class: 'axis-title' }));
-    xt.textContent = t.xTitle;
-    if (narrow) {                                               // 窄螢幕：x 軸標題分兩行
-      const parts = t.xTitle.split('→').map(x => x.trim());
-      xt.textContent = parts[0];
-      const x2 = svg.appendChild(sv('text', { x: m.l + iw / 2, y: H - 6, 'text-anchor': 'middle', class: 'axis-title' }));
-      x2.textContent = parts[1] ? '→ ' + parts[1] : '';
-    }
+    const parts = narrow ? o.xTitle.split('→').map(x => x.trim()) : [o.xTitle];
+    parts.forEach((s, i) => {
+      const xt = svg.appendChild(sv('text', { x: m.l + iw / 2, y: H - (parts.length > 1 ? 22 - i * 16 : 10), 'text-anchor': 'middle', class: 'axis-title' }));
+      xt.textContent = i ? '→ ' + s : s;
+      const len = xt.getComputedTextLength(), room = W - 8;    // 窄螢幕放不下就縮小字級，不讓標題超出畫面
+      if (len > room) { xt.setAttribute('x', W / 2); xt.style.fontSize = Math.max(9, 11.5 * room / len).toFixed(1) + 'px'; }
+    });
     const yt = svg.appendChild(sv('text', { transform: `translate(${narrow ? 11 : 14},${m.t + ih / 2}) rotate(-90)`, 'text-anchor': 'middle', class: 'axis-title' }));
     yt.textContent = o.yTitle;
 
     const placed = [];                                          // 已佔用的文字框，避免重疊
-    const overlaps = b => placed.some(p => b.x < p.x + p.w && b.x + b.w > p.x && b.y < p.y + p.h && b.y + b.h > p.y);
+    const boxOf = n => { const bb = n.getBBox(); return { x: bb.x - 2, y: bb.y - 2, w: bb.width + 4, h: bb.height + 4 }; };
     if (o.ref != null) {
       svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(o.ref), y2: Y(o.ref), class: 'refline' }));
       const rl = svg.appendChild(sv('text', { x: W - m.r - 4, y: Y(o.ref) - 6, 'text-anchor': 'end', class: 'reflabel' }));
-      rl.textContent = t.refLabel;
-      const bb = rl.getBBox(); placed.push({ x: bb.x - 2, y: bb.y - 2, w: bb.width + 4, h: bb.height + 4 });
+      rl.textContent = t.refLabel; placed.push(boxOf(rl));
     }
     if (o.zones) {
       [[t.zoneHi, m.t + 14], [t.zoneLo, m.t + ih - 8]].forEach(([s, y]) => {
-        const z = svg.appendChild(sv('text', { x: m.l + 8, y, class: 'zone' })); z.textContent = s;
-        const bb = z.getBBox(); placed.push({ x: bb.x - 2, y: bb.y - 2, w: bb.width + 4, h: bb.height + 4 });
+        const z = svg.appendChild(sv('text', { x: m.l + 8, y, class: 'zone' })); z.textContent = s; placed.push(boxOf(z));
       });
     }
-    if (o.fit) {
-      const vis = rows.map(c => c.gini), a = Math.min(...vis), b = Math.max(...vis);
-      const yy = v => Math.min(yHi, Math.max(yLo, Math.exp(o.fit.a + o.fit.b * v)));
-      svg.appendChild(sv('path', { d: `M${X(a)},${Y(yy(a))}L${X(b)},${Y(yy(b))}`, class: 'trend' }));
+    if (o.trend && rows.length > 2) {                           // 趨勢線：在可見範圍內取樣（對數軸上也正確）
+      const xs = rows.map(c => c[o.xk]), a = Math.min(...xs), b = Math.max(...xs);
+      const inv = o.xLog ? (u => Math.exp(Math.log(a) + u * (Math.log(b) - Math.log(a)))) : (u => a + u * (b - a));
+      let d = '';
+      for (let i = 0; i <= 40; i++) { const v = inv(i / 40); d += (i ? 'L' : 'M') + X(v).toFixed(1) + ',' + Y(clampY(o.trend(v))).toFixed(1); }
+      svg.appendChild(sv('path', { d, class: 'trend' }));
     }
 
-    // 點：背景點先畫，臺灣與有標籤者最後畫
     const r = narrow ? 4.5 : 5.5;
-    const pts = rows.map(c => ({ c, x: X(c.gini), y: Y(Math.min(yHi, Math.max(yLo, c[o.yk]))) }));
+    const pts = rows.map(c => ({ c, id: o.id(c), x: X(c[o.xk]), y: Y(clampY(c[o.yk])) }));
     const gPts = svg.appendChild(sv('g'));
-    pts.sort((p, q) => (p.c.iso3 === 'TWN') - (q.c.iso3 === 'TWN')).forEach(p => {
-      const big = p.c.iso3 === 'TWN' || LABEL_PRIORITY.includes(p.c.iso3);
+    pts.sort((p, q) => (p.id === o.ring) - (q.id === o.ring)).forEach(p => {
+      const big = p.id === o.ring || o.order.includes(p.id);
+      const g = o.groupOf(p.c);
       p.r = big ? r + 1 : r;
-      p.node = gPts.appendChild(sv('path', { d: shapePath(GROUP[p.c.group].shape, p.x, p.y, p.r), class: `pt g-${p.c.group}${big ? '' : ' bg'}` }));
-      if (p.c.iso3 === 'TWN') gPts.appendChild(sv('circle', { cx: p.x, cy: p.y, r: p.r + 5, class: 'tw-ring' }));
+      p.node = gPts.appendChild(sv('path', { d: shapePath(GROUP[g].shape, p.x, p.y, p.r), class: `pt g-${g}${big ? '' : ' bg'}` }));
+      if (p.id === o.ring) gPts.appendChild(sv('circle', { cx: p.x, cy: p.y, r: p.r + 5, class: 'tw-ring' }));
     });
-    pts.forEach(p => placed.push({ x: p.x - p.r - 1, y: p.y - p.r - 1, w: 2 * p.r + 2, h: 2 * p.r + 2, iso: p.c.iso3 }));
+    pts.forEach(p => placed.push({ x: p.x - p.r - 1, y: p.y - p.r - 1, w: 2 * p.r + 2, h: 2 * p.r + 2, id: p.id }));
 
-    // 標籤：依優先順序，在點周圍 8 個方位找不重疊的位置；放不下就略過（表格與 tooltip 仍有完整資訊）
+    // 標籤：依優先順序在點周圍找不重疊的位置；放不下就略過（表格與 tooltip 仍有完整資訊）。
+    // o.must 中的點一定要標：放不下時改用較遠位置＋引線。
     const gLab = svg.appendChild(sv('g'));
-    const byIso = Object.fromEntries(pts.map(p => [p.c.iso3, p]));
-    const maxLabels = narrow ? 7 : 15;
-    const MUST = ['TWN', 'USA'];                                // 一定要標：放不下時改用較遠位置＋引線
+    const byId = Object.fromEntries(pts.map(p => [p.id, p]));
+    const maxLabels = o.maxLabels[narrow ? 0 : 1];
     let count = 0;
-    LABEL_PRIORITY.forEach(iso => {
-      const p = byIso[iso], must = MUST.includes(iso);
+    o.order.forEach(id => {
+      const p = byId[id], must = (o.must || []).includes(id);
       if (!p || (count >= maxLabels && !must)) return;
-      const tw = iso === 'TWN';
-      const node = gLab.appendChild(sv('text', { class: 'plabel' + (tw ? ' tw' : '') }));
-      node.textContent = nameOf(p.c);
-      const bw = node.getComputedTextLength(), bh = tw ? 14 : 12;
+      const ringed = id === o.ring;
+      const node = gLab.appendChild(sv('text', { class: 'plabel' + (ringed ? ' tw' : '') }));
+      node.textContent = o.label(p.c);
+      const bw = node.getComputedTextLength(), bh = ringed ? 14 : 12;
       const ring = d => [[d, -2, 'start'], [-d, -2, 'end'], [0, -d - 3, 'middle'], [0, d + bh - 1, 'middle'],
         [d, -d, 'start'], [-d, -d, 'end'], [d, d + 6, 'start'], [-d, d + 6, 'end']];
-      const d0 = p.r + (tw ? 9 : 4);                           // 臺灣外圈有黑環，標籤要讓開
+      const d0 = p.r + (ringed ? 9 : 4);                        // 臺灣外圈有黑環，標籤要讓開
       const cands = ring(d0).concat(must ? ring(d0 + 14).concat(ring(d0 + 30)) : []);
       const tryPlace = force => {
         for (const [dx, dy, anchor] of cands) {
@@ -635,9 +729,9 @@ footer a { color: var(--ink-2); }
           const bx = anchor === 'start' ? x : anchor === 'end' ? x - bw : x - bw / 2;
           const box = { x: bx - 2, y: y - bh, w: bw + 4, h: bh + 3 };
           if (box.x < m.l || box.x + box.w > W - m.r || box.y < m.t - 4 || box.y + box.h > m.t + ih) continue;
-          if (!force && placed.some(q => q.iso !== iso && box.x < q.x + q.w && box.x + box.w > q.x && box.y < q.y + q.h && box.y + box.h > q.y)) continue;
+          if (!force && placed.some(q => q.id !== id && box.x < q.x + q.w && box.x + box.w > q.x && box.y < q.y + q.h && box.y + box.h > q.y)) continue;
           node.setAttribute('x', x); node.setAttribute('y', y); node.setAttribute('text-anchor', anchor);
-          if (Math.hypot(dx, dy) > d0 + 8) {                    // 遠離點時加引線，避免認錯
+          if (Math.hypot(dx, dy) > d0 + 8) {                      // 遠離點時加引線，避免認錯
             const ex = anchor === 'start' ? box.x : anchor === 'end' ? box.x + box.w : x, ey = y - bh / 2;
             gLab.insertBefore(sv('line', { x1: p.x, y1: p.y, x2: ex, y2: ey, class: 'leader' }), node);
           }
@@ -651,19 +745,18 @@ footer a { color: var(--ink-2); }
     // 互動：找離指標最近的點（命中範圍大於點本身）
     const hit = svg.appendChild(sv('rect', { x: m.l, y: m.t, width: iw, height: ih, class: 'hit' }));
     let hot = null;
-    const show = (p, cx, cy) => {
+    const show = p => {
       if (hot) hot.node.classList.remove('hot');
       hot = p;
       if (!p) { tip.style.display = 'none'; return; }
       p.node.classList.add('hot');
-      fillTip(tip, p.c);
+      o.tip(tip, p.c);
       tip.style.display = 'block';
-      const hw = host.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
-      const sx = host.clientWidth / W;
-      let lx = p.x * sx + 14, ly = p.y * sx - th - 10;
-      if (lx + tw > hw) lx = p.x * sx - tw - 14;
-      if (lx < 0) lx = Math.max(0, Math.min(hw - tw, p.x * sx - tw / 2));
-      if (ly < 0) ly = p.y * sx + 14;
+      const hw = host.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight, s = hw / W;
+      let lx = p.x * s + 14, ly = p.y * s - th - 10;
+      if (lx + tw > hw) lx = p.x * s - tw - 14;
+      if (lx < 0) lx = Math.max(0, Math.min(hw - tw, p.x * s - tw / 2));
+      if (ly < 0) ly = p.y * s + 14;
       tip.style.left = lx + 'px'; tip.style.top = ly + 'px';
     };
     const nearest = ev => {
@@ -696,6 +789,85 @@ footer a { color: var(--ink-2); }
     if (c.rate_source === 'MOTC') tip.appendChild(el('div', { class: 'tsrc' }, t.tipTW));
   }
 
+  // ================================================================ 03 臺灣內部
+  const TW_ORDER = ['臺東縣', '臺北市', '屏東縣', '連江縣', '雲林縣', '新竹市', '新竹縣', '嘉義縣', '金門縣', '新北市',
+    '花蓮縣', '宜蘭縣', '南投縣', '澎湖縣', '彰化縣', '臺中市', '高雄市', '桃園市', '臺南市', '基隆市', '嘉義市', '苗栗縣'];
+  // 英文短名去掉 City／County；新竹、嘉義市縣同名，保留全名以免混淆
+  const cName = c => (state.lang === 'en' ? (/^(Hsinchu|Chiayi) /.test(c.en) ? c.en : c.en.replace(/ (City|County)$/, '')) : c.county);
+  const cAlt = c => (state.lang === 'en' ? c.county : c.en);
+  const linFit = (rows, xk, yk, logx) => {
+    const xs = rows.map(r => (logx ? Math.log(r[xk]) : r[xk])), ys = rows.map(r => r[yk]), n = xs.length;
+    const mx = xs.reduce((s, v) => s + v, 0) / n, my = ys.reduce((s, v) => s + v, 0) / n;
+    let sxy = 0, sxx = 0; for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; }
+    const b = sxy / sxx, a = my - b * mx; return v => a + b * (logx ? Math.log(v) : v);
+  };
+  function renderTwCharts() {
+    const t = T(), tw = state.tw, C = tw.counties, cc = tw.meta.county_corr;
+    const panels = [
+      { id: 'twc1', key: 'gini_est', title: t.twP1, xTitle: t.twX1, xTicks: [0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7], xFmt: v => v.toFixed(2), xNarrowEvery: 2 },
+      { id: 'twc2', key: 'median_est', title: t.twP2, xTitle: t.twX2, xTicks: [400, 500, 600, 700, 800], xFmt: v => String(v) },
+      { id: 'twc3', key: 'density', title: t.twP3, xTitle: t.twX3, xTicks: [50, 100, 200, 500, 1000, 2000, 5000, 10000],
+        xFmt: v => (v >= 1000 ? v / 1000 + 'k' : String(v)), xLog: true, xNarrowEvery: 2 },
+    ];
+    panels.forEach(pn => {
+      const r = cc[pn.key], sig = r.ci[0] > 0 || r.ci[1] < 0;
+      $(pn.id + 't').textContent = pn.title;
+      $(pn.id + 's').textContent = t.twRho(fmtR(r.spearman), fmtR(r.ci[0]), fmtR(r.ci[1])) + (sig ? '' : t.twNs);
+      scatter($(pn.id), {
+        all: C, rows: C, xk: pn.key, xLog: pn.xLog, xTicks: pn.xTicks, xFmt: pn.xFmt, xTitle: pn.xTitle, xNarrowEvery: pn.xNarrowEvery,
+        yk: 'rate', yTicks: [0, 5, 10, 15, 20, 25, 30, 35], yFmt: String, yTitle: t.twY,
+        height: () => 340, groupOf: () => 'asia', id: c => c.county, label: cName, order: TW_ORDER, must: ['臺北市', '臺東縣'],
+        maxLabels: [8, 10], ring: null, tip: fillTwTip, aria: () => t.twAria(pn.title),
+        trend: linFit(C, pn.key, 'rate', pn.xLog),
+      });
+    });
+  }
+  function fillTwTip(tip, c) {
+    const t = T(); tip.textContent = '';
+    const head = el('div', { class: 'tn' });
+    head.appendChild(el('span', null, state.lang === 'en' ? c.en : c.county));
+    head.appendChild(el('span', { class: 'ten' }, cAlt(c)));
+    tip.appendChild(head);
+    const dl = el('dl');
+    const row = (k, v) => { dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, v)); };
+    row(t.tipRate, fmt1(c.rate) + t.per100k);
+    row(t.twGini, c.gini_est.toFixed(3));
+    row(t.twIqr, c.iqr_est.toFixed(2) + '×');
+    row(t.twMed, fmtInt(c.median_est) + t.kNtd);
+    row(t.twMean, fmtInt(c.mean) + t.kNtd);
+    row(t.twDens, fmtInt(c.density) + t.perKm2);
+    tip.appendChild(dl);
+    tip.appendChild(el('div', { class: 'tsrc' }, t.twTipSrc(fmtInt(c.deaths), c.n_towns)));
+  }
+  function renderTwStatic() {
+    const t = T(), m = state.tw.meta, cc = m.county_corr, M = m.models;
+    $('twKicker').textContent = t.twKicker(m.n_towns, m.death_years[0], m.death_years[2], m.income_year);
+    const sig = ci => ci[0] > 0 || ci[1] < 0;
+    const e3 = M.T3.effects;
+    const tiles = [
+      { label: t.twT1, value: fmtR(cc.gini_est.spearman), unit: t.twRhoUnit, badge: !sig(cc.gini_est.ci),
+        note: t.twT1note(fmtR(cc.gini_est.ci[0]), fmtR(cc.gini_est.ci[1])) },
+      { label: t.twT2, value: fmtR(cc.median_est.spearman), unit: t.twRhoUnit, badge: !sig(cc.median_est.ci),
+        note: t.twT2note(fmtR(cc.median_est.ci[0]), fmtR(cc.median_est.ci[1])) },
+      { label: t.twT3, value: fmtPct(e3.iqr.pct), unit: t.twT3unit, badge: !sig(e3.iqr.pct_ci),
+        note: t.twT3note(fmtPct(e3.iqr.pct_ci[0]), fmtPct(e3.iqr.pct_ci[1])) },
+      { label: t.twT4, value: fmtPct(e3.density.pct), unit: t.twT4unit, badge: !sig(e3.density.pct_ci), lead: true,
+        note: t.twT4note(fmtPct(e3.density.pct_ci[0]), fmtPct(e3.density.pct_ci[1])) },
+    ];
+    const box = $('twTiles'); box.textContent = '';
+    tiles.forEach(x => {
+      const d = el('div', { class: 'tile' + (x.lead ? ' lead-tile' : '') });
+      d.appendChild(el('div', { class: 'label' }, x.label));
+      const v = el('div', { class: 'value' }, x.value);
+      v.appendChild(el('span', { class: 'unit' }, x.unit));
+      if (x.badge) v.appendChild(el('span', { class: 'badge' }, t.t3badge));
+      d.appendChild(v); d.appendChild(el('div', { class: 'note' }, x.note));
+      box.appendChild(d);
+    });
+    $('twLead').innerHTML = t.twLead;
+    $('twCap').textContent = t.twCap(m.deaths_unassigned[String(m.death_years[1])]);
+  }
+
   // ================================================================ 03 模型表
   function renderModels() {
     const t = T(), M = state.meta.models;
@@ -716,6 +888,64 @@ footer a { color: var(--ink-2); }
       tr.appendChild(el('td', { class: 'num' }, mo.gini_pct_ci ? `${fmtPct(mo.gini_pct_ci[0])} ～ ${fmtPct(mo.gini_pct_ci[1])}` : t.na));
       tr.appendChild(el('td', { class: 'num' }, mo.r2.toFixed(2)));
     });
+  }
+
+  function renderTwModels() {
+    const t = T(), M = state.tw.meta.models;
+    $('twMkicker').textContent = t.twMkicker;
+    const tb = $('twMtable'); tb.textContent = '';
+    const cols = [['model', ''], ['spec', ''], ['n', 'num'], ['iqr', 'num'], ['median', 'num'], ['density', 'num']];
+    const head = tb.appendChild(el('thead')).appendChild(el('tr'));
+    cols.forEach(([k, cl]) => head.appendChild(el('th', { class: cl, scope: 'col' }, t.twMcols[k])));
+    const body = tb.appendChild(el('tbody'));
+    ['T1', 'T2', 'T3', 'T4'].forEach(k => {
+      const mo = M[k], tr = body.appendChild(el('tr'));
+      tr.appendChild(el('td', null, k));
+      tr.appendChild(el('td', { class: 'wrap' }, t.twModels[k]));
+      tr.appendChild(el('td', { class: 'num' }, String(mo.n)));
+      ['iqr', 'median', 'density'].forEach(n => {
+        const e = mo.effects[n];
+        if (!e) { tr.appendChild(el('td', { class: 'num' }, t.na)); return; }
+        const td = el('td', { class: 'num' }, `${fmtPct(e.pct)}（${fmtPct(e.pct_ci[0])}～${fmtPct(e.pct_ci[1])}）`);
+        if (e.pct_ci[0] <= 0 && e.pct_ci[1] >= 0) td.appendChild(el('span', { class: 'sig' }, t.sigNo));
+        tr.appendChild(td);
+      });
+    });
+  }
+  function renderTwTable() {
+    const t = T(), tb = $('twCtable'); tb.textContent = '';
+    const cols = [['county', ''], ['rate', 'num'], ['gini', 'num'], ['iqr', 'num'], ['med', 'num'], ['mean', 'num'], ['dens', 'num'], ['towns', 'num']];
+    const val = (c, k) => ({ county: cName(c), rate: c.rate, gini: c.gini_est, iqr: c.iqr_est, med: c.median_est, mean: c.mean,
+      dens: c.density, towns: c.n_towns })[k];
+    const head = tb.appendChild(el('thead')).appendChild(el('tr'));
+    cols.forEach(([k, cl]) => {
+      const th = el('th', { class: cl, scope: 'col' });
+      if (state.twSort.key === k) th.setAttribute('aria-sort', state.twSort.dir > 0 ? 'ascending' : 'descending');
+      const b = el('button', { type: 'button' }, t.twCcols[k]);
+      b.addEventListener('click', () => {
+        state.twSort = { key: k, dir: state.twSort.key === k ? -state.twSort.dir : (cl === 'num' ? -1 : 1) };
+        renderTwTable();
+        const again = document.querySelector(`#twCtable th:nth-child(${cols.findIndex(c => c[0] === k) + 1}) button`); if (again) again.focus();
+      });
+      th.appendChild(b); head.appendChild(th);
+    });
+    const rows = state.tw.counties.slice().sort((a, b) => {
+      const x = val(a, state.twSort.key), y = val(b, state.twSort.key);
+      return (typeof x === 'string' ? x.localeCompare(y, T().locale) : x - y) * state.twSort.dir;
+    });
+    const body = tb.appendChild(el('tbody'));
+    rows.forEach(c => {
+      const tr = body.appendChild(el('tr'));
+      tr.appendChild(el('td', null, cName(c)));
+      tr.appendChild(el('td', { class: 'num' }, fmt1(c.rate)));
+      tr.appendChild(el('td', { class: 'num' }, c.gini_est.toFixed(3)));
+      tr.appendChild(el('td', { class: 'num' }, c.iqr_est.toFixed(2) + '×'));
+      tr.appendChild(el('td', { class: 'num' }, fmtInt(c.median_est)));
+      tr.appendChild(el('td', { class: 'num' }, fmtInt(c.mean)));
+      tr.appendChild(el('td', { class: 'num' }, fmtInt(c.density)));
+      tr.appendChild(el('td', { class: 'num' }, String(c.n_towns)));
+    });
+    $('twCcount').textContent = t.twCcount;
   }
 
   // ================================================================ 04 各國表
@@ -797,8 +1027,31 @@ footer a { color: var(--ink-2); }
       ],
     };
     const ul = a => '<ul>' + a.map(s => `<li>${s}</li>`).join('') + '</ul>';
-    box.innerHTML = `<h3>${L.h1}</h3>${ul(L.data)}<h3>${L.h2}</h3>${ul(L.method)}<h3>${L.h3}</h3>${ul(L.read)}` +
+    let twHtml = '';
+    if (state.tw) {
+      const w = state.tw.meta, lc = w.lognormal_check, un = w.deaths_unassigned[String(w.death_years[1])];
+      const W = en ? {
+        h: 'Within Taiwan: data and method',
+        li: [
+          `Income: Ministry of Finance Fiscal Information Agency, ${w.income_year} consolidated income-tax statistics by township (per tax unit). They exclude government transfers, tax-exempt and separately taxed income, and households that do not file, so they describe pre-tax filed income, not household disposable income.`,
+          `Population and land area: Ministry of the Interior, end of ${w.income_year}. Deaths: MOTC road safety portal, 30-day deaths ${w.death_years[0]}–${w.death_years[2]}; freeway crashes and deaths not assignable to a township are excluded (${un} in ${w.death_years[1]}). Township sums were checked against county totals.`,
+          `County Gini, median and Q3÷Q1 are <strong>estimates</strong>: each township is treated as log-normal (fitted to its median and quartiles) and the townships are mixed by number of tax units. Check: the mean implied by that fit is ${lc.p50.toFixed(2)}× the actual township mean (median; 10–90% range ${lc.p10.toFixed(2)}–${lc.p90.toFixed(2)}), so the top tail is a little heavier than log-normal and the estimated Gini is probably slightly low. Township models use the published quartiles directly, with no distributional assumption.`,
+          `With only 22 counties, county-level correlations have wide intervals; the township models (n=${w.n_towns}) carry the inference.`,
+        ],
+      } : {
+        h: '臺灣內部：資料與方法',
+        li: [
+          `所得：財政部財政資訊中心${w.income_year - 1911}年度綜合所得稅各鄉鎮市區統計（以納稅單位計）。不含政府移轉、免稅與分離課稅所得，未申報者也不在內，因此描述的是稅前的申報所得，而非家戶可支配所得。`,
+          `人口與面積：內政部${w.income_year - 1911}年底資料。死亡：交通部道安資訊查詢網${w.death_years[0] - 1911}–${w.death_years[2] - 1911}年30日死亡人數；國道與無法歸屬鄉鎮的事故不計入（${w.death_years[1]}年${un}人）。各鄉鎮加總已與縣市總數核對。`,
+          `縣市的吉尼係數、中位數與Q3÷Q1為<strong>推估值</strong>：把每個鄉鎮視為對數常態分配（以中位數與四分位數定參數），再依納稅單位數混合。檢核：由此推得的平均數為鄉鎮實際平均數的${lc.p50.toFixed(2)}倍（中位數；10%–90%為${lc.p10.toFixed(2)}–${lc.p90.toFixed(2)}），代表高所得尾端比對數常態略厚，推估的吉尼係數可能略為偏低。鄉鎮模型直接使用財政部公布的分位數，不需要分配假設。`,
+          `縣市只有22個，縣市層級的相關係數區間很寬；推論主要依靠${w.n_towns}個鄉鎮的模型。`,
+        ],
+      };
+      twHtml = `<h3>${W.h}</h3>${ul(W.li)}`;
+    }
+    box.innerHTML = `<h3>${L.h1}</h3>${ul(L.data)}<h3>${L.h2}</h3>${ul(L.method)}<h3>${L.h3}</h3>${ul(L.read)}${twHtml}` +
       `<h3>${L.h4}</h3><p><code>python3 scripts/build_road_safety.py</code> → <code>python3 scripts/build_inequality.py</code>` +
+      (state.tw ? '；<code>python3 scripts/build_taiwan_inequality.py</code>' : '') +
       `（${en ? 'generated ' : ''}${m.generated.slice(0, 10)}${en ? '' : ' 產生'}）。` +
       `${en ? 'Citation' : '引用'}：<a href="${m.swiid_doi}" rel="noopener">${m.sources.swiid.replace(/</g, '&lt;')}</a></p>`;
   }
