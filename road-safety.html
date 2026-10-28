@@ -182,6 +182,8 @@ h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; 
 .tip .tq { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grid); color: var(--ink-2); }
 .tip .tsrc { margin-top: 4px; font-size: 11px; color: var(--muted); }
 .caption { font-size: 11.5px; color: var(--muted); margin: 8px 4px 2px; }
+.more { display: inline-block; margin-top: 14px; font-size: 13px; font-weight: 700; color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--lime); padding-bottom: 1px; }
+.more:hover { border-color: var(--ink); }
 
 /* ------------------------------------------------------------------ table view */
 .tbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -299,6 +301,7 @@ footer a { color: var(--ink-2); }
     </div>
     <p class="caption" id="caption"></p>
   </div>
+  <a class="more" href="road-safety-inequality.html" data-i18n="moreIneq">延伸分析：所得分配不均，會讓道路更危險嗎？ →</a>
 </section>
 
 <section class="section" aria-labelledby="s3">
@@ -346,6 +349,7 @@ footer a { color: var(--ink-2); }
       hlAria: '突顯國家', hlLabel: '突顯', thrAria: '象限門檻', thrLabel: '門檻',
       gdpThr: '所得門檻', rateThr: '死亡率門檻', gdpThrAria: '人均 GDP 門檻（對數）', rateThrAria: '道路交通死亡率門檻',
       reset: '回到預設門檻', showAll: '顯示全部國家',
+      moreIneq: '延伸分析：所得分配不均，會讓道路更危險嗎？ →',
       viewAria: '顯示範圍', viewLabel: '範圍', viewAll: '全部國家', viewRich: '放大富裕國家',
       zoomNote: n => `（放大檢視：顯示富裕國家附近的 ${n} 國；四象限國家數仍以全部國家計）`,
       subline: (y, n) => `${y} 年資料 · WHO 道路交通死亡率估計值 × IMF 人均 GDP · ${n} 個國家／地區`,
@@ -394,6 +398,7 @@ footer a { color: var(--ink-2); }
       hlAria: 'Highlighted countries', hlLabel: 'Highlight', thrAria: 'Quadrant thresholds', thrLabel: 'Thresholds',
       gdpThr: 'Income', rateThr: 'Death rate', gdpThrAria: 'GDP per capita threshold (log)', rateThrAria: 'Road traffic death rate threshold',
       reset: 'Reset thresholds', showAll: 'Show all countries',
+      moreIneq: 'Follow-up: does income inequality make roads deadlier? →',
       viewAria: 'View', viewLabel: 'View', viewAll: 'All countries', viewRich: 'Zoom: high-income',
       zoomNote: n => ` (zoomed: ${n} countries near the high-income group shown; quadrant counts still cover all countries)`,
       subline: (y, n) => `${y} data · WHO road traffic death-rate estimates × IMF GDP per capita · ${n} countries and areas`,

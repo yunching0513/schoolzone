@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>道路安全 × 所得分配｜打造夢想街道</title>
+<meta name="description" content="以SWIID標準化吉尼係數與WHO道路交通死亡率，檢驗所得分配不均與道路安全的關係，並比較臺灣與其他國家。">
+<meta name="theme-color" content="#1A1A1A">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<script>
+  // 在畫面繪製前套用主題與語言（與國際比較頁共用設定），避免先閃一下另一種樣式。
+  (function () {
+    var q = new URLSearchParams(location.search), d = document.documentElement;
+    function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    var th = q.get('theme'), lg = q.get('lang');
+    if (th && /^(auto|light|dark)$/.test(th)) set('rs_theme', th); else th = get('rs_theme') || 'auto';
+    if (lg && /^(zh|en)$/.test(lg)) set('lang', lg); else lg = get('lang') === 'en' ? 'en' : 'zh';
+    if (th !== 'auto') d.setAttribute('data-theme', th);
+    d.setAttribute('lang', lg === 'en' ? 'en' : 'zh-Hant');
+    window.__RS_LANG = lg; window.__RS_THEME = th;
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ------------------------------------------------------------------ tokens
+   與 road-safety.html 同一套：品牌色（lime／黑）用於版面；大洲用經驗證的 4 色＋形狀雙重編碼。 */
+:root {
+  color-scheme: light;
+  --lime: #C8D400; --lime-dk: #A8B200;
+  --page: #ffffff; --surface: #ffffff;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --rule: #1A1A1A;
+  --hair: rgba(11,11,11,0.10);
+  --c-asia: #2a78d6; --c-europe: #eda100; --c-americas: #e87ba4; --c-africa: #008300;
+  --font-zh: 'Noto Sans TC', system-ui, sans-serif;
+  --font-en: 'Space Grotesk', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+    --hair: rgba(255,255,255,0.10);
+    --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+  --hair: rgba(255,255,255,0.10);
+  --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--page); color: var(--ink); font-family: var(--font-zh); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.shell { max-width: 1240px; margin: 0 auto; padding: 48px 40px 80px; }
+
+.page-header { display: flex; align-items: flex-end; gap: 24px; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 2px solid var(--rule); }
+.logo-mark { font-family: var(--font-en); font-size: 9px; font-weight: 600; letter-spacing: .18em; border: 1.5px solid var(--rule); padding: 5px 10px; text-transform: uppercase; line-height: 1.5; white-space: nowrap; }
+.title-block { flex: 1; min-width: 0; }
+.eyebrow { font-family: var(--font-en); font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; line-height: 1.35; }
+.sub { margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
+.back { font-family: var(--font-en); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--axis); white-space: nowrap; padding-bottom: 1px; }
+.back:hover { color: var(--ink); border-color: var(--ink); }
+.ctrls { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.seg { display: inline-flex; border: 1.5px solid var(--rule); }
+.seg button { font-family: var(--font-en); font-size: 10.5px; font-weight: 600; letter-spacing: .08em; padding: 5px 10px;
+  background: var(--surface); color: var(--muted); border: 0; cursor: pointer; line-height: 1.4; }
+.seg button + button { border-left: 1px solid var(--axis); }
+.seg button[aria-pressed="true"] { background: var(--rule); color: var(--page); }
+.seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.section { margin-bottom: 44px; }
+.section-label { font-family: var(--font-en); font-size: 10px; font-weight: 600; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--grid); }
+.lead { font-size: 15px; line-height: 1.9; max-width: 860px; margin: 18px 0 0; }
+.lead strong { font-weight: 700; }
+.kicker { font-size: 13px; color: var(--ink-2); max-width: 860px; margin: -4px 0 16px; line-height: 1.8; }
+
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--hair); padding: 16px 18px; }
+.tile .label { font-size: 12px; color: var(--ink-2); }
+.tile .value { font-size: 30px; font-weight: 700; line-height: 1.15; margin-top: 6px; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+.tile .unit { font-size: 12px; font-weight: 400; color: var(--ink-2); margin-left: 4px; }
+.tile .note { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.tile.lead-tile { border-left: 3px solid var(--lime); }
+.badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 6px; margin-left: 6px; border: 1px solid var(--ink-2); color: var(--ink-2); vertical-align: middle; letter-spacing: .04em; line-height: 1.5; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-bottom: 14px; }
+.fgroup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.flabel { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--muted); margin-right: 4px; }
+.chip { font-family: var(--font-zh); font-size: 12px; padding: 6px 11px; border: 1px solid var(--axis); background: var(--surface); color: var(--ink); cursor: pointer; line-height: 1.3; }
+.chip:hover { border-color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: #111; font-weight: 700; }
+.chip:focus-visible, .lg-item:focus-visible, th button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.card { background: var(--surface); border: 1px solid var(--hair); padding: 16px 16px 10px; position: relative; }
+.card + .card { margin-top: 16px; }
+.card-title { font-size: 14px; font-weight: 700; margin: 0 4px 2px; }
+.card-sub { font-size: 12px; color: var(--ink-2); margin: 0 4px 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin: 0 4px 6px; }
+.lg-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink); background: none; border: 0; cursor: pointer; padding: 3px 2px; font-family: inherit; }
+.lg-item[aria-pressed="false"] { color: var(--muted); text-decoration: line-through; }
+.lg-item[aria-pressed="false"] svg { opacity: .3; }
+.lg-item .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.lg-note { font-size: 11.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--font-zh); }
+.tick text { font-family: var(--font-en); font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.axisline { stroke: var(--axis); stroke-width: 1; }
+.refline { stroke: var(--ink-2); stroke-width: 1.5; }
+.reflabel { font-size: 11.5px; fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.trend { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 5; fill: none; opacity: .55; }
+.zone { font-size: 11.5px; font-weight: 700; fill: var(--muted); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.axis-title { font-size: 11.5px; fill: var(--ink-2); }
+.pt { stroke: var(--surface); stroke-width: 2; }
+.pt.bg { opacity: .55; }
+@media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .pt.bg { opacity: .75; } }
+:root[data-theme="dark"] .pt.bg { opacity: .75; }
+.pt.hot { stroke: var(--ink); opacity: 1; }
+.g-asia { fill: var(--c-asia); } .g-europe { fill: var(--c-europe); }
+.g-americas { fill: var(--c-americas); } .g-africa { fill: var(--c-africa); }
+.tw-ring { fill: none; stroke: var(--ink); stroke-width: 2; }
+.plabel { font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.plabel.tw { font-size: 13px; font-weight: 900; }
+.hit { fill: transparent; }
+.leader { stroke: var(--muted); stroke-width: 1; pointer-events: none; }
+
+.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--hair); box-shadow: 0 6px 24px rgba(0,0,0,.14); padding: 10px 12px; min-width: 200px; max-width: 270px; font-size: 12px; line-height: 1.5; display: none; }
+.tip .tn { font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.tip .ten { color: var(--muted); font-weight: 400; font-family: var(--font-en); }
+.tip dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin-top: 6px; color: var(--ink-2); }
+.tip dd { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.tip .tsrc { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grid); font-size: 11px; color: var(--muted); }
+.caption { font-size: 11.5px; color: var(--muted); margin: 8px 4px 2px; }
+
+.twrap { overflow: auto; border: 1px solid var(--hair); background: var(--surface); -webkit-overflow-scrolling: touch; }
+.twrap.tall { max-height: 520px; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+#mtable { min-width: 640px; } #ctable { min-width: 760px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-weight: 700; color: var(--ink-2); font-size: 11.5px; position: sticky; top: 0; background: var(--surface); z-index: 1; }
+th button { all: unset; cursor: pointer; }
+th button::after { content: ' ↕'; color: var(--axis); }
+th[aria-sort="ascending"] button::after { content: ' ↑'; color: var(--ink); }
+th[aria-sort="descending"] button::after { content: ' ↓'; color: var(--ink); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.wrap { white-space: normal; min-width: 220px; color: var(--ink-2); }
+tr.tw td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, transparent); }
+.swatch { display: inline-flex; align-items: center; gap: 6px; }
+.sig { font-size: 10.5px; font-weight: 700; border: 1px solid var(--axis); padding: 0 5px; margin-left: 6px; color: var(--ink-2); }
+
+.notes { background: var(--surface); border: 1px solid var(--hair); padding: 18px 22px; font-size: 13px; color: var(--ink-2); }
+.notes h3 { font-size: 13px; color: var(--ink); margin: 14px 0 4px; }
+.notes h3:first-child { margin-top: 0; }
+.notes ul { padding-left: 1.2em; }
+.notes li { margin: 3px 0; }
+.notes a { color: var(--ink); }
+.notes code { font-size: 12px; background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 0 4px; }
+
+.empty { background: var(--surface); border: 1px solid var(--hair); padding: 28px; font-size: 13.5px; color: var(--ink-2); }
+.empty code { background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 1px 6px; }
+
+footer { border-top: 2px solid var(--rule); padding-top: 18px; margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-family: var(--font-en); font-size: 9px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
+footer a { color: var(--ink-2); }
+
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) {
+  .shell { padding: 28px 16px 56px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 32px; }
+  .title-block { width: 100%; }
+  .ctrls { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  h1 { font-size: 21px; }
+  .lead { font-size: 14px; }
+  .tile .value { font-size: 24px; }
+  .tile .unit { display: block; margin: 2px 0 0; }
+  .tile { padding: 14px; }
+  .chip { padding: 8px 12px; }
+  .card { padding: 12px 6px 8px; }
+  .notes { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) { .pt { transition: opacity .15s; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="page-header">
+  <div class="logo-mark">Taiwan<br>Mobility<br>Atlas</div>
+  <div class="title-block">
+    <div class="eyebrow">Road Safety × Income Inequality</div>
+    <h1 data-i18n="h1">道路安全 × 所得分配｜不平等的國家，道路比較危險嗎？</h1>
+    <div class="sub" id="subline"></div>
+  </div>
+  <div class="ctrls">
+    <div class="seg" id="langSeg" role="group" data-i18n-aria="langAria">
+      <button type="button" data-lang="zh">中</button><button type="button" data-lang="en">EN</button>
+    </div>
+    <div class="seg" id="themeSeg" role="group" data-i18n-aria="themeAria">
+      <button type="button" data-theme-opt="auto" data-i18n="thAuto">自動</button><button type="button" data-theme-opt="light" data-i18n="thLight">白底</button><button type="button" data-theme-opt="dark" data-i18n="thDark">深色</button>
+    </div>
+    <a class="back" href="road-safety.html" data-i18n="back">← 道路安全 × 國家所得</a>
+  </div>
+</header>
+
+<div id="app" hidden>
+
+<section class="section" aria-labelledby="s1">
+  <div class="section-label" id="s1" data-i18n="s1">01 — 先說結論</div>
+  <div class="tiles" id="tiles"></div>
+  <p class="lead" id="lead"></p>
+</section>
+
+<section class="section" aria-labelledby="s2">
+  <div class="section-label" id="s2" data-i18n="s2">02 — 吉尼係數 × 道路死亡率</div>
+  <div class="filters" role="group" data-i18n-aria="viewAria">
+    <span class="flabel" data-i18n="viewLabel">範圍</span>
+    <div class="fgroup" id="viewSeg">
+      <button type="button" class="chip" data-view="all" data-i18n="viewAll">全部國家</button>
+      <button type="button" class="chip" data-view="hic" data-i18n="viewHic">只看高所得國家</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" data-i18n="c1Title">粗看：所得越不平均，道路越致命</div>
+    <div class="card-sub" data-i18n="c1Sub">還沒扣掉國家貧富的影響</div>
+    <div class="legend" id="legend1"></div>
+    <div class="chart" id="chart1"><div class="tip" role="status" aria-live="polite"></div></div>
+    <p class="caption" id="cap1"></p>
+  </div>
+  <div class="card">
+    <div class="card-title" data-i18n="c2Title">扣掉所得之後：誰比「同樣富裕的國家」更致命？</div>
+    <div class="card-sub" data-i18n="c2Sub">縱軸＝實際死亡率 ÷ 依人均GDP推估的預期死亡率；1 代表與所得水準相稱</div>
+    <div class="legend" id="legend2"></div>
+    <div class="chart" id="chart2"><div class="tip" role="status" aria-live="polite"></div></div>
+    <p class="caption" id="cap2"></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="s3">
+  <div class="section-label" id="s3" data-i18n="s3">03 — 模型摘要</div>
+  <p class="kicker" id="mkicker"></p>
+  <div class="twrap"><table id="mtable"></table></div>
+</section>
+
+<section class="section" aria-labelledby="s4">
+  <div class="section-label" id="s4" data-i18n="s4">04 — 各國數值</div>
+  <div class="twrap tall"><table id="ctable"></table></div>
+  <p class="caption" id="ccount"></p>
+</section>
+
+<section class="section" aria-labelledby="s5">
+  <div class="section-label" id="s5" data-i18n="s5">05 — 資料與方法</div>
+  <div class="notes" id="notes"></div>
+</section>
+
+</div>
+
+<div class="empty" id="empty" hidden></div>
+
+<footer>
+  <span>Taiwan Mobility Atlas · Road Safety × Inequality</span>
+  <span><a href="road-safety.html" data-i18n="footBack">道路安全 × 國家所得</a> · <a href="./" data-i18n="footHome">打造夢想街道</a></span>
+</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ================================================================ 文字（中／英）
+  const I18N = {
+    zh: {
+      htmlLang: 'zh-Hant', locale: 'zh-Hant',
+      title: '道路安全 × 所得分配｜打造夢想街道',
+      desc: '以SWIID標準化吉尼係數與WHO道路交通死亡率，檢驗所得分配不均與道路安全的關係，並比較臺灣與其他國家。',
+      h1: '道路安全 × 所得分配｜不平等的國家，道路比較危險嗎？',
+      back: '← 道路安全 × 國家所得', footBack: '道路安全 × 國家所得', footHome: '打造夢想街道',
+      langAria: '語言', themeAria: '顏色主題', thAuto: '自動', thLight: '白底', thDark: '深色',
+      s1: '01 — 先說結論', s2: '02 — 吉尼係數 × 道路死亡率', s3: '03 — 模型摘要', s4: '04 — 各國數值', s5: '05 — 資料與方法',
+      viewAria: '顯示範圍', viewLabel: '範圍', viewAll: '全部國家', viewHic: '只看高所得國家',
+      c1Title: '粗看：所得越不平均，道路越致命', c1Sub: '還沒扣掉國家貧富的影響',
+      c2Title: '扣掉所得之後：誰比「同樣富裕的國家」更致命？',
+      c2Sub: '縱軸＝實際死亡率 ÷ 依人均GDP推估的預期死亡率；1代表與所得水準相稱',
+      subline: (y, n, v) => `${y}年道路交通死亡率（WHO）× 可支配所得吉尼係數（SWIID ${v}）· ${n}個國家／地區`,
+      groups: { asia: '亞洲・大洋洲', europe: '歐洲', americas: '美洲', africa: '非洲' },
+      legendAria: '大洲分組（點擊可隱藏）', legendNote: '圈起者為臺灣',
+      t1: '粗看的關聯', t1unit: '等級相關', t1note: (n, lo, hi) => `${n}國：吉尼係數越高，死亡率越高（95%區間 ${lo}～${hi}）`,
+      t2: '扣掉所得之後', t2unit: '／吉尼每+1點', t2note: (lo, hi) => `同樣的人均GDP下，死亡率的增幅（95%區間 ${lo}～${hi}）`,
+      t3: '再扣掉大洲差異', t3unit: '／吉尼每+1點', t3badge: '不顯著', t3note: (lo, hi) => `95%區間 ${lo}～${hi}，跨過0：關聯多半來自區域差異`,
+      t4: '臺灣：所得預期的', t4unit: '倍', t4note: (g, e, r, n) => `吉尼${g}，比${n}個高所得國家中的多數平均；死亡率${r}，同所得水準預期約${e}`,
+      lead: m => `<strong>粗看之下，所得越不平均的國家，道路確實越致命</strong>；扣掉國家貧富之後，關聯仍在，但幅度變小；再把拉丁美洲、非洲等區域差異納入，關聯就不再具統計顯著性。換句話說，所得分配與道路安全的連結，恐怕多半反映的是區域性的制度與發展路徑，而非吉尼係數本身。臺灣則是另一回事：所得分配比多數富裕國家平均，道路死亡率卻是同所得水準預期的${m.ratio}倍；在51個高所得國家裡，比預期更致命的程度排第${m.rank}，排在前面的${m.above}都是高度不平等的國家。<strong>臺灣的道路死亡，無法用所得不均解釋，問題更可能在運具結構與街道設計。</strong>`,
+      xTitle: '吉尼係數（可支配所得，0＝完全平均）→ 越往右越不平均',
+      y1Title: '道路交通死亡率（每十萬人，對數尺度）', y2Title: '實際 ÷ 所得預期（對數尺度）',
+      refLabel: '與所得水準相稱', zoneHi: '比所得預期更致命', zoneLo: '比所得預期更安全',
+      trend: '趨勢線',
+      chartAria: (n, w) => `散佈圖：橫軸吉尼係數，縱軸${w}。共${n}國。數值見下方「各國數值」表。`,
+      cap1: (n, p) => `共${n}國。虛線為趨勢線（對數線性）：吉尼每+1點，死亡率約${p}，尚未扣掉國家貧富。形狀與顏色都代表大洲；滑過或點選任一點看詳細數字。`,
+      cap2: (n, p) => `共${n}國。預期死亡率由人均GDP的迴歸（模型M0）推估。虛線趨勢：吉尼每+1點，「實際÷預期」約${p}。`,
+      tipGini: '吉尼係數', tipRate: '死亡率', tipGdp: '人均GDP', tipExp: '所得預期', tipRatio: '實際 ÷ 預期',
+      tipYear: y => `（${y}年）`, tipTW: '死亡率為交通部30日死亡人數 ÷ 人口，非WHO估計值',
+      per100k: '／十萬人',
+      mkicker: '依變數皆為ln（死亡率）。吉尼係數效果換算為「每增加1點，死亡率增減幾%」；95%區間以bootstrap重抽2,000次取得。區間跨過0，代表資料無法排除「沒有關聯」。',
+      mcols: { model: '模型', spec: '控制變項', n: '國家數', eff: '吉尼+1點的效果', ci: '95%區間', r2: 'R²' },
+      models: { M0: ['M0', '只有人均GDP（對數）'], M1: ['M1', '人均GDP＋吉尼係數'], M2: ['M2', '人均GDP＋吉尼係數＋大洲'], H1: ['H1', '同M1，只用高所得國家'] },
+      sigNo: '不顯著', na: '—',
+      ccols: { name: '國家／地區', group: '大洲', gini: '吉尼係數', gy: '年份', rate: '死亡率', gdp: '人均GDP', exp: '所得預期', ratio: '實際÷預期' },
+      ccount: n => `共${n}國，點欄位標題可排序。`,
+      empty: '<p><strong>資料尚未建置。</strong>這一頁需要 <code>data/road_safety_inequality.json</code>，請在專案根目錄依序執行 <code>python3 scripts/build_road_safety.py</code> 與 <code>python3 scripts/build_inequality.py</code>，完成後重新整理即可。</p>',
+    },
+    en: {
+      htmlLang: 'en', locale: 'en',
+      title: 'Road Safety × Income Inequality | Build Dream Streets',
+      desc: 'Testing whether income inequality (SWIID standardized Gini) is linked to road traffic deaths (WHO), and where Taiwan stands.',
+      h1: 'Road safety × income inequality: are unequal countries’ roads deadlier?',
+      back: '← Road safety × national income', footBack: 'Road safety × national income', footHome: 'Build Dream Streets',
+      langAria: 'Language', themeAria: 'Colour theme', thAuto: 'Auto', thLight: 'Light', thDark: 'Dark',
+      s1: '01 — The short answer', s2: '02 — Gini × road deaths', s3: '03 — Model summary', s4: '04 — Country values', s5: '05 — Data & method',
+      viewAria: 'View', viewLabel: 'View', viewAll: 'All countries', viewHic: 'High-income only',
+      c1Title: 'At first glance: more unequal, deadlier roads', c1Sub: 'Not yet adjusted for how rich a country is',
+      c2Title: 'After adjusting for income: who is deadlier than equally rich countries?',
+      c2Sub: 'Vertical axis = actual death rate ÷ rate expected from GDP per capita; 1 = in line with income',
+      subline: (y, n, v) => `${y} road traffic death rates (WHO) × disposable-income Gini (SWIID ${v}) · ${n} countries and areas`,
+      groups: { asia: 'Asia & Oceania', europe: 'Europe', americas: 'Americas', africa: 'Africa' },
+      legendAria: 'Continent groups (click to hide)', legendNote: 'Circled: Taiwan',
+      t1: 'Raw association', t1unit: 'rank correlation', t1note: (n, lo, hi) => `${n} countries: higher Gini, higher death rate (95% CI ${lo} to ${hi})`,
+      t2: 'Adjusted for income', t2unit: 'per +1 Gini point', t2note: (lo, hi) => `Change in death rate at the same GDP per capita (95% CI ${lo} to ${hi})`,
+      t3: 'Also adjusted for continent', t3unit: 'per +1 Gini point', t3badge: 'Not significant', t3note: (lo, hi) => `95% CI ${lo} to ${hi} crosses zero: the link is largely regional`,
+      t4: 'Taiwan vs. its income-expected rate', t4unit: '×', t4note: (g, e, r, n) => `Gini ${g}, more equal than most of ${n} high-income countries; death rate ${r} vs. ~${e} expected at its income`,
+      lead: m => `<strong>At first glance, more unequal countries do have deadlier roads.</strong> The link survives adjusting for national income, though it shrinks; once regional differences (Latin America, Africa) are taken into account, it is no longer statistically significant. The connection between inequality and road safety seems to reflect regional institutions and development paths more than the Gini coefficient itself. Taiwan is a different story: its income is more evenly distributed than in most rich countries, yet its road death rate is ${m.ratio}× what its income would predict. Among 51 high-income countries it ranks ${m.rankEn} on that measure, and the ones ahead of it (${m.above}) are all highly unequal. <strong>Taiwan’s road deaths cannot be explained by inequality; transport mode mix and street design are the likelier culprits.</strong>`,
+      xTitle: 'Gini coefficient (disposable income, 0 = perfectly equal) → more unequal',
+      y1Title: 'Road traffic deaths per 100,000 (log scale)', y2Title: 'Actual ÷ income-expected (log scale)',
+      refLabel: 'In line with income', zoneHi: 'Deadlier than income predicts', zoneLo: 'Safer than income predicts',
+      trend: 'Trend',
+      chartAria: (n, w) => `Scatter plot: Gini coefficient across, ${w} up the side. ${n} countries. Values are listed in the country table below.`,
+      cap1: (n, p) => `${n} countries. Dashed line: log-linear trend, about ${p} in death rate per +1 Gini point, before adjusting for income. Shape and colour both show the continent; hover or tap any point for details.`,
+      cap2: (n, p) => `${n} countries. Expected rates come from a regression on GDP per capita (model M0). Dashed trend: about ${p} in actual÷expected per +1 Gini point.`,
+      tipGini: 'Gini', tipRate: 'Death rate', tipGdp: 'GDP per capita', tipExp: 'Income-expected', tipRatio: 'Actual ÷ expected',
+      tipYear: y => ` (${y})`, tipTW: 'Rate: MOTC 30-day deaths ÷ population; not a WHO estimate',
+      per100k: ' /100k',
+      mkicker: 'All models predict ln(death rate). The Gini effect is shown as the % change in death rate per +1 Gini point; 95% intervals come from 2,000 bootstrap resamples. An interval that crosses zero means the data cannot rule out no association.',
+      mcols: { model: 'Model', spec: 'Controls', n: 'Countries', eff: 'Effect of +1 Gini point', ci: '95% interval', r2: 'R²' },
+      models: { M0: ['M0', 'GDP per capita (log) only'], M1: ['M1', 'GDP per capita + Gini'], M2: ['M2', 'GDP per capita + Gini + continent'], H1: ['H1', 'As M1, high-income countries only'] },
+      sigNo: 'n.s.', na: '—',
+      ccols: { name: 'Country / area', group: 'Continent', gini: 'Gini', gy: 'Year', rate: 'Death rate', gdp: 'GDP per capita', exp: 'Expected', ratio: 'Actual÷expected' },
+      ccount: n => `${n} countries. Click a column heading to sort.`,
+      empty: '<p><strong>Data not built yet.</strong> This page needs <code>data/road_safety_inequality.json</code>. From the project root run <code>python3 scripts/build_road_safety.py</code>, then <code>python3 scripts/build_inequality.py</code>, and reload.</p>',
+    },
+  };
+  const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th'));
+
+  // 標籤優先順序：臺灣 → 比所得預期更致命的富裕國家 → 主要／標竿國家
+  const LABEL_PRIORITY = ['TWN', 'USA', 'SAU', 'CRI', 'JPN', 'DEU', 'SWE', 'KOR', 'NLD', 'GBR', 'FRA', 'SGP', 'AUS', 'CHN',
+    'IND', 'BRA', 'ZAF', 'MEX', 'CHL', 'COL', 'THA', 'VNM', 'MYS', 'PHL', 'IDN', 'NOR', 'CAN', 'ITA', 'ESP', 'NZL', 'URY', 'PRI', 'NGA'];
+  const GROUPS = [
+    { key: 'asia', shape: 'circle' }, { key: 'europe', shape: 'square' },
+    { key: 'americas', shape: 'triangle' }, { key: 'africa', shape: 'diamond' },
+  ];
+  const GROUP = Object.fromEntries(GROUPS.map(g => [g.key, g]));
+
+  const state = {
+    data: null, meta: null,
+    lang: window.__RS_LANG === 'en' ? 'en' : 'zh',
+    theme: window.__RS_THEME || 'auto',
+    view: 'all', hidden: new Set(),
+    sort: { key: 'ratio', dir: -1 },
+  };
+  const T = () => I18N[state.lang];
+  const zhName = c => (c.iso3 === 'TWN' ? '臺灣' : c.zh);
+  const nameOf = c => (state.lang === 'en' ? c.en : zhName(c));
+  const altName = c => (state.lang === 'en' ? zhName(c) : c.en);
+  const $ = id => document.getElementById(id);
+  const fmtInt = v => Math.round(v).toLocaleString('en-US');
+  const fmt1 = v => (v == null ? '—' : Number(v).toFixed(1));
+  const fmt2 = v => (v == null ? '—' : Number(v).toFixed(2));
+  const fmtPct = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1) + '%';
+  const el = (tag, attrs, text) => {            // 名稱一律走 textContent（資料視為不受信任）
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const NS = 'http://www.w3.org/2000/svg';
+  const sv = (tag, attrs) => { const e = document.createElementNS(NS, tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+
+  // 同面積的四種形狀
+  function shapePath(shape, x, y, r) {
+    switch (shape) {
+      case 'square': { const h = r * 0.886; return `M${x - h},${y - h}h${2 * h}v${2 * h}h${-2 * h}Z`; }
+      case 'triangle': { const a = r * 2.694, H = a * 0.866;
+        return `M${x},${y - 2 * H / 3}L${x + a / 2},${y + H / 3}L${x - a / 2},${y + H / 3}Z`; }
+      case 'diamond': { const d = r * 1.2533; return `M${x},${y - d}L${x + d},${y}L${x},${y + d}L${x - d},${y}Z`; }
+      default: return `M${x - r},${y}a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`;
+    }
+  }
+  function keySwatch(group, size) {
+    const s = sv('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}`, 'aria-hidden': 'true' });
+    s.appendChild(sv('path', { d: shapePath(GROUP[group].shape, size / 2, size / 2 + (GROUP[group].shape === 'triangle' ? 1 : 0), size * 0.36), class: 'g-' + group }));
+    return s;
+  }
+
+  // 簡單 OLS：ln(y) = a + b·x，回傳 {a, b}
+  function logFit(pts, xk, yk) {
+    const n = pts.length; if (n < 3) return null;
+    const xs = pts.map(p => p[xk]), ys = pts.map(p => Math.log(p[yk]));
+    const mx = xs.reduce((s, v) => s + v, 0) / n, my = ys.reduce((s, v) => s + v, 0) / n;
+    let sxy = 0, sxx = 0;
+    for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; }
+    const b = sxy / sxx; return { a: my - b * mx, b };
+  }
+
+  // ================================================================ 語言與主題
+  function applyStatic() {
+    const t = T();
+    document.documentElement.setAttribute('lang', t.htmlLang);
+    document.title = t.title;
+    const md = document.querySelector('meta[name=description]'); if (md) md.setAttribute('content', t.desc);
+    document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t[e.dataset.i18n]; });
+    document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
+    document.querySelectorAll('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
+    document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeOpt === state.theme)));
+    $('empty').innerHTML = t.empty;                               // 靜態字串，非資料內容
+  }
+  function setLang(l) {
+    state.lang = l;
+    try { localStorage.setItem('lang', l); } catch (e) {}
+    applyStatic();
+    if (state.data) renderAll();
+  }
+  function setTheme(th) {
+    state.theme = th;
+    try { localStorage.setItem('rs_theme', th); } catch (e) {}
+    if (th === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', th);
+    applyStatic();
+  }
+  document.querySelectorAll('#langSeg button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+  document.querySelectorAll('#themeSeg button').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeOpt)));
+  applyStatic();
+
+  // ================================================================ 載入
+  fetch('data/road_safety_inequality.json', { cache: 'no-cache' })
+    .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
+    .then(init)
+    .catch(() => { $('empty').hidden = false; });
+
+  function init(d) {
+    state.data = d.countries;
+    state.meta = d.meta;
+    $('app').hidden = false;
+    document.querySelectorAll('#viewSeg .chip').forEach(b => b.addEventListener('click', () => {
+      state.view = b.dataset.view; renderCharts();
+    }));
+    renderAll();
+    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(renderCharts, 120); });
+  }
+
+  function renderAll() {
+    const t = T(), m = state.meta;
+    $('subline').textContent = t.subline(m.year, state.data.length, m.swiid_version);
+    renderTiles(); renderCharts(); renderModels(); renderTable(); renderNotes();
+  }
+
+  // ================================================================ 01 結論
+  function renderTiles() {
+    const t = T(), m = state.meta, M = m.models, tw = m.taiwan;
+    const ci = a => a.map(fmtPct);
+    const tiles = [
+      { label: t.t1, value: m.corr_all.spearman.toFixed(2), unit: t.t1unit,
+        note: t.t1note(m.corr_all.n, m.corr_all.spearman_ci[0].toFixed(2), m.corr_all.spearman_ci[1].toFixed(2)) },
+      { label: t.t2, value: fmtPct(M.M1.gini_pct), unit: t.t2unit, note: t.t2note(...ci(M.M1.gini_pct_ci)) },
+      { label: t.t3, value: fmtPct(M.M2.gini_pct), unit: t.t3unit, badge: t.t3badge, note: t.t3note(...ci(M.M2.gini_pct_ci)) },
+      { label: t.t4, value: tw.ratio.toFixed(1), unit: t.t4unit, lead: true,
+        note: t.t4note(fmt1(tw.gini), fmt1(tw.expected), fmt1(tw.rate), tw.n_hic) },
+    ];
+    const box = $('tiles'); box.textContent = '';
+    tiles.forEach(x => {
+      const d = el('div', { class: 'tile' + (x.lead ? ' lead-tile' : '') });
+      d.appendChild(el('div', { class: 'label' }, x.label));
+      const v = el('div', { class: 'value' }, x.value);
+      v.appendChild(el('span', { class: 'unit' }, x.unit));
+      if (x.badge && M.M2.gini_pct_ci[0] <= 0 && M.M2.gini_pct_ci[1] >= 0) v.appendChild(el('span', { class: 'badge' }, x.badge));
+      d.appendChild(v);
+      d.appendChild(el('div', { class: 'note' }, x.note));
+      box.appendChild(d);
+    });
+    const byIso = Object.fromEntries(state.data.map(c => [c.iso3, c]));
+    const above = tw.above_in_hic.map(i => byIso[i] ? nameOf(byIso[i]) : i).join(state.lang === 'en' ? ', ' : '、');
+    $('lead').innerHTML = t.lead({ ratio: tw.ratio.toFixed(1), rank: tw.ratio_rank_hic, rankEn: ordinal(tw.ratio_rank_hic), above });
+  }
+
+  // ================================================================ 02 散佈圖
+  function visibleRows() {
+    return state.data.filter(c => (state.view === 'all' || c.hic) && !state.hidden.has(c.group));
+  }
+  function renderCharts() {
+    document.querySelectorAll('#viewSeg .chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
+    const t = T(), rows = visibleRows();
+    renderLegend('legend1'); renderLegend('legend2');
+    const f1 = logFit(rows, 'gini', 'rate'), f2 = logFit(rows, 'gini', 'ratio');
+    scatter($('chart1'), rows, { yk: 'rate', yTitle: t.y1Title, fit: f1, ticks: [0.5, 1, 2, 5, 10, 20, 50], yFmt: v => String(v) });
+    scatter($('chart2'), rows, { yk: 'ratio', yTitle: t.y2Title, fit: f2, ref: 1, zones: true,
+      ticks: [0.1, 0.2, 0.5, 1, 2, 5], yFmt: v => (v < 1 ? v.toFixed(1) : String(v)) + '×' });
+    const p = f => (f ? fmtPct((Math.exp(f.b) - 1) * 100) : '—');
+    $('cap1').textContent = t.cap1(rows.length, p(f1));
+    $('cap2').textContent = t.cap2(rows.length, p(f2));
+  }
+  function renderLegend(id) {
+    const t = T(), box = $(id); box.textContent = '';
+    box.setAttribute('role', 'group'); box.setAttribute('aria-label', t.legendAria);
+    const base = state.data.filter(c => state.view === 'all' || c.hic);
+    GROUPS.forEach(g => {
+      const n = base.filter(c => c.group === g.key).length; if (!n) return;
+      const b = el('button', { type: 'button', class: 'lg-item', 'aria-pressed': String(!state.hidden.has(g.key)) });
+      b.appendChild(keySwatch(g.key, 14));
+      b.appendChild(el('span', null, t.groups[g.key]));
+      b.appendChild(el('span', { class: 'n' }, String(n)));
+      b.addEventListener('click', () => {
+        if (state.hidden.has(g.key)) state.hidden.delete(g.key); else state.hidden.add(g.key);
+        renderCharts();
+        const again = document.querySelector(`#${id} .lg-item:nth-child(${GROUPS.indexOf(g) + 1})`); if (again) again.focus();
+      });
+      box.appendChild(b);
+    });
+    const note = el('span', { class: 'lg-note' });
+    const ring = sv('svg', { width: 14, height: 14, viewBox: '0 0 14 14', 'aria-hidden': 'true' });
+    ring.appendChild(sv('circle', { cx: 7, cy: 7, r: 5.5, class: 'tw-ring' }));
+    note.appendChild(ring); note.appendChild(el('span', null, t.legendNote));
+    box.appendChild(note);
+  }
+
+  function scatter(host, rows, o) {
+    const t = T();
+    host.querySelectorAll('svg').forEach(s => s.remove());
+    const tip = host.querySelector('.tip'); tip.style.display = 'none';
+    const W = Math.max(300, host.clientWidth), narrow = W < 560;
+    const H = narrow ? 380 : 470;
+    const m = { l: narrow ? 44 : 56, r: narrow ? 10 : 18, t: 18, b: narrow ? 58 : 50 };
+    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const all = state.data;                                     // 軸範圍固定在全部國家，切換時位置不跳動
+    const gMin = Math.floor(Math.min(...all.map(c => c.gini)) / 5) * 5, gMax = Math.ceil(Math.max(...all.map(c => c.gini)) / 5) * 5;
+    const ys = all.map(c => c[o.yk]);
+    const below = o.ticks.filter(v => v <= Math.min(...ys)), above = o.ticks.filter(v => v >= Math.max(...ys));
+    const yLo = below.length ? below[below.length - 1] : o.ticks[0];         // 不大於最小值的最大刻度
+    const yHi = above.length ? above[0] : o.ticks[o.ticks.length - 1];       // 不小於最大值的最小刻度
+    const X = v => m.l + (v - gMin) / (gMax - gMin) * iw;
+    const Y = v => m.t + ih - (Math.log(v) - Math.log(yLo)) / (Math.log(yHi) - Math.log(yLo)) * ih;
+
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': t.chartAria(rows.length, o.yTitle) });
+    host.insertBefore(svg, tip);
+    const gGrid = svg.appendChild(sv('g'));
+    o.ticks.filter(v => v >= yLo && v <= yHi).forEach(v => {
+      gGrid.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'gridline' }));
+      const g = gGrid.appendChild(sv('g', { class: 'tick' }));
+      const tx = g.appendChild(sv('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' })); tx.textContent = o.yFmt(v);
+    });
+    for (let v = gMin; v <= gMax; v += 5) {
+      if (narrow && v % 10) continue;
+      gGrid.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t, y2: m.t + ih, class: 'gridline' }));
+      const g = gGrid.appendChild(sv('g', { class: 'tick' }));
+      const tx = g.appendChild(sv('text', { x: X(v), y: m.t + ih + 18, 'text-anchor': 'middle' })); tx.textContent = String(v);
+    }
+    svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih, class: 'axisline' }));
+    const xt = svg.appendChild(sv('text', { x: m.l + iw / 2, y: H - (narrow ? 22 : 10), 'text-anchor': 'middle', class: 'axis-title' }));
+    xt.textContent = t.xTitle;
+    if (narrow) {                                               // 窄螢幕：x 軸標題分兩行
+      const parts = t.xTitle.split('→').map(x => x.trim());
+      xt.textContent = parts[0];
+      const x2 = svg.appendChild(sv('text', { x: m.l + iw / 2, y: H - 6, 'text-anchor': 'middle', class: 'axis-title' }));
+      x2.textContent = parts[1] ? '→ ' + parts[1] : '';
+    }
+    const yt = svg.appendChild(sv('text', { transform: `translate(${narrow ? 11 : 14},${m.t + ih / 2}) rotate(-90)`, 'text-anchor': 'middle', class: 'axis-title' }));
+    yt.textContent = o.yTitle;
+
+    const placed = [];                                          // 已佔用的文字框，避免重疊
+    const overlaps = b => placed.some(p => b.x < p.x + p.w && b.x + b.w > p.x && b.y < p.y + p.h && b.y + b.h > p.y);
+    if (o.ref != null) {
+      svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(o.ref), y2: Y(o.ref), class: 'refline' }));
+      const rl = svg.appendChild(sv('text', { x: W - m.r - 4, y: Y(o.ref) - 6, 'text-anchor': 'end', class: 'reflabel' }));
+      rl.textContent = t.refLabel;
+      const bb = rl.getBBox(); placed.push({ x: bb.x - 2, y: bb.y - 2, w: bb.width + 4, h: bb.height + 4 });
+    }
+    if (o.zones) {
+      [[t.zoneHi, m.t + 14], [t.zoneLo, m.t + ih - 8]].forEach(([s, y]) => {
+        const z = svg.appendChild(sv('text', { x: m.l + 8, y, class: 'zone' })); z.textContent = s;
+        const bb = z.getBBox(); placed.push({ x: bb.x - 2, y: bb.y - 2, w: bb.width + 4, h: bb.height + 4 });
+      });
+    }
+    if (o.fit) {
+      const vis = rows.map(c => c.gini), a = Math.min(...vis), b = Math.max(...vis);
+      const yy = v => Math.min(yHi, Math.max(yLo, Math.exp(o.fit.a + o.fit.b * v)));
+      svg.appendChild(sv('path', { d: `M${X(a)},${Y(yy(a))}L${X(b)},${Y(yy(b))}`, class: 'trend' }));
+    }
+
+    // 點：背景點先畫，臺灣與有標籤者最後畫
+    const r = narrow ? 4.5 : 5.5;
+    const pts = rows.map(c => ({ c, x: X(c.gini), y: Y(Math.min(yHi, Math.max(yLo, c[o.yk]))) }));
+    const gPts = svg.appendChild(sv('g'));
+    pts.sort((p, q) => (p.c.iso3 === 'TWN') - (q.c.iso3 === 'TWN')).forEach(p => {
+      const big = p.c.iso3 === 'TWN' || LABEL_PRIORITY.includes(p.c.iso3);
+      p.r = big ? r + 1 : r;
+      p.node = gPts.appendChild(sv('path', { d: shapePath(GROUP[p.c.group].shape, p.x, p.y, p.r), class: `pt g-${p.c.group}${big ? '' : ' bg'}` }));
+      if (p.c.iso3 === 'TWN') gPts.appendChild(sv('circle', { cx: p.x, cy: p.y, r: p.r + 5, class: 'tw-ring' }));
+    });
+    pts.forEach(p => placed.push({ x: p.x - p.r - 1, y: p.y - p.r - 1, w: 2 * p.r + 2, h: 2 * p.r + 2, iso: p.c.iso3 }));
+
+    // 標籤：依優先順序，在點周圍 8 個方位找不重疊的位置；放不下就略過（表格與 tooltip 仍有完整資訊）
+    const gLab = svg.appendChild(sv('g'));
+    const byIso = Object.fromEntries(pts.map(p => [p.c.iso3, p]));
+    const maxLabels = narrow ? 7 : 15;
+    const MUST = ['TWN', 'USA'];                                // 一定要標：放不下時改用較遠位置＋引線
+    let count = 0;
+    LABEL_PRIORITY.forEach(iso => {
+      const p = byIso[iso], must = MUST.includes(iso);
+      if (!p || (count >= maxLabels && !must)) return;
+      const tw = iso === 'TWN';
+      const node = gLab.appendChild(sv('text', { class: 'plabel' + (tw ? ' tw' : '') }));
+      node.textContent = nameOf(p.c);
+      const bw = node.getComputedTextLength(), bh = tw ? 14 : 12;
+      const ring = d => [[d, -2, 'start'], [-d, -2, 'end'], [0, -d - 3, 'middle'], [0, d + bh - 1, 'middle'],
+        [d, -d, 'start'], [-d, -d, 'end'], [d, d + 6, 'start'], [-d, d + 6, 'end']];
+      const d0 = p.r + (tw ? 9 : 4);                           // 臺灣外圈有黑環，標籤要讓開
+      const cands = ring(d0).concat(must ? ring(d0 + 14).concat(ring(d0 + 30)) : []);
+      const tryPlace = force => {
+        for (const [dx, dy, anchor] of cands) {
+          const x = p.x + dx, y = p.y + dy + 4;
+          const bx = anchor === 'start' ? x : anchor === 'end' ? x - bw : x - bw / 2;
+          const box = { x: bx - 2, y: y - bh, w: bw + 4, h: bh + 3 };
+          if (box.x < m.l || box.x + box.w > W - m.r || box.y < m.t - 4 || box.y + box.h > m.t + ih) continue;
+          if (!force && placed.some(q => q.iso !== iso && box.x < q.x + q.w && box.x + box.w > q.x && box.y < q.y + q.h && box.y + box.h > q.y)) continue;
+          node.setAttribute('x', x); node.setAttribute('y', y); node.setAttribute('text-anchor', anchor);
+          if (Math.hypot(dx, dy) > d0 + 8) {                    // 遠離點時加引線，避免認錯
+            const ex = anchor === 'start' ? box.x : anchor === 'end' ? box.x + box.w : x, ey = y - bh / 2;
+            gLab.insertBefore(sv('line', { x1: p.x, y1: p.y, x2: ex, y2: ey, class: 'leader' }), node);
+          }
+          placed.push(box); count++; return true;
+        }
+        return false;
+      };
+      if (!tryPlace(false) && !(must && tryPlace(true))) node.remove();
+    });
+
+    // 互動：找離指標最近的點（命中範圍大於點本身）
+    const hit = svg.appendChild(sv('rect', { x: m.l, y: m.t, width: iw, height: ih, class: 'hit' }));
+    let hot = null;
+    const show = (p, cx, cy) => {
+      if (hot) hot.node.classList.remove('hot');
+      hot = p;
+      if (!p) { tip.style.display = 'none'; return; }
+      p.node.classList.add('hot');
+      fillTip(tip, p.c);
+      tip.style.display = 'block';
+      const hw = host.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+      const sx = host.clientWidth / W;
+      let lx = p.x * sx + 14, ly = p.y * sx - th - 10;
+      if (lx + tw > hw) lx = p.x * sx - tw - 14;
+      if (lx < 0) lx = Math.max(0, Math.min(hw - tw, p.x * sx - tw / 2));
+      if (ly < 0) ly = p.y * sx + 14;
+      tip.style.left = lx + 'px'; tip.style.top = ly + 'px';
+    };
+    const nearest = ev => {
+      const rect = svg.getBoundingClientRect(), s = W / rect.width;
+      const x = (ev.clientX - rect.left) * s, y = (ev.clientY - rect.top) * s;
+      let best = null, bd = 22 * s;
+      pts.forEach(p => { const dd = Math.hypot(p.x - x, p.y - y); if (dd < bd) { bd = dd; best = p; } });
+      return best;
+    };
+    hit.addEventListener('pointermove', ev => show(nearest(ev)));
+    hit.addEventListener('pointerdown', ev => show(nearest(ev)));
+    hit.addEventListener('pointerleave', () => show(null));
+  }
+
+  function fillTip(tip, c) {
+    const t = T(); tip.textContent = '';
+    const head = el('div', { class: 'tn' });
+    head.appendChild(keySwatch(c.group, 12));
+    head.appendChild(el('span', null, nameOf(c)));
+    head.appendChild(el('span', { class: 'ten' }, altName(c)));
+    tip.appendChild(head);
+    const dl = el('dl');
+    const row = (k, v) => { dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, v)); };
+    row(t.tipGini, `${fmt1(c.gini)} ± ${fmt1(c.gini_se)}${t.tipYear(c.gini_year)}`);
+    row(t.tipRate, fmt1(c.rate) + t.per100k);
+    row(t.tipGdp, '$' + fmtInt(c.gdp_pc));
+    row(t.tipExp, fmt1(c.expected) + t.per100k);
+    row(t.tipRatio, fmt2(c.ratio) + '×');
+    tip.appendChild(dl);
+    if (c.rate_source === 'MOTC') tip.appendChild(el('div', { class: 'tsrc' }, t.tipTW));
+  }
+
+  // ================================================================ 03 模型表
+  function renderModels() {
+    const t = T(), M = state.meta.models;
+    $('mkicker').textContent = t.mkicker;
+    const tb = $('mtable'); tb.textContent = '';
+    const head = tb.appendChild(el('thead')).appendChild(el('tr'));
+    [['model', ''], ['spec', ''], ['n', 'num'], ['eff', 'num'], ['ci', 'num'], ['r2', 'num']].forEach(([k, cl]) =>
+      head.appendChild(el('th', { class: cl, scope: 'col' }, t.mcols[k])));
+    const body = tb.appendChild(el('tbody'));
+    ['M0', 'M1', 'M2', 'H1'].forEach(k => {
+      const mo = M[k], tr = body.appendChild(el('tr'));
+      tr.appendChild(el('td', null, t.models[k][0]));
+      tr.appendChild(el('td', { class: 'wrap' }, t.models[k][1]));
+      tr.appendChild(el('td', { class: 'num' }, String(mo.n)));
+      const eff = el('td', { class: 'num' }, mo.gini_pct != null ? fmtPct(mo.gini_pct) : t.na);
+      if (mo.gini_pct_ci && mo.gini_pct_ci[0] <= 0 && mo.gini_pct_ci[1] >= 0) eff.appendChild(el('span', { class: 'sig' }, t.sigNo));
+      tr.appendChild(eff);
+      tr.appendChild(el('td', { class: 'num' }, mo.gini_pct_ci ? `${fmtPct(mo.gini_pct_ci[0])} ～ ${fmtPct(mo.gini_pct_ci[1])}` : t.na));
+      tr.appendChild(el('td', { class: 'num' }, mo.r2.toFixed(2)));
+    });
+  }
+
+  // ================================================================ 04 各國表
+  function renderTable() {
+    const t = T(), tb = $('ctable'); tb.textContent = '';
+    const cols = [['name', ''], ['group', ''], ['gini', 'num'], ['gy', 'num'], ['rate', 'num'], ['gdp', 'num'], ['exp', 'num'], ['ratio', 'num']];
+    const val = (c, k) => ({ name: nameOf(c), group: t.groups[c.group], gini: c.gini, gy: c.gini_year, rate: c.rate,
+      gdp: c.gdp_pc, exp: c.expected, ratio: c.ratio })[k];
+    const head = tb.appendChild(el('thead')).appendChild(el('tr'));
+    cols.forEach(([k, cl]) => {
+      const th = el('th', { class: cl, scope: 'col' });
+      if (state.sort.key === k) th.setAttribute('aria-sort', state.sort.dir > 0 ? 'ascending' : 'descending');
+      const b = el('button', { type: 'button' }, t.ccols[k]);
+      b.addEventListener('click', () => {
+        state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : (cl === 'num' ? -1 : 1) };
+        renderTable();
+        const again = document.querySelector(`#ctable th:nth-child(${cols.findIndex(c => c[0] === k) + 1}) button`); if (again) again.focus();
+      });
+      th.appendChild(b); head.appendChild(th);
+    });
+    const rows = state.data.slice().sort((a, b) => {
+      const x = val(a, state.sort.key), y = val(b, state.sort.key);
+      return (typeof x === 'string' ? x.localeCompare(y, T().locale) : x - y) * state.sort.dir;
+    });
+    const body = tb.appendChild(el('tbody'));
+    rows.forEach(c => {
+      const tr = body.appendChild(el('tr', c.iso3 === 'TWN' ? { class: 'tw' } : null));
+      const nm = el('td'); const sw = el('span', { class: 'swatch' }); sw.appendChild(keySwatch(c.group, 12));
+      sw.appendChild(el('span', null, nameOf(c))); nm.appendChild(sw); tr.appendChild(nm);
+      tr.appendChild(el('td', null, t.groups[c.group]));
+      tr.appendChild(el('td', { class: 'num' }, fmt1(c.gini)));
+      tr.appendChild(el('td', { class: 'num' }, String(c.gini_year)));
+      tr.appendChild(el('td', { class: 'num' }, fmt1(c.rate)));
+      tr.appendChild(el('td', { class: 'num' }, '$' + fmtInt(c.gdp_pc)));
+      tr.appendChild(el('td', { class: 'num' }, fmt1(c.expected)));
+      tr.appendChild(el('td', { class: 'num' }, fmt2(c.ratio) + '×'));
+    });
+    $('ccount').textContent = t.ccount(rows.length);
+  }
+
+  // ================================================================ 05 資料與方法
+  function renderNotes() {
+    const m = state.meta, en = state.lang === 'en', R = m.redistribution_hic, box = $('notes');
+    const L = en ? {
+      h1: 'Data', h2: 'Method', h3: 'How to read it — and what it cannot tell us', h4: 'Rebuild',
+      data: [
+        `Inequality: <strong>SWIID v${m.swiid_version}</strong> (Standardized World Income Inequality Database, Frederick Solt), Gini of <em>disposable</em> income (after taxes and transfers), standard errors included. Each country uses its latest year between ${m.gini_years[0]} and ${m.gini_years[1]}. SWIID is used because it puts national surveys on one comparable scale and includes Taiwan.`,
+        `Road deaths, GDP per capita and continents: the same ${m.year} data as the <a href="road-safety.html">road safety × income</a> page (WHO estimates; Taiwan uses MOTC 30-day deaths; IMF GDP per capita).`,
+        `${m.unmatched.length} countries have no SWIID estimate for ${m.gini_years[0]}–${m.gini_years[1]} and are left out.`,
+      ],
+      method: [
+        'All regressions are OLS on ln(death rate). M0 uses ln(GDP per capita) only; M1 adds the Gini; M2 also adds continent dummies; H1 repeats M1 for high-income countries.',
+        'The income-expected rate in the second chart is M0’s prediction. Actual ÷ expected above 1 means deadlier than countries of similar income.',
+        `95% intervals: ${m.bootstrap.n.toLocaleString('en-US')} bootstrap resamples with a fixed seed, so the numbers are reproducible.`,
+      ],
+      read: [
+        'These are <strong>country-level associations</strong>, not causal effects. Inequality, institutions, urban form and transport policy move together, and a cross-section cannot separate them.',
+        'Most of the raw association comes from Latin America and Africa, where inequality and road deaths are both high. Within Asia and Europe the link is weak.',
+        `Redistribution (how much taxes and transfers lower the Gini) is also linked to fewer deaths among high-income countries (Spearman ${R.spearman.toFixed(2)}, n=${R.n}), but the link fades after adjusting for income and disappears once continent is added, so it is not shown as a finding.`,
+        'Gini estimates carry uncertainty (Taiwan ± ' + fmt1(state.data.find(c => c.iso3 === 'TWN').gini_se) + '); WHO death rates are model estimates for many countries.',
+      ],
+    } : {
+      h1: '資料', h2: '方法', h3: '怎麼讀：以及它無法告訴我們的事', h4: '重新建置',
+      data: [
+        `所得不均：<strong>SWIID v${m.swiid_version}</strong>（標準化世界所得不平等資料庫，Frederick Solt），採<em>可支配所得</em>（稅與移轉後）的吉尼係數，並附標準誤；每國取${m.gini_years[0]}–${m.gini_years[1]}年間最新一年。選用SWIID，是因為它把各國調查換算到同一可比基準，且包含臺灣。`,
+        `道路死亡率、人均GDP與大洲分組：與<a href="road-safety.html">道路安全 × 國家所得</a>同一份${m.year}年資料（WHO估計值；臺灣為交通部30日死亡；IMF人均GDP）。`,
+        `${m.unmatched.length}個國家在${m.gini_years[0]}–${m.gini_years[1]}年間沒有SWIID估計值，未納入。`,
+      ],
+      method: [
+        '迴歸皆為OLS，依變數為ln（死亡率）。M0只放ln（人均GDP）；M1加入吉尼係數；M2再加入大洲虛擬變數；H1為只用高所得國家的M1。',
+        '第二張圖的「所得預期死亡率」是M0的預測值；實際÷預期大於1，代表比所得相近的國家更致命。',
+        `95%區間：以固定種子bootstrap重抽${m.bootstrap.n.toLocaleString('en-US')}次，數字可重現。`,
+      ],
+      read: [
+        '這些是<strong>國家層級的相關</strong>，不是因果效果。所得不均、制度、都市型態與交通政策往往一起變動，單一年度的跨國比較無法把它們分開。',
+        '粗看的關聯，多半來自拉丁美洲與非洲：這些地區同時高度不平等、道路死亡率也高；只看亞洲與歐洲，關聯並不明顯。',
+        `再分配程度（稅與移轉讓吉尼係數下降多少）在高所得國家中也與較低的死亡率相關（Spearman ${R.spearman.toFixed(2)}，n=${R.n}），但扣掉所得後關聯變弱、再扣掉大洲後消失，因此不列為發現。`,
+        '吉尼係數本身有估計誤差（臺灣 ± ' + fmt1(state.data.find(c => c.iso3 === 'TWN').gini_se) + '）；多數國家的WHO死亡率也是模型估計值。',
+      ],
+    };
+    const ul = a => '<ul>' + a.map(s => `<li>${s}</li>`).join('') + '</ul>';
+    box.innerHTML = `<h3>${L.h1}</h3>${ul(L.data)}<h3>${L.h2}</h3>${ul(L.method)}<h3>${L.h3}</h3>${ul(L.read)}` +
+      `<h3>${L.h4}</h3><p><code>python3 scripts/build_road_safety.py</code> → <code>python3 scripts/build_inequality.py</code>` +
+      `（${en ? 'generated ' : ''}${m.generated.slice(0, 10)}${en ? '' : ' 產生'}）。` +
+      `${en ? 'Citation' : '引用'}：<a href="${m.swiid_doi}" rel="noopener">${m.sources.swiid.replace(/</g, '&lt;')}</a></p>`;
+  }
+})();
+</script>
+</body>
+</html>
