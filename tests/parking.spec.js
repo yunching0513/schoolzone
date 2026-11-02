@@ -98,6 +98,22 @@ async function open(browser, opts = {}) {
     await ctx.close();
   }
 
+  console.log('\n— 返回連結 —');
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await ctx.route('**://fonts.googleapis.com/**', r => r.fulfill({ contentType: 'text/css', body: '' }));
+    const page = await ctx.newPage();
+    await page.goto(URL, { waitUntil: 'domcontentloaded' });
+    check('直接開啟：返回打造夢想街道', (await page.locator('header a.back').getAttribute('href')) === './'
+      && (await page.locator('header a.back').textContent()).includes('打造夢想街道'));
+    await page.goto(URL + '?from=atlas', { waitUntil: 'domcontentloaded' });
+    check('從 atlas 進入：返回全國交通安全地圖', (await page.locator('header a.back').getAttribute('href')) === '/taiwan-mobility-atlas/'
+      && (await page.locator('footer a').textContent()).includes('全國交通安全地圖'));
+    await page.locator('#langSeg button[data-lang="en"]').click();
+    check('切換英文後仍回 atlas', (await page.locator('header a.back').textContent()).includes('Taiwan Mobility Atlas'));
+    await ctx.close();
+  }
+
   console.log('\n— 資料缺失 —');
   {
     const { ctx, page } = await open(browser, { missing: true });

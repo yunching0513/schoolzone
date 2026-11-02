@@ -19,6 +19,21 @@
     if (th !== 'auto') d.setAttribute('data-theme', th);
     d.setAttribute('lang', lg === 'en' ? 'en' : 'zh-Hant');
     window.__RS_LANG = lg; window.__RS_THEME = th;
+
+    // 返回連結看來源：從 Taiwan Mobility Atlas 點進來就回 atlas，其餘回打造夢想街道（同 road-safety.html）。
+    var ATLAS = '/taiwan-mobility-atlas/', back = null;
+    function sget(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+    function sset(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+    try {
+      var r = document.referrer ? new URL(document.referrer) : null;
+      if (r && r.origin === location.origin && r.pathname !== location.pathname) {
+        back = r.pathname.indexOf(ATLAS) === 0 ? r.pathname + r.search : '';
+      }
+    } catch (e) {}
+    if (back === null && q.get('from') === 'atlas') back = ATLAS;
+    if (back === null) back = sget('ps_back');
+    else sset('ps_back', back);
+    window.__RS_BACK = back || '';                                   // '' ＝ 回打造夢想街道
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -234,7 +249,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     <div class="seg" id="themeSeg" role="group" data-i18n-aria="themeAria">
       <button type="button" data-theme-opt="auto" data-i18n="thAuto">自動</button><button type="button" data-theme-opt="light" data-i18n="thLight">白底</button><button type="button" data-theme-opt="dark" data-i18n="thDark">深色</button>
     </div>
-    <a class="back" href="road-safety.html" data-i18n="back">← 道路安全 × 國家所得</a>
+    <a class="back" href="./" data-i18n="back">← 打造夢想街道</a>
   </div>
 </header>
 
@@ -293,7 +308,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
 
 <footer>
   <span>Taiwan Mobility Atlas · Taipei Street Space</span>
-  <span><a href="road-safety.html" data-i18n="footBack">道路安全 × 國家所得</a> · <a href="./" data-i18n="footHome">打造夢想街道</a></span>
+  <span><a href="./" data-i18n="footBack">打造夢想街道</a></span>
 </footer>
 </div>
 
@@ -312,7 +327,8 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       h1: '臺北街道空間｜汽機車停車格佔了多少街道？',
       sub: (snap) => `路邊停車格圖資 ${snap}；8公尺以上道路測繪 103–105年`,
       langAria: '語言', themeAria: '顏色主題', thAuto: '自動', thLight: '白底', thDark: '深色',
-      back: '← 道路安全 × 國家所得', footBack: '道路安全 × 國家所得', footHome: '打造夢想街道',
+      back: '← 打造夢想街道', footBack: '打造夢想街道',
+      backAtlas: '← 全國交通安全地圖', footBackAtlas: '全國交通安全地圖',
       s1: '01 — 先說結論', s2: '02 — 8公尺以上道路的空間組成', s3: '03 — 各區路邊停車格面積',
       s4: '04 — 資料看不見的部分', s5: '05 — 各區數值', s6: '06 — 資料與方法',
       t1: '路邊汽機車停車格總面積', t1u: '公頃', t1n: n => `約${n}座大安森林公園`,
@@ -347,7 +363,8 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       h1: 'Taipei street space | How much goes to car and motorcycle parking?',
       sub: (snap) => `Kerbside parking map ${snap}; survey of roads 8 m and wider, 2014–2016`,
       langAria: 'Language', themeAria: 'Colour theme', thAuto: 'Auto', thLight: 'Light', thDark: 'Dark',
-      back: '← Road safety × national income', footBack: 'Road safety × national income', footHome: 'Dream Streets',
+      back: '← Build Dream Streets', footBack: 'Build Dream Streets',
+      backAtlas: '← Taiwan Mobility Atlas', footBackAtlas: 'Taiwan Mobility Atlas',
       s1: '01 — The short version', s2: '02 — What roads 8 m and wider are made of', s3: '03 — Kerbside parking area by district',
       s4: '04 — What the data cannot see', s5: '05 — District figures', s6: '06 — Data and method',
       t1: 'Kerbside car and motorcycle spaces', t1u: 'ha', t1n: n => `About ${n} times Daan Forest Park`,
@@ -401,11 +418,13 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     document.documentElement.setAttribute('lang', t.htmlLang);
     document.title = t.title;
     const md = document.querySelector('meta[name=description]'); if (md) md.setAttribute('content', t.desc);
-    document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t[e.dataset.i18n]; });
+    const src = window.__RS_BACK ? 'Atlas' : '';                   // back／footBack 依來源換字
+    document.querySelectorAll('[data-i18n]').forEach(e => { const k = e.dataset.i18n; e.textContent = t[k + src] || t[k]; });
     document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
     document.querySelectorAll('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
     document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeOpt === state.theme)));
     $('empty').innerHTML = t.empty;                               // 靜態字串，非資料內容
+    if (window.__RS_BACK) document.querySelectorAll('a[data-i18n="back"], a[data-i18n="footBack"]').forEach(a => { a.href = window.__RS_BACK; });
   }
   function setLang(l) {
     state.lang = l;
