@@ -228,7 +228,18 @@ footer a { color: var(--ink-2); }
 .unseen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .unseen .tile .value { font-size: 26px; }
 tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, transparent); }
-#dtable { min-width: 900px; }
+#dtable { min-width: 1180px; }
+.vgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.vgrid .card + .card { margin-top: 0; }
+.line { fill: none; stroke-width: 2.5; }
+.line.car { stroke: var(--c-car); } .line.moto { stroke: var(--c-moto); }
+.end-label { font-size: 11.5px; font-weight: 700; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.end-label.car { fill: var(--c-car); } .end-label.moto { fill: var(--c-moto); }
+.cursor { stroke: var(--axis); stroke-width: 1; }
+.dot { stroke: var(--surface); stroke-width: 1.5; }
+.dot.car { fill: var(--c-car); } .dot.moto { fill: var(--c-moto); }
+.connector { stroke: var(--axis); stroke-width: 2; }
+@media (max-width: 980px) { .vgrid { grid-template-columns: 1fr; } }
 @media (max-width: 860px) { .unseen { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -286,19 +297,41 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
 </section>
 
 <section class="section" aria-labelledby="s4">
-  <div class="section-label" id="s4" data-i18n="s4">04 — 資料看不見的部分</div>
+  <div class="section-label" id="s4" data-i18n="s4">04 — 車輛總數與停車空間</div>
+  <p class="kicker" id="kv"></p>
+  <div class="tiles" id="vtiles"></div>
+  <div class="vgrid">
+    <div class="card">
+      <div class="card-title" id="c3t"></div>
+      <div class="card-sub" id="c3s"></div>
+      <div class="legend" id="key3"></div>
+      <div class="chart" id="chart3"><div class="tip" role="status" aria-live="polite"></div></div>
+      <p class="caption" id="cap3"></p>
+    </div>
+    <div class="card">
+      <div class="card-title" id="c4t"></div>
+      <div class="card-sub" id="c4s"></div>
+      <div class="legend" id="key4"></div>
+      <div class="chart" id="chart4"><div class="tip" role="status" aria-live="polite"></div></div>
+      <p class="caption" id="cap4"></p>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="s5">
+  <div class="section-label" id="s5" data-i18n="s5">05 — 資料看不見的部分</div>
   <p class="kicker" id="k4"></p>
   <div class="unseen" id="unseen"></div>
 </section>
 
-<section class="section" aria-labelledby="s5">
-  <div class="section-label" id="s5" data-i18n="s5">05 — 各區數值</div>
+<section class="section" aria-labelledby="s6">
+  <div class="section-label" id="s6" data-i18n="s6">06 — 各區數值</div>
   <div class="twrap"><table id="dtable"></table></div>
   <p class="caption" id="dcap"></p>
 </section>
 
-<section class="section" aria-labelledby="s6">
-  <div class="section-label" id="s6" data-i18n="s6">06 — 資料與方法</div>
+<section class="section" aria-labelledby="s7">
+  <div class="section-label" id="s7" data-i18n="s7">07 — 資料與方法</div>
   <div class="notes" id="notes"></div>
 </section>
 
@@ -330,11 +363,23 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       back: '← 打造夢想街道', footBack: '打造夢想街道',
       backAtlas: '← 全國交通安全地圖', footBackAtlas: '全國交通安全地圖',
       s1: '01 — 先說結論', s2: '02 — 8公尺以上道路的空間組成', s3: '03 — 各區路邊停車格面積',
-      s4: '04 — 資料看不見的部分', s5: '05 — 各區數值', s6: '06 — 資料與方法',
+      s4: '04 — 車輛總數與停車空間', s5: '05 — 資料看不見的部分', s6: '06 — 各區數值', s7: '07 — 資料與方法',
+      kv: (p) => `路邊停車格只是一部分。把臺北市登記的汽機車（${p}）全部停好需要多少空間？以路邊格的實測平均面積計算（汽車約10.7 m²、機車約1.5 m²），這只是格位本身的大小，不含車道與進出空間，是保守的下限。`,
+      v1: '登記汽機車', v1u: '輛', v1n: (c, m) => `汽車${c}輛、機車${m}輛`,
+      v2: '全部停好至少需要', v2u: 'km²', v2n: (r, d) => `相當於全市已開闢道路面積的${r}，約${d}座大安森林公園`,
+      v3: '公開停車供給容納得下的汽車', v3u: '', v3n: (n, m) => `路邊格與公開停車場共${n}個汽車格；機車為${m}`,
+      v4: '汽車總數變化', v4u: '', v4n: (p0, a, b, m) => `${p0}以來，自用小客車${a}，營業用小型車（多為租賃車）${b}；機車${m}`,
+      c3t: '臺北市汽機車登記數', c3s: '每月底，萬輛', cap3: '滑過或點選看各月數字。營業用小型車多為租賃公司登記的車輛。',
+      c4t: '公開停車供給 ÷ 登記車輛', c4s: '各區路邊格加公開停車場的格數，除以該區登記數；100%＝全部容納得下',
+      cap4: '車輛依車主或公司地址登記，不一定停在該區；中山、大安、內湖登記了大量營業用車，比例因此偏低。建築物附設停車位沒有公開資料，不在供給內。',
+      keys3: { car: '汽車', moto: '機車' }, wan: '萬', full: '全部容納',
+      tipCar: '汽車', tipMoto: '機車', tipPriv: '自用小客車', tipBiz: '營業用小型車', tipCarCov: '汽車供給比', tipMotoCov: '機車供給比',
+      tipCarReg: '登記汽車', tipMotoReg: '登記機車', tipCarSup: '公開汽車格', tipMotoSup: '公開機車格',
       t1: '路邊汽機車停車格總面積', t1u: '公頃', t1n: n => `約${n}座大安森林公園`,
       t2: '汽車格佔停車格面積', t2u: '', t2n: (cs, csh, ratio) => `汽車格只佔格數的${cs}，一格平均${csh} m²，可停約${ratio}台機車`,
       t3: '8公尺以上道路：人行道', t3u: '的路面', t3n: v => `行車道與路邊停車共佔${v}`,
       t4: '8公尺以上道路：停車格 ÷ 人行道', t4u: '', t4n: v => `同一批道路上，光是汽車格就相當於人行道面積的${v}`,
+      leadV: (o) => `若把登記的${o.cars}輛汽車與${o.motos}輛機車全部停好，光是格位本身就需要${o.km2}平方公里，相當於全市已開闢道路面積的${o.road}；路邊格與公開停車場加起來，只容納得下${o.cov}的汽車。<strong>空間的限制是硬的，車輛的數量卻沒有上限。</strong>`,
       lead: (o) => `臺北市的路邊共劃設<strong>${o.car}個汽車格、${o.moto}個機車格</strong>，加總約${o.ha}公頃，相當於${o.daan}座大安森林公園。這些格位多半劃在道路上，是城市免費或低價出租給私人車輛的公共空間。<strong>汽車格的分配尤其失衡：格數不到兩成，卻佔了${o.carShare}的停車面積。</strong>放大到整條街道來看，8公尺以上的道路中，人行道只佔${o.sw}，行車道與路邊停車則佔${o.lanes}。換句話說，臺北街道的主角恐怕仍是車，而不是人。`,
       k2: '工務局測繪了每一段8公尺以上道路的人行道、側溝與分隔島面積；把停車格多邊形疊上去，就能拆出路邊停車格佔了多少。其餘部分是行車道，包含公車與自行車也會使用的車道。',
       c1t: '8公尺以上道路的空間組成', c1s: '全市與各行政區，依人行道比例由高到低排序',
@@ -351,7 +396,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       u1: '路外停車場', u1u: '座', u1n: (c, m) => `汽車${c}格、機車${m}格；多在地下或建築內，只有格位數，沒有面積`,
       u2: '建築物附設停車位', u2v: '無公開資料', u2n: '依建築技術規則設置的法定停車位，佔用的是建築樓地板，而非街道',
       u3: '騎樓、人行道與巷道的違規停放', u3v: '無法統計', u3n: '從空中看不到騎樓下的機車；樹蔭下的汽車也會被遮住',
-      cols: { district: '行政區', car: '汽車格', moto: '機車格', carHa: '汽車格面積（公頃）', motoHa: '機車格面積（公頃）', ha: '合計（公頃）',
+      cols: { district: '行政區', regCar: '登記汽車', regMoto: '登記機車', carCov: '汽車供給比', car: '汽車格', moto: '機車格', carHa: '汽車格面積（公頃）', motoHa: '機車格面積（公頃）', ha: '合計（公頃）',
         roadPct: '佔已開闢道路面積', sw: '人行道佔8m以上道路', per: '每人（m²）', off: '路外停車場汽車格' },
       dcap: '機車格含機慢車停放區；不含欄位說明未列的格位代碼。已開闢道路面積包含8公尺以下的巷道。',
       empty: '<p><strong>資料尚未建置。</strong>這一頁需要 <code>data/taipei_parking_space.json</code>，請在專案根目錄執行 <code>pip install pyshp shapely</code> 與 <code>python3 scripts/build_parking_space.py</code>，完成後重新整理即可。</p>',
@@ -366,11 +411,23 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       back: '← Build Dream Streets', footBack: 'Build Dream Streets',
       backAtlas: '← Taiwan Mobility Atlas', footBackAtlas: 'Taiwan Mobility Atlas',
       s1: '01 — The short version', s2: '02 — What roads 8 m and wider are made of', s3: '03 — Kerbside parking area by district',
-      s4: '04 — What the data cannot see', s5: '05 — District figures', s6: '06 — Data and method',
+      s4: '04 — Vehicle numbers and parking space', s5: '05 — What the data cannot see', s6: '06 — District figures', s7: '07 — Data and method',
+      kv: (p) => `Kerbside spaces are only part of the story. How much space would it take to park every car and motorcycle registered in Taipei (${p})? Using the measured average kerbside space (about 10.7 m² per car, 1.5 m² per motorcycle), this counts only the painted space itself, without aisles or access, so it is a conservative lower bound.`,
+      v1: 'Registered cars and motorcycles', v1u: '', v1n: (c, m) => `${c} cars and ${m} motorcycles`,
+      v2: 'Space to park them all, at least', v2u: 'km²', v2n: (r, d) => `${r} of all opened road area, or about ${d} Daan Forest Parks`,
+      v3: 'Cars that public parking can hold', v3u: '', v3n: (n, m) => `${n} car spaces at the kerb and in public car parks; ${m} for motorcycles`,
+      v4: 'Change in registered cars', v4u: '', v4n: (p0, a, b, m) => `Since ${p0}: private cars ${a}, commercial small vehicles (mostly rentals) ${b}; motorcycles ${m}`,
+      c3t: 'Registered cars and motorcycles in Taipei', c3s: 'End of each month', cap3: 'Hover or tap for monthly figures. Commercial small vehicles are mostly registered by rental companies.',
+      c4t: 'Public parking ÷ registered vehicles', c4s: 'Kerbside plus public car-park spaces in each district, divided by vehicles registered there; 100% = all fit',
+      cap4: 'Vehicles are registered at the owner\u2019s or company\u2019s address, not necessarily where they park; Zhongshan, Da\u2019an and Neihu hold many commercial registrations, so their ratios look low. Parking inside buildings has no open data and is not counted as supply.',
+      keys3: { car: 'Cars', moto: 'Motorcycles' }, wan: '0k', full: 'All fit',
+      tipCar: 'Cars', tipMoto: 'Motorcycles', tipPriv: 'Private cars', tipBiz: 'Commercial small vehicles', tipCarCov: 'Car ratio', tipMotoCov: 'Motorcycle ratio',
+      tipCarReg: 'Registered cars', tipMotoReg: 'Registered motorcycles', tipCarSup: 'Public car spaces', tipMotoSup: 'Public motorcycle spaces',
       t1: 'Kerbside car and motorcycle spaces', t1u: 'ha', t1n: n => `About ${n} times Daan Forest Park`,
       t2: 'Car spaces’ share of parking area', t2u: '', t2n: (cs, csh, ratio) => `Only ${cs} of spaces; at ${csh} m² each, one holds about ${ratio} motorcycles`,
       t3: 'Roads 8 m+: sidewalks', t3u: 'of the surface', t3n: v => `Traffic lanes and kerbside parking take ${v}`,
       t4: 'Roads 8 m+: parking ÷ sidewalks', t4u: '', t4n: v => `On the same roads, car spaces alone equal ${v} of sidewalk area`,
+      leadV: (o) => `Parking all ${o.cars} registered cars and ${o.motos} motorcycles would take ${o.km2} km² for the painted spaces alone, ${o.road} of all opened road area, while kerbside and public car parks together hold only ${o.cov} of the cars. <strong>Space has a hard limit; the number of vehicles does not.</strong>`,
       lead: (o) => `Taipei has marked <strong>${o.car} car spaces and ${o.moto} motorcycle spaces</strong> along its streets, about ${o.ha} hectares in total, or ${o.daan} times Daan Forest Park. Most of this is road surface that the city lends to private vehicles for free or at a low price. <strong>Car spaces are especially greedy: fewer than one in five spaces, but ${o.carShare} of the parking area.</strong> On roads 8 m and wider, sidewalks make up only ${o.sw} of the surface, while traffic lanes and kerbside parking take ${o.lanes}. Taipei’s streets are still built mainly for vehicles, not people.`,
       k2: 'The Public Works Department surveyed sidewalk, gutter and median area on every road segment 8 m and wider. Overlaying the parking-space polygons separates kerbside parking; the remainder is traffic lanes, including lanes used by buses and bicycles.',
       c1t: 'What roads 8 m and wider are made of', c1s: 'Whole city and each district, sorted by sidewalk share',
@@ -387,7 +444,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       u1: 'Off-street car parks', u1u: '', u1n: (c, m) => `${c} car and ${m} motorcycle spaces; mostly underground or in buildings, with counts but no area`,
       u2: 'Parking inside buildings', u2v: 'No open data', u2n: 'Mandatory parking under the building code takes floor area, not street space',
       u3: 'Illegal parking in arcades, sidewalks and lanes', u3v: 'Not counted', u3n: 'Motorcycles under arcades are invisible from above, and trees hide cars',
-      cols: { district: 'District', car: 'Car spaces', moto: 'Motorcycle spaces', carHa: 'Car area (ha)', motoHa: 'Motorcycle area (ha)', ha: 'Total (ha)',
+      cols: { district: 'District', regCar: 'Registered cars', regMoto: 'Registered motorcycles', carCov: 'Car ratio', car: 'Car spaces', moto: 'Motorcycle spaces', carHa: 'Car area (ha)', motoHa: 'Motorcycle area (ha)', ha: 'Total (ha)',
         roadPct: 'Share of all road area', sw: 'Sidewalk share, roads 8 m+', per: 'Per resident (m²)', off: 'Off-street car spaces' },
       dcap: 'Motorcycle figures include two-wheeler zones; space codes not listed in the field description are excluded. All road area includes lanes narrower than 8 m.',
       empty: '<p><strong>Data not built yet.</strong> This page needs <code>data/taipei_parking_space.json</code>. From the project root run <code>pip install pyshp shapely</code>, then <code>python3 scripts/build_parking_space.py</code>, and reload.</p>',
@@ -462,12 +519,15 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       carM2: A.car, motoM2: A.moto + A.zone, parkM2,
       motoN: r.slots.moto, carN: r.slots.car,
       roadPct: parkM2 / r.road_m2, swPct: R.sidewalk / R.area, perPerson: parkM2 / r.population,
+      veh: r.vehicles, carSup: r.slots.car + r.offstreet.car, motoSup: r.slots.moto + r.offstreet.moto,
+      carCov: (r.slots.car + r.offstreet.car) / r.vehicles.car, motoCov: (r.slots.moto + r.offstreet.moto) / r.vehicles.moto,
     });
   }
   function init(d) {
     const M = d.meta.totals;
     const all = derive({ district: 'ALL', en: 'Taipei', population: M.population, land_km2: M.land_km2, road_m2: M.road_m2,
-      road8m: M.road8m, slots: M.slots, slot_m2: M.slot_m2, slot_m2_in8m: M.slot_m2_in8m, charged: M.charged, offstreet: M.offstreet });
+      road8m: M.road8m, slots: M.slots, slot_m2: M.slot_m2, slot_m2_in8m: M.slot_m2_in8m, charged: M.charged, offstreet: M.offstreet,
+      vehicles: M.vehicles });
     state.d = { meta: d.meta, all, rows: d.districts.map(derive) };
     $('app').hidden = false;
     renderAll();
@@ -478,6 +538,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     $('subline').textContent = t.sub(meta.slots_snapshot);
     renderTiles(all);
     renderCharts();
+    renderVehicleTiles();
     renderUnseen(all);
     renderTable();
     renderNotes();
@@ -508,7 +569,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     $('lead').innerHTML = t.lead({                                 // 模板為靜態字串，插入的只有數字
       car: fmtInt(a.carN), moto: fmtInt(a.motoN), ha: fmt1(ha), daan: (ha / DAAN_HA).toFixed(1),
       carShare: pct(carShare, 0), sw: pct(a.share('sidewalk')), lanes: pct(lanes),
-    });
+    }) + (state.lang === 'en' ? ' ' : '') + t.leadV({ cars: fmtInt(a.veh.car), motos: fmtInt(a.veh.moto), km2: need(a).toFixed(1), road: pct(need(a) * 1e6 / a.road_m2, 0), cov: pct(a.carCov, 0) });
   }
 
   // ================================================================ 圖表
@@ -532,6 +593,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       rows: sorted2, keys: ['car', 'moto'], max: max2, value: (r, k) => (k === 'car' ? r.carM2 : r.motoM2) / 1e4,
       inLabel: () => '', end: r => fmt1(r.parkM2 / 1e4) + ' ' + t.ha, ticks: true, tip: tipArea, aria: t.c2t,
     });
+    renderVehicleCharts();
   }
   function renderKey(id, items) {
     const box = $(id); box.textContent = '';
@@ -622,7 +684,145 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     row(t.tipPop, fmtInt(r.population));
   }
 
-  // ================================================================ 04 看不見的部分
+  // ================================================================ 04 車輛總數與停車空間
+  const avgArea = () => { const M = state.d.meta.totals; return { car: M.slot_m2.car / M.slots.car, moto: M.slot_m2.moto / M.slots.moto }; };
+  const need = r => { const A = avgArea(); return (r.veh.car * A.car + r.veh.moto * A.moto) / 1e6; };   // km²
+  const pctSigned = (a, b) => { const v = (b / a - 1) * 100; return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1) + '%'; };
+  function periodLabel(p, short) {                              // '115年9月底' → 中文原樣／英文 2026-09
+    const m = /(\d+)年(\d+)月/.exec(p); if (!m) return p;
+    const y = +m[1] + 1911, mo = +m[2];
+    if (state.lang === 'en') return short ? String(y) : `${y}-${String(mo).padStart(2, '0')}`;
+    return short ? String(y) : p;
+  }
+  function renderVehicleTiles() {
+    const t = T(), a = state.d.all, S = state.d.meta.vehicles_series, s0 = S[0], s1 = S[S.length - 1];
+    $('kv').textContent = t.kv(periodLabel(state.d.meta.vehicles_period));
+    const tiles = [
+      { label: t.v1, value: fmtInt(a.veh.car + a.veh.moto), unit: t.v1u, note: t.v1n(fmtInt(a.veh.car), fmtInt(a.veh.moto)) },
+      { label: t.v2, value: need(a).toFixed(1), unit: t.v2u, note: t.v2n(pct(need(a) * 1e6 / a.road_m2, 0), Math.round(need(a) * 100 / DAAN_HA)), lead: true },
+      { label: t.v3, value: pct(a.carCov, 0), unit: t.v3u, note: t.v3n(fmtInt(a.carSup), pct(a.motoCov, 0)) },
+      { label: t.v4, value: pctSigned(s0.car, s1.car), unit: t.v4u,
+        note: t.v4n(periodLabel(s0.period), pctSigned(s0.small_private, s1.small_private), pctSigned(s0.small_business, s1.small_business), pctSigned(s0.moto, s1.moto)) },
+    ];
+    const box = $('vtiles'); box.textContent = '';
+    tiles.forEach(x => {
+      const dv = el('div', { class: 'tile' + (x.lead ? ' lead-tile' : '') });
+      dv.appendChild(el('div', { class: 'label' }, x.label));
+      const v = el('div', { class: 'value' }, x.value);
+      if (x.unit) v.appendChild(el('span', { class: 'unit' }, x.unit));
+      dv.appendChild(v);
+      dv.appendChild(el('div', { class: 'note' }, x.note));
+      box.appendChild(dv);
+    });
+  }
+  function renderVehicleCharts() {
+    const t = T();
+    ['c3t', 'c3s', 'cap3', 'c4t', 'c4s', 'cap4'].forEach(k => { $(k).textContent = t[k]; });
+    renderKey('key3', [['car', t.keys3.car], ['moto', t.keys3.moto]]);
+    renderKey('key4', [['car', t.keys3.car], ['moto', t.keys3.moto]]);
+    lineChart($('chart3'));
+    dotChart($('chart4'));
+  }
+  // 月別折線：汽車、機車兩條線，共用縱軸
+  function lineChart(host) {
+    const t = T(), S = state.d.meta.vehicles_series;
+    host.querySelectorAll('svg').forEach(s => s.remove());
+    const tip = host.querySelector('.tip'); tip.style.display = 'none';
+    const W = Math.max(280, host.clientWidth), narrow = W < 460, H = narrow ? 260 : 300;
+    const m = { l: narrow ? 44 : 52, r: narrow ? 46 : 54, t: 14, b: 28 };
+    const vals = S.flatMap(p => [p.car, p.moto]);
+    const lo = Math.floor(Math.min(...vals) / 5e4) * 5e4, hi = Math.ceil(Math.max(...vals) / 5e4) * 5e4;
+    const X = i => m.l + i / (S.length - 1) * (W - m.l - m.r), Y = v => m.t + (hi - v) / (hi - lo) * (H - m.t - m.b);
+    const fmtY = v => (state.lang === 'en' ? v / 1e3 + 'k' : v / 1e4 + t.wan);
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': t.c3t });
+    host.insertBefore(svg, tip);
+    for (let v = lo; v <= hi; v += 5e4) {
+      svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'gridline' }));
+      const tx = svg.appendChild(sv('g', { class: 'tick' })).appendChild(sv('text', { x: m.l - 6, y: Y(v) + 4, 'text-anchor': 'end' }));
+      tx.textContent = fmtY(v);
+    }
+    S.forEach((p, i) => {
+      if (!/年\s*1月/.test(p.period) || (narrow && (+/(\d+)年/.exec(p.period)[1]) % 2)) return;
+      const tx = svg.appendChild(sv('g', { class: 'tick' })).appendChild(sv('text', { x: X(i), y: H - 8, 'text-anchor': 'middle' }));
+      tx.textContent = periodLabel(p.period, true);
+    });
+    svg.appendChild(sv('line', { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: 'axisline' }));
+    ['car', 'moto'].forEach(k => {
+      svg.appendChild(sv('path', { d: S.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(p[k]).toFixed(1)).join(''), class: 'line ' + k }));
+      const last = S[S.length - 1];
+      const lb = svg.appendChild(sv('text', { x: W - m.r + 6, y: Y(last[k]) + 4, class: 'end-label ' + k }));
+      lb.textContent = t.keys3[k];
+      if (lb.getComputedTextLength() > m.r - 8) {                 // 窄螢幕放不下：改放在線的上方、靠右對齊
+        lb.setAttribute('x', W - m.r); lb.setAttribute('y', Y(last[k]) - 8); lb.setAttribute('text-anchor', 'end');
+      }
+    });
+    const cur = svg.appendChild(sv('line', { y1: m.t, y2: H - m.b, class: 'cursor', visibility: 'hidden' }));
+    const hit = svg.appendChild(sv('rect', { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, class: 'hit' }));
+    const show = ev => {
+      const rect = svg.getBoundingClientRect(), sx = W / rect.width;
+      const i = Math.max(0, Math.min(S.length - 1, Math.round(((ev.clientX - rect.left) * sx - m.l) / (W - m.l - m.r) * (S.length - 1))));
+      const p = S[i];
+      cur.setAttribute('x1', X(i)); cur.setAttribute('x2', X(i)); cur.setAttribute('visibility', 'visible');
+      tip.textContent = '';
+      tip.appendChild(el('div', { class: 'tn' }, periodLabel(p.period)));
+      const dl = tip.appendChild(el('dl'));
+      [[t.tipCar, p.car], [t.tipPriv, p.small_private], [t.tipBiz, p.small_business], [t.tipMoto, p.moto]].forEach(([k, v]) => {
+        dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, fmtInt(v)));
+      });
+      tip.style.display = 'block';
+      const s = host.clientWidth / W, tw = tip.offsetWidth;
+      let lx = X(i) * s + 12; if (lx + tw > host.clientWidth) lx = X(i) * s - tw - 12;
+      tip.style.left = Math.max(0, lx) + 'px'; tip.style.top = (m.t * s + 4) + 'px';
+    };
+    hit.addEventListener('pointermove', show);
+    hit.addEventListener('pointerdown', show);
+    hit.addEventListener('pointerleave', () => { tip.style.display = 'none'; cur.setAttribute('visibility', 'hidden'); });
+  }
+  // 各區供給比：汽車與機車兩個點，以線相連
+  function dotChart(host) {
+    const t = T(), rows = state.d.rows.slice().sort((p, q) => p.carCov - q.carCov);
+    host.querySelectorAll('svg').forEach(s => s.remove());
+    const tip = host.querySelector('.tip'); tip.style.display = 'none';
+    const W = Math.max(280, host.clientWidth), narrow = W < 460;
+    const rowH = 24, m = { l: narrow ? 62 : 76, r: 16, t: 24, b: 6 };
+    const H = m.t + rows.length * rowH + m.b, X = v => m.l + Math.min(v, 1) * (W - m.l - m.r);
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': t.c4t });
+    host.insertBefore(svg, tip);
+    [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+      svg.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t - 4, y2: H - m.b, class: v === 1 ? 'refline' : 'gridline' }));
+      const tx = svg.appendChild(sv('g', { class: 'tick' })).appendChild(sv('text', { x: X(v), y: m.t - 9, 'text-anchor': v === 1 ? 'end' : 'middle' }));
+      tx.textContent = v === 1 ? t.full + ' 100%' : Math.round(v * 100) + '%';
+    });
+    let hot = null;
+    rows.forEach((r, i) => {
+      const y = m.t + i * rowH + rowH / 2;
+      const lab = svg.appendChild(sv('text', { x: m.l - 8, y: y + 4, 'text-anchor': 'end', class: 'row-label' }));
+      lab.textContent = dName(r);
+      svg.appendChild(sv('line', { x1: X(r.carCov), x2: X(r.motoCov), y1: y, y2: y, class: 'connector' }));
+      svg.appendChild(sv('circle', { cx: X(r.carCov), cy: y, r: 6, class: 'dot car' }));
+      svg.appendChild(sv('circle', { cx: X(r.motoCov), cy: y, r: 6, class: 'dot moto' }));
+      const hit = svg.appendChild(sv('rect', { x: 0, y: y - rowH / 2, width: W, height: rowH, class: 'row-hit' }));
+      const show = on => {
+        if (hot) hot.classList.remove('hot');
+        hot = on ? hit : null;
+        if (!on) { tip.style.display = 'none'; return; }
+        hit.classList.add('hot');
+        const row = tipHead(tip, r);
+        row(t.tipCarReg, fmtInt(r.veh.car)); row(t.tipCarSup, fmtInt(r.carSup)); row(t.tipCarCov, pct(r.carCov, 0));
+        row(t.tipBiz, fmtInt(r.veh.small_business));
+        row(t.tipMotoReg, fmtInt(r.veh.moto)); row(t.tipMotoSup, fmtInt(r.motoSup)); row(t.tipMotoCov, pct(r.motoCov, 0));
+        tip.style.display = 'block';
+        const s = host.clientWidth / W;
+        tip.style.left = Math.max(0, Math.min(host.clientWidth - tip.offsetWidth, m.l * s)) + 'px';
+        tip.style.top = ((y + rowH / 2) * s + 4) + 'px';
+      };
+      hit.addEventListener('pointerenter', () => show(true));
+      hit.addEventListener('pointerdown', () => show(true));
+      hit.addEventListener('pointerleave', () => show(false));
+    });
+  }
+
+  // ================================================================ 05 看不見的部分
   function renderUnseen(a) {
     const t = T(), box = $('unseen'); box.textContent = '';
     $('k4').textContent = t.k4;
@@ -644,13 +844,13 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
   // ================================================================ 05 表格
   function renderTable() {
     const t = T(), { all, rows } = state.d, tb = $('dtable'); tb.textContent = '';
-    const C = t.cols, keys = ['district', 'car', 'moto', 'carHa', 'motoHa', 'ha', 'roadPct', 'sw', 'per', 'off'];
+    const C = t.cols, keys = ['district', 'regCar', 'regMoto', 'carCov', 'car', 'moto', 'carHa', 'motoHa', 'ha', 'roadPct', 'sw', 'per', 'off'];
     const head = tb.appendChild(el('thead')).appendChild(el('tr'));
     keys.forEach((k, i) => head.appendChild(el('th', { class: i ? 'num' : '', scope: 'col' }, C[k])));
     const body = tb.appendChild(el('tbody'));
     [all].concat(rows).forEach(r => {
       const tr = body.appendChild(el('tr', r.district === 'ALL' ? { class: 'all' } : null));
-      [dName(r), fmtInt(r.carN), fmtInt(r.motoN), fmt1(r.carM2 / 1e4), fmt1(r.motoM2 / 1e4), fmt1(r.parkM2 / 1e4),
+      [dName(r), fmtInt(r.veh.car), fmtInt(r.veh.moto), pct(r.carCov, 0), fmtInt(r.carN), fmtInt(r.motoN), fmt1(r.carM2 / 1e4), fmt1(r.motoM2 / 1e4), fmt1(r.parkM2 / 1e4),
         pct(r.roadPct), pct(r.swPct), r.perPerson.toFixed(2), fmtInt(r.offstreet.car)]
         .forEach((v, i) => tr.appendChild(el('td', i ? { class: 'num' } : null, v)));
     });
@@ -666,22 +866,26 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       h1: 'Data', data: [
         `Kerbside parking: ${link(S.slots, 'Taipei Parking Management and Development Office, kerbside parking spaces (SHP)')}, snapshot ${m.slots_snapshot}. Each space is a polygon; area is measured from the polygon (TWD97 TM2), not from standard dimensions.`,
         `Roads 8 m and wider: ${link(S.road8m, 'Public Works Department road survey (SHP)')}, surveyed ${m.road8m_survey}, with sidewalk, gutter and median area per segment. All road area: ${link(S.roadplan, 'opened roads within urban planning areas')}.`,
+        `Registered vehicles: ${link(S.vehicles, 'Taipei City Government, registered motor vehicles by district and month')}, latest ${periodLabel(m.vehicles_period)}.`,
         `Paid spaces: ${link(S.pubspace, 'Department of Transportation, public paid parking statistics')}. Off-street car parks: ${link(S.lots, 'parking lot information')} (updated ${m.lots_updated}). Population and land area: Ministry of the Interior, end of 2023.`,
       ], h2: 'Method', method: [
         `Space types follow the office’s field description. Cars: codes ${m.classes.car.join(', ')}. Motorcycles: ${m.classes.moto.join(', ')} (22 is car–motorcycle flexible, drawn at motorcycle size). Two-wheeler zones (${m.classes.zone.join(', ')}) include bicycles and are counted only by area. Codes not in the field description are excluded: ${other}.`,
         `A space counts as inside a road 8 m+ when its centre falls within the road polygon. “Other traffic lanes” = road area − sidewalk − medians and gutters − parking inside that road; it includes bus and bicycle lanes.`,
         `The road survey dates from ${m.road8m_survey}, while the parking map is current; sidewalks widened since then are not reflected. Arcades are on private land and are not part of the sidewalk figure.`,
+        'Space to park every registered vehicle = registered cars × measured average car space + registered motorcycles × measured average motorcycle space. It excludes aisles and access, so real off-street parking needs considerably more. Public supply = kerbside spaces + spaces in listed car parks; parking inside buildings (required by the building code) has no open data. Vehicles are registered at the owner\u2019s address and may park elsewhere; commuters from New Taipei add daytime demand that registration does not show.',
         `Daan Forest Park is taken as about ${DAAN_HA} ha.`,
       ], h3: 'Rebuild',
     } : {
       h1: '資料', data: [
         `路邊停車格：${link(S.slots, '臺北市停車管理工程處〈臺北市路邊停車格位〉SHP')}，資料時間${m.slots_snapshot}。每一格是一個多邊形，面積直接由多邊形計算（TWD97 TM2），不是用標準尺寸換算。`,
         `8公尺以上道路：${link(S.road8m, '臺北市工務局新建工程處〈臺北市寬度超過8公尺道路GIS圖資〉')}，${m.road8m_survey}測繪，含各路段的人行道、側溝與分隔島面積。全部道路面積：${link(S.roadplan, '工務局〈臺北市都市計畫區域內現有已開闢道路長度及面積〉')}。`,
+        `機動車輛登記數：${link(S.vehicles, '臺北市主計處〈臺北市機動車輛登記數按月別、按行政區別〉')}，最新為${m.vehicles_period}。`,
         `收費格位：${link(S.pubspace, '交通局〈臺北市公有收費停車位統計表〉')}。路外停車場：${link(S.lots, '停管處〈臺北市停車場資訊〉')}（更新時間${m.lots_updated}）。人口與土地面積：內政部112年底資料。`,
       ], h2: '方法', method: [
         `格位種類依停管處的欄位說明歸類。汽車：代碼${m.classes.car.join('、')}。機車：${m.classes.moto.join('、')}（22為汽機車彈性共用，圖資以機車格大小繪製）。機慢車停放區（${m.classes.zone.join('、')}）含自行車，只計面積。欄位說明未列的代碼不計入：${other}。`,
         '停車格的中心點落在8公尺以上道路的多邊形內，就算作該道路上的停車格。「其餘車道」＝道路面積－人行道－分隔島與側溝－落在該道路內的停車格，包含公車專用道與自行車道。',
         `道路測繪為${m.road8m_survey}的資料，停車格圖資則是最新版本，之後拓寬的人行道不會反映在這裡。騎樓屬私有土地，不算在人行道面積內。`,
+        '全部停好所需面積＝登記汽車數 × 路邊汽車格實測平均面積＋登記機車數 × 機車格實測平均面積。不含車道與進出空間，路外停車場實際需要的面積還會更大。公開停車供給＝路邊格＋停車場資訊所列停車場的格位；建築物依法附設的停車位沒有公開資料。車輛依車主地址登記，未必停在同一區，從新北市通勤進城的車輛也不在登記數內。',
         `大安森林公園以約${DAAN_HA}公頃換算。`,
       ], h3: '重新建置',
     };

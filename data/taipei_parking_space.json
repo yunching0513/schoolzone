@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated": "2026-11-02T08:39:42+00:00",
+  "generated": "2026-11-02T10:48:27+00:00",
   "slots_file": "park01_202610021742",
   "slots_snapshot": "2026-10-02",
   "lots_updated": "Mon Oct 19 10:26:00 CST 2026",
@@ -83,14 +83,675 @@
     "lots": 1767,
     "car": 179751,
     "moto": 93595
+   },
+   "vehicles": {
+    "car": 828488,
+    "moto": 889774,
+    "small_private": 619832,
+    "small_business": 185433
    }
   },
+  "vehicles_period": "115年9月底",
+  "vehicles_series": [
+   {
+    "period": "108年1月底",
+    "car": 814659,
+    "moto": 944142,
+    "small_private": 647935,
+    "small_business": 142699
+   },
+   {
+    "period": "108年2月底",
+    "car": 813582,
+    "moto": 944408,
+    "small_private": 647063,
+    "small_business": 142540
+   },
+   {
+    "period": "108年3月底",
+    "car": 813139,
+    "moto": 944532,
+    "small_private": 646523,
+    "small_business": 142638
+   },
+   {
+    "period": "108年4月底",
+    "car": 812367,
+    "moto": 944923,
+    "small_private": 646047,
+    "small_business": 142327
+   },
+   {
+    "period": "108年5月底",
+    "car": 813056,
+    "moto": 945100,
+    "small_private": 646162,
+    "small_business": 142862
+   },
+   {
+    "period": "108年6月底",
+    "car": 814450,
+    "moto": 945320,
+    "small_private": 646427,
+    "small_business": 143907
+   },
+   {
+    "period": "108年7月底",
+    "car": 814942,
+    "moto": 944670,
+    "small_private": 646352,
+    "small_business": 144297
+   },
+   {
+    "period": "108年8月底",
+    "car": 812907,
+    "moto": 944579,
+    "small_private": 645113,
+    "small_business": 143698
+   },
+   {
+    "period": "108年9月底",
+    "car": 812504,
+    "moto": 944923,
+    "small_private": 644678,
+    "small_business": 143661
+   },
+   {
+    "period": "108年10月底",
+    "car": 813465,
+    "moto": 945466,
+    "small_private": 645142,
+    "small_business": 144168
+   },
+   {
+    "period": "108年11月底",
+    "car": 814665,
+    "moto": 949801,
+    "small_private": 645495,
+    "small_business": 145119
+   },
+   {
+    "period": "108年12月底",
+    "car": 815569,
+    "moto": 952055,
+    "small_private": 645504,
+    "small_business": 146027
+   },
+   {
+    "period": "109年1月底",
+    "car": 815137,
+    "moto": 951079,
+    "small_private": 645210,
+    "small_business": 145931
+   },
+   {
+    "period": "109年2月底",
+    "car": 814868,
+    "moto": 950944,
+    "small_private": 644882,
+    "small_business": 146039
+   },
+   {
+    "period": "109年3月底",
+    "car": 814753,
+    "moto": 950376,
+    "small_private": 644578,
+    "small_business": 146245
+   },
+   {
+    "period": "109年4月底",
+    "car": 813458,
+    "moto": 948887,
+    "small_private": 643521,
+    "small_business": 145981
+   },
+   {
+    "period": "109年5月底",
+    "car": 813600,
+    "moto": 948232,
+    "small_private": 643792,
+    "small_business": 145879
+   },
+   {
+    "period": "109年6月底",
+    "car": 814406,
+    "moto": 948015,
+    "small_private": 644044,
+    "small_business": 146448
+   },
+   {
+    "period": "109年7月底",
+    "car": 814247,
+    "moto": 947879,
+    "small_private": 643813,
+    "small_business": 146573
+   },
+   {
+    "period": "109年8月底",
+    "car": 814058,
+    "moto": 948112,
+    "small_private": 643477,
+    "small_business": 146797
+   },
+   {
+    "period": "109年9月底",
+    "car": 814972,
+    "moto": 948605,
+    "small_private": 643714,
+    "small_business": 147526
+   },
+   {
+    "period": "109年10月底",
+    "car": 816153,
+    "moto": 948550,
+    "small_private": 644252,
+    "small_business": 148050
+   },
+   {
+    "period": "109年11月底",
+    "car": 816700,
+    "moto": 948081,
+    "small_private": 644437,
+    "small_business": 148539
+   },
+   {
+    "period": "109年12月底",
+    "car": 815343,
+    "moto": 946851,
+    "small_private": 643004,
+    "small_business": 148738
+   },
+   {
+    "period": "110年1月底",
+    "car": 816829,
+    "moto": 947057,
+    "small_private": 643635,
+    "small_business": 149684
+   },
+   {
+    "period": "110年2月底",
+    "car": 817008,
+    "moto": 946353,
+    "small_private": 643644,
+    "small_business": 149877
+   },
+   {
+    "period": "110年3月底",
+    "car": 818531,
+    "moto": 946259,
+    "small_private": 644013,
+    "small_business": 151076
+   },
+   {
+    "period": "110年4月底",
+    "car": 819249,
+    "moto": 945948,
+    "small_private": 643750,
+    "small_business": 152068
+   },
+   {
+    "period": "110年5月底",
+    "car": 819525,
+    "moto": 945798,
+    "small_private": 643598,
+    "small_business": 152571
+   },
+   {
+    "period": "110年6月底",
+    "car": 819719,
+    "moto": 945406,
+    "small_private": 643542,
+    "small_business": 152855
+   },
+   {
+    "period": "110年7月底",
+    "car": 820017,
+    "moto": 944802,
+    "small_private": 643701,
+    "small_business": 153015
+   },
+   {
+    "period": "110年8月底",
+    "car": 819595,
+    "moto": 945554,
+    "small_private": 643124,
+    "small_business": 153152
+   },
+   {
+    "period": "110年9月底",
+    "car": 820837,
+    "moto": 946074,
+    "small_private": 643200,
+    "small_business": 154268
+   },
+   {
+    "period": "110年10月底",
+    "car": 820908,
+    "moto": 947224,
+    "small_private": 643027,
+    "small_business": 154561
+   },
+   {
+    "period": "110年11月底",
+    "car": 821672,
+    "moto": 948227,
+    "small_private": 643140,
+    "small_business": 155225
+   },
+   {
+    "period": "110年12月底",
+    "car": 822312,
+    "moto": 948193,
+    "small_private": 642806,
+    "small_business": 156254
+   },
+   {
+    "period": "111年1月底",
+    "car": 823052,
+    "moto": 947491,
+    "small_private": 642790,
+    "small_business": 156993
+   },
+   {
+    "period": "111年2月底",
+    "car": 823535,
+    "moto": 947452,
+    "small_private": 642679,
+    "small_business": 157589
+   },
+   {
+    "period": "111年3月底",
+    "car": 823343,
+    "moto": 947073,
+    "small_private": 641982,
+    "small_business": 158071
+   },
+   {
+    "period": "111年4月底",
+    "car": 823798,
+    "moto": 946362,
+    "small_private": 641658,
+    "small_business": 158882
+   },
+   {
+    "period": "111年5月底",
+    "car": 823826,
+    "moto": 945918,
+    "small_private": 641432,
+    "small_business": 159170
+   },
+   {
+    "period": "111年6月底",
+    "car": 824323,
+    "moto": 946382,
+    "small_private": 641458,
+    "small_business": 159676
+   },
+   {
+    "period": "111年7月底",
+    "car": 824946,
+    "moto": 946053,
+    "small_private": 641371,
+    "small_business": 160401
+   },
+   {
+    "period": "111年8月底",
+    "car": 825902,
+    "moto": 946260,
+    "small_private": 641236,
+    "small_business": 161484
+   },
+   {
+    "period": "111年9月底",
+    "car": 826128,
+    "moto": 947025,
+    "small_private": 640735,
+    "small_business": 162175
+   },
+   {
+    "period": "111年10月底",
+    "car": 826598,
+    "moto": 947111,
+    "small_private": 640826,
+    "small_business": 162624
+   },
+   {
+    "period": "111年11月底",
+    "car": 827043,
+    "moto": 947367,
+    "small_private": 641038,
+    "small_business": 162846
+   },
+   {
+    "period": "111年12月底",
+    "car": 827756,
+    "moto": 946894,
+    "small_private": 640845,
+    "small_business": 163780
+   },
+   {
+    "period": "112年1月底",
+    "car": 828300,
+    "moto": 945811,
+    "small_private": 640756,
+    "small_business": 164427
+   },
+   {
+    "period": "112年2月底",
+    "car": 828090,
+    "moto": 945157,
+    "small_private": 640281,
+    "small_business": 164736
+   },
+   {
+    "period": "112年3月底",
+    "car": 828620,
+    "moto": 944597,
+    "small_private": 640139,
+    "small_business": 165424
+   },
+   {
+    "period": "112年4月底",
+    "car": 829979,
+    "moto": 944157,
+    "small_private": 640441,
+    "small_business": 166442
+   },
+   {
+    "period": "112年5月底",
+    "car": 831060,
+    "moto": 943526,
+    "small_private": 640746,
+    "small_business": 167173
+   },
+   {
+    "period": "112年6月底",
+    "car": 833450,
+    "moto": 943921,
+    "small_private": 641385,
+    "small_business": 168887
+   },
+   {
+    "period": "112年7月底",
+    "car": 834296,
+    "moto": 943429,
+    "small_private": 641147,
+    "small_business": 169896
+   },
+   {
+    "period": "112年8月底",
+    "car": 833776,
+    "moto": 943161,
+    "small_private": 640649,
+    "small_business": 169932
+   },
+   {
+    "period": "112年9月底",
+    "car": 834707,
+    "moto": 943296,
+    "small_private": 640556,
+    "small_business": 170935
+   },
+   {
+    "period": "112年10月底",
+    "car": 835523,
+    "moto": 942532,
+    "small_private": 640373,
+    "small_business": 171809
+   },
+   {
+    "period": "112年11月底",
+    "car": 836551,
+    "moto": 941850,
+    "small_private": 640645,
+    "small_business": 172437
+   },
+   {
+    "period": "112年12月底",
+    "car": 836911,
+    "moto": 940809,
+    "small_private": 639994,
+    "small_business": 173389
+   },
+   {
+    "period": "113年1月底",
+    "car": 837653,
+    "moto": 938796,
+    "small_private": 639833,
+    "small_business": 174359
+   },
+   {
+    "period": "113年2月底",
+    "car": 837206,
+    "moto": 938149,
+    "small_private": 639082,
+    "small_business": 174682
+   },
+   {
+    "period": "113年3月底",
+    "car": 837969,
+    "moto": 937318,
+    "small_private": 638887,
+    "small_business": 175682
+   },
+   {
+    "period": "113年4月底",
+    "car": 838002,
+    "moto": 936791,
+    "small_private": 638408,
+    "small_business": 176132
+   },
+   {
+    "period": "113年5月底",
+    "car": 838625,
+    "moto": 936413,
+    "small_private": 638572,
+    "small_business": 176625
+   },
+   {
+    "period": "113年6月底",
+    "car": 840485,
+    "moto": 936272,
+    "small_private": 639059,
+    "small_business": 177996
+   },
+   {
+    "period": "113年7月底",
+    "car": 841646,
+    "moto": 934894,
+    "small_private": 638711,
+    "small_business": 179488
+   },
+   {
+    "period": "113年8月底",
+    "car": 840391,
+    "moto": 933724,
+    "small_private": 637563,
+    "small_business": 179436
+   },
+   {
+    "period": "113年9月底",
+    "car": 840819,
+    "moto": 932942,
+    "small_private": 636899,
+    "small_business": 180469
+   },
+   {
+    "period": "113年10月底",
+    "car": 840304,
+    "moto": 931682,
+    "small_private": 636024,
+    "small_business": 180864
+   },
+   {
+    "period": "113年11月底",
+    "car": 840638,
+    "moto": 929852,
+    "small_private": 635983,
+    "small_business": 181221
+   },
+   {
+    "period": "113年12月底",
+    "car": 840017,
+    "moto": 928634,
+    "small_private": 634627,
+    "small_business": 181898
+   },
+   {
+    "period": "114年1月底",
+    "car": 839956,
+    "moto": 927265,
+    "small_private": 634279,
+    "small_business": 182210
+   },
+   {
+    "period": "114年2月底",
+    "car": 838727,
+    "moto": 925401,
+    "small_private": 632522,
+    "small_business": 182781
+   },
+   {
+    "period": "114年3月底",
+    "car": 836661,
+    "moto": 921127,
+    "small_private": 629908,
+    "small_business": 183351
+   },
+   {
+    "period": "114年4月底",
+    "car": 835806,
+    "moto": 919717,
+    "small_private": 628769,
+    "small_business": 183682
+   },
+   {
+    "period": "114年5月底",
+    "car": 834660,
+    "moto": 917140,
+    "small_private": 627180,
+    "small_business": 184190
+   },
+   {
+    "period": "114年6月底",
+    "car": 834139,
+    "moto": 916181,
+    "small_private": 626473,
+    "small_business": 184432
+   },
+   {
+    "period": "114年7月底",
+    "car": 833465,
+    "moto": 914321,
+    "small_private": 625846,
+    "small_business": 184443
+   },
+   {
+    "period": "114年8月底",
+    "car": 832295,
+    "moto": 911349,
+    "small_private": 624672,
+    "small_business": 184372
+   },
+   {
+    "period": "114年9月底",
+    "car": 832443,
+    "moto": 908626,
+    "small_private": 624505,
+    "small_business": 184697
+   },
+   {
+    "period": "114年10月底",
+    "car": 832323,
+    "moto": 907201,
+    "small_private": 624030,
+    "small_business": 185068
+   },
+   {
+    "period": "114年11月底",
+    "car": 832230,
+    "moto": 905617,
+    "small_private": 623984,
+    "small_business": 185137
+   },
+   {
+    "period": "114年12月底",
+    "car": 831637,
+    "moto": 903556,
+    "small_private": 623438,
+    "small_business": 185023
+   },
+   {
+    "period": "115年1月底",
+    "car": 830716,
+    "moto": 900925,
+    "small_private": 622622,
+    "small_business": 185013
+   },
+   {
+    "period": "115年2月底",
+    "car": 829825,
+    "moto": 899471,
+    "small_private": 621763,
+    "small_business": 184961
+   },
+   {
+    "period": "115年3月底",
+    "car": 829455,
+    "moto": 897088,
+    "small_private": 620936,
+    "small_business": 185384
+   },
+   {
+    "period": "115年4月底",
+    "car": 828445,
+    "moto": 896060,
+    "small_private": 620229,
+    "small_business": 184973
+   },
+   {
+    "period": "115年5月底",
+    "car": 828419,
+    "moto": 894673,
+    "small_private": 620076,
+    "small_business": 185026
+   },
+   {
+    "period": "115年6月底",
+    "car": 829272,
+    "moto": 894482,
+    "small_private": 620564,
+    "small_business": 185427
+   },
+   {
+    "period": "115年7月底",
+    "car": 828808,
+    "moto": 892157,
+    "small_private": 620198,
+    "small_business": 185247
+   },
+   {
+    "period": "115年8月底",
+    "car": 827939,
+    "moto": 890414,
+    "small_private": 619602,
+    "small_business": 185027
+   },
+   {
+    "period": "115年9月底",
+    "car": 828488,
+    "moto": 889774,
+    "small_private": 619832,
+    "small_business": 185433
+   }
+  ],
   "sources": {
    "slots": "https://data.taipei/dataset/detail?id=5a911ea5-1694-4301-808e-e1780d971611",
    "road8m": "https://data.taipei/dataset/detail?id=ee2e4015-8844-48fb-aa57-31209909b0fc",
    "roadplan": "https://data.taipei/dataset/detail?id=caeceb7e-5991-488c-becd-382ffc3015f5",
    "pubspace": "https://data.taipei/dataset/detail?id=435deea7-eee3-4429-bb36-9a105cda0967",
-   "lots": "https://data.taipei/dataset/detail?id=d5c0656b-5250-4179-a491-c94daa56ef2c"
+   "lots": "https://data.taipei/dataset/detail?id=d5c0656b-5250-4179-a491-c94daa56ef2c",
+   "vehicles": "https://data.taipei/dataset/detail?id=bf7f4c40-ac1c-41ee-860d-9c8387aa88c0"
   }
  },
  "districts": [
@@ -132,6 +793,12 @@
     "lots": 159,
     "car": 10426,
     "moto": 5759
+   },
+   "vehicles": {
+    "car": 50393,
+    "moto": 49812,
+    "small_private": 36895,
+    "small_business": 8063
    }
   },
   {
@@ -172,6 +839,12 @@
     "lots": 92,
     "car": 6934,
     "moto": 5079
+   },
+   "vehicles": {
+    "car": 32380,
+    "moto": 47952,
+    "small_private": 27810,
+    "small_business": 4084
    }
   },
   {
@@ -212,6 +885,12 @@
     "lots": 260,
     "car": 23631,
     "moto": 4496
+   },
+   "vehicles": {
+    "car": 124386,
+    "moto": 71946,
+    "small_private": 62299,
+    "small_business": 58226
    }
   },
   {
@@ -252,6 +931,12 @@
     "lots": 135,
     "car": 14675,
     "moto": 4989
+   },
+   "vehicles": {
+    "car": 62625,
+    "moto": 64974,
+    "small_private": 48122,
+    "small_business": 13207
    }
   },
   {
@@ -292,6 +977,12 @@
     "lots": 247,
     "car": 17355,
     "moto": 6451
+   },
+   "vehicles": {
+    "car": 117789,
+    "moto": 66741,
+    "small_private": 69502,
+    "small_business": 46496
    }
   },
   {
@@ -332,6 +1023,12 @@
     "lots": 82,
     "car": 14514,
     "moto": 8851
+   },
+   "vehicles": {
+    "car": 36016,
+    "moto": 77187,
+    "small_private": 33164,
+    "small_business": 2373
    }
   },
   {
@@ -372,6 +1069,12 @@
     "lots": 132,
     "car": 21798,
     "moto": 21356
+   },
+   "vehicles": {
+    "car": 55933,
+    "moto": 70110,
+    "small_private": 48000,
+    "small_business": 5215
    }
   },
   {
@@ -412,6 +1115,12 @@
     "lots": 145,
     "car": 14108,
     "moto": 7172
+   },
+   "vehicles": {
+    "car": 67906,
+    "moto": 101245,
+    "small_private": 62956,
+    "small_business": 3063
    }
   },
   {
@@ -452,6 +1161,12 @@
     "lots": 134,
     "car": 11378,
     "moto": 3838
+   },
+   "vehicles": {
+    "car": 60533,
+    "moto": 99594,
+    "small_private": 57096,
+    "small_business": 2542
    }
   },
   {
@@ -492,6 +1207,12 @@
     "lots": 196,
     "car": 19732,
     "moto": 5887
+   },
+   "vehicles": {
+    "car": 117989,
+    "moto": 99359,
+    "small_private": 81020,
+    "small_business": 33913
    }
   },
   {
@@ -532,6 +1253,12 @@
     "lots": 82,
     "car": 15653,
     "moto": 15325
+   },
+   "vehicles": {
+    "car": 36626,
+    "moto": 44811,
+    "small_private": 30202,
+    "small_business": 6032
    }
   },
   {
@@ -572,6 +1299,12 @@
     "lots": 103,
     "car": 9547,
     "moto": 4392
+   },
+   "vehicles": {
+    "car": 65912,
+    "moto": 96043,
+    "small_private": 62766,
+    "small_business": 2219
    }
   }
  ]

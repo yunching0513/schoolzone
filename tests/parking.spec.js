@@ -63,8 +63,26 @@ async function open(browser, opts = {}) {
     const tip = await page.locator('#chart2 .tip').textContent();
     check('圖2 tooltip：格數與收費格', tip.includes(top.slots.car.toLocaleString('en-US')) && tip.includes(top.charged.car.toLocaleString('en-US')), tip.slice(0, 40));
     check('表格：全市＋12區', (await page.locator('#dtable tbody tr').count()) === NDIST + 1);
+    check('表格：含登記汽車欄', (await page.locator('#dtable tbody tr:first-child td:nth-child(2)').textContent()) === M.vehicles.car.toLocaleString('en-US'));
     check('看不見的部分：路外停車場數', (await page.locator('#unseen .tile .value').first().textContent()).startsWith(M.offstreet.lots.toLocaleString('en-US')));
     check('方法說明列出未說明代碼', (await page.locator('#notes').textContent()).includes(Object.keys(D.meta.other_codes)[0]));
+    const V = M.vehicles, carA = M.slot_m2.car / M.slots.car, motoA = M.slot_m2.moto / M.slots.moto;
+    const needKm2 = (V.car * carA + V.moto * motoA) / 1e6;
+    const vt = await page.$$eval('#vtiles .value', a => a.map(e => e.firstChild.textContent));
+    check('車輛：登記汽機車總數', vt[0] === (V.car + V.moto).toLocaleString('en-US'), vt[0]);
+    check('車輛：全部停好所需面積（km²）', vt[1] === needKm2.toFixed(1), vt[1]);
+    check('車輛：公開供給容納汽車比例', vt[2] === Math.round(100 * (M.slots.car + M.offstreet.car) / V.car) + '%', vt[2]);
+    const S = D.meta.vehicles_series;
+    check('車輛：月別序列最後一期等於最新登記數', S[S.length - 1].car === V.car && S[S.length - 1].moto === V.moto);
+    check('車輛：各區加總等於全市', D.districts.reduce((s, r) => s + r.vehicles.car, 0) === V.car);
+    check('折線圖：汽車與機車兩條線', (await page.locator('#chart3 .line').count()) === 2);
+    check('供給比圖：12區、每區兩個點', (await page.locator('#chart4 .dot').count()) === 2 * NDIST);
+    await page.locator('#chart3').scrollIntoViewIfNeeded();
+    const lb = await page.locator('#chart3 .hit').boundingBox();
+    await page.mouse.move(lb.x + lb.width - 2, lb.y + lb.height / 2); await page.waitForTimeout(80);
+    const lt = await page.locator('#chart3 .tip').textContent();
+    check('折線圖 tooltip：最新月份與汽車數', lt.includes(D.meta.vehicles_period) && lt.includes(V.car.toLocaleString('en-US')), lt.slice(0, 30));
+    check('結論段落含登記數', (await page.locator('#lead').textContent()).includes(V.car.toLocaleString('en-US')));
     check('沒有 JS 錯誤', errs.length === 0, errs.join(' | '));
     await ctx.close();
   }
