@@ -131,3 +131,11 @@ python3 -m http.server 8848   # PMTiles 需 HTTP Range；若圖層不顯示請�
 ## 授權
 
 見 [`LICENSE`](./LICENSE)。
+
+
+---
+
+## 著作權 Copyright
+
+© 2026　吳昀慶 Yun-Ching Wu
+授權條款見 [`LICENSE`](LICENSE)　詳細聲明見 [`COPYRIGHT.md`](COPYRIGHT.md)
