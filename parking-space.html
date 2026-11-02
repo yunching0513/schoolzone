@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>臺北街道空間｜打造夢想街道</title>
+<meta name="description" content="以臺北市停管處的路邊停車格位圖資與工務局道路測繪資料，計算汽機車停車格佔用了多少街道空間。">
+<meta name="theme-color" content="#1A1A1A">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<script>
+  // 在畫面繪製前套用主題與語言（與道路安全頁共用設定），避免先閃一下另一種樣式。
+  (function () {
+    var q = new URLSearchParams(location.search), d = document.documentElement;
+    function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    var th = q.get('theme'), lg = q.get('lang');
+    if (th && /^(auto|light|dark)$/.test(th)) set('rs_theme', th); else th = get('rs_theme') || 'auto';
+    if (lg && /^(zh|en)$/.test(lg)) set('lang', lg); else lg = get('lang') === 'en' ? 'en' : 'zh';
+    if (th !== 'auto') d.setAttribute('data-theme', th);
+    d.setAttribute('lang', lg === 'en' ? 'en' : 'zh-Hant');
+    window.__RS_LANG = lg; window.__RS_THEME = th;
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ------------------------------------------------------------------ tokens
+   與 road-safety.html 同一套：品牌色（lime／黑）用於版面。
+   街道組成：人行道、汽車格、機車格用驗證過的前三個類別色，分隔島與車道用中性灰。 */
+:root {
+  color-scheme: light;
+  --lime: #C8D400; --lime-dk: #A8B200;
+  --page: #ffffff; --surface: #ffffff;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --rule: #1A1A1A;
+  --hair: rgba(11,11,11,0.10);
+  --c-asia: #2a78d6; --c-europe: #eda100; --c-americas: #e87ba4; --c-africa: #008300;
+  --c-sidewalk: #1baf7a; --c-car: #eb6834; --c-moto: #2a78d6; --c-median: #dcdbd3; --c-lane: #a3a29a;
+  --font-zh: 'Noto Sans TC', system-ui, sans-serif;
+  --font-en: 'Space Grotesk', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+    --hair: rgba(255,255,255,0.10);
+    --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+    --c-sidewalk: #199e70; --c-car: #d95926; --c-moto: #3987e5; --c-median: #33332f; --c-lane: #5c5b56;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+  --hair: rgba(255,255,255,0.10);
+  --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+  --c-sidewalk: #199e70; --c-car: #d95926; --c-moto: #3987e5; --c-median: #33332f; --c-lane: #5c5b56;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--page); color: var(--ink); font-family: var(--font-zh); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.shell { max-width: 1240px; margin: 0 auto; padding: 48px 40px 80px; }
+
+.page-header { display: flex; align-items: flex-end; gap: 24px; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 2px solid var(--rule); }
+.logo-mark { font-family: var(--font-en); font-size: 9px; font-weight: 600; letter-spacing: .18em; border: 1.5px solid var(--rule); padding: 5px 10px; text-transform: uppercase; line-height: 1.5; white-space: nowrap; }
+.title-block { flex: 1; min-width: 0; }
+.eyebrow { font-family: var(--font-en); font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; line-height: 1.35; }
+.sub { margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
+.back { font-family: var(--font-en); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--axis); white-space: nowrap; padding-bottom: 1px; }
+.back:hover { color: var(--ink); border-color: var(--ink); }
+.ctrls { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.seg { display: inline-flex; border: 1.5px solid var(--rule); }
+.seg button { font-family: var(--font-en); font-size: 10.5px; font-weight: 600; letter-spacing: .08em; padding: 5px 10px;
+  background: var(--surface); color: var(--muted); border: 0; cursor: pointer; line-height: 1.4; }
+.seg button + button { border-left: 1px solid var(--axis); }
+.seg button[aria-pressed="true"] { background: var(--rule); color: var(--page); }
+.seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.section { margin-bottom: 44px; }
+.section-label { font-family: var(--font-en); font-size: 10px; font-weight: 600; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--grid); }
+.lead { font-size: 15px; line-height: 1.9; max-width: 860px; margin: 18px 0 0; }
+.lead strong { font-weight: 700; }
+.kicker { font-size: 13px; color: var(--ink-2); max-width: 860px; margin: -4px 0 16px; line-height: 1.8; }
+
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--hair); padding: 16px 18px; }
+.tile .label { font-size: 12px; color: var(--ink-2); }
+.tile .value { font-size: 30px; font-weight: 700; line-height: 1.15; margin-top: 6px; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+.tile .unit { font-size: 12px; font-weight: 400; color: var(--ink-2); margin-left: 4px; }
+.tile .note { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.tile.lead-tile { border-left: 3px solid var(--lime); }
+.badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 6px; margin-left: 6px; border: 1px solid var(--ink-2); color: var(--ink-2); vertical-align: middle; letter-spacing: .04em; line-height: 1.5; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-bottom: 14px; }
+.fgroup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.flabel { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--muted); margin-right: 4px; }
+.chip { font-family: var(--font-zh); font-size: 12px; padding: 6px 11px; border: 1px solid var(--axis); background: var(--surface); color: var(--ink); cursor: pointer; line-height: 1.3; }
+.chip:hover { border-color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: #111; font-weight: 700; }
+.chip:focus-visible, .lg-item:focus-visible, th button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.card { background: var(--surface); border: 1px solid var(--hair); padding: 16px 16px 10px; position: relative; }
+.card + .card { margin-top: 16px; }
+.card-title { font-size: 14px; font-weight: 700; margin: 0 4px 2px; }
+.card-sub { font-size: 12px; color: var(--ink-2); margin: 0 4px 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin: 0 4px 6px; }
+.lg-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink); background: none; border: 0; cursor: pointer; padding: 3px 2px; font-family: inherit; }
+.lg-item[aria-pressed="false"] { color: var(--muted); text-decoration: line-through; }
+.lg-item[aria-pressed="false"] svg { opacity: .3; }
+.lg-item .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.lg-note { font-size: 11.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--font-zh); }
+.tick text { font-family: var(--font-en); font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.axisline { stroke: var(--axis); stroke-width: 1; }
+.refline { stroke: var(--ink-2); stroke-width: 1.5; }
+.reflabel { font-size: 11.5px; fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.trend { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 5; fill: none; opacity: .55; }
+.zone { font-size: 11.5px; font-weight: 700; fill: var(--muted); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.axis-title { font-size: 11.5px; fill: var(--ink-2); }
+.pt { stroke: var(--surface); stroke-width: 2; }
+.pt.bg { opacity: .55; }
+@media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .pt.bg { opacity: .75; } }
+:root[data-theme="dark"] .pt.bg { opacity: .75; }
+.pt.hot { stroke: var(--ink); opacity: 1; }
+.g-asia { fill: var(--c-asia); } .g-europe { fill: var(--c-europe); }
+.g-americas { fill: var(--c-americas); } .g-africa { fill: var(--c-africa); }
+.g-north { fill: var(--c-north); } .g-central { fill: var(--c-central); } .g-south { fill: var(--c-south); }
+.g-east { fill: var(--c-east); } .g-island { fill: var(--c-island); }
+.tw-ring { fill: none; stroke: var(--ink); stroke-width: 2; }
+.plabel { font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.plabel.tw { font-size: 13px; font-weight: 900; }
+.hit { fill: transparent; }
+.leader { stroke: var(--muted); stroke-width: 1; pointer-events: none; }
+
+.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--hair); box-shadow: 0 6px 24px rgba(0,0,0,.14); padding: 10px 12px; min-width: 200px; max-width: 270px; font-size: 12px; line-height: 1.5; display: none; }
+.tip .tn { font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.tip .ten { color: var(--muted); font-weight: 400; font-family: var(--font-en); }
+.tip dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin-top: 6px; color: var(--ink-2); }
+.tip dd { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.tip .tsrc { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grid); font-size: 11px; color: var(--muted); }
+.caption { font-size: 11.5px; color: var(--muted); margin: 8px 4px 2px; }
+.tw-legend { margin-top: 18px; }
+.sm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 4px; }
+.sm .card + .card { margin-top: 0; }
+.subhead { font-size: 13px; font-weight: 700; color: var(--ink); margin: 26px 0 10px; }
+#twMtable { min-width: 760px; } #twCtable { min-width: 760px; }
+
+.twrap { overflow: auto; border: 1px solid var(--hair); background: var(--surface); -webkit-overflow-scrolling: touch; }
+.twrap.tall { max-height: 520px; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+#mtable { min-width: 640px; } #ctable { min-width: 760px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-weight: 700; color: var(--ink-2); font-size: 11.5px; position: sticky; top: 0; background: var(--surface); z-index: 1; }
+th button { all: unset; cursor: pointer; }
+th button::after { content: ' ↕'; color: var(--axis); }
+th[aria-sort="ascending"] button::after { content: ' ↑'; color: var(--ink); }
+th[aria-sort="descending"] button::after { content: ' ↓'; color: var(--ink); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.wrap { white-space: normal; min-width: 220px; color: var(--ink-2); }
+tr.tw td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, transparent); }
+.swatch { display: inline-flex; align-items: center; gap: 6px; }
+.sig { font-size: 10.5px; font-weight: 700; border: 1px solid var(--axis); padding: 0 5px; margin-left: 6px; color: var(--ink-2); }
+
+.notes { background: var(--surface); border: 1px solid var(--hair); padding: 18px 22px; font-size: 13px; color: var(--ink-2); }
+.notes h3 { font-size: 13px; color: var(--ink); margin: 14px 0 4px; }
+.notes h3:first-child { margin-top: 0; }
+.notes ul { padding-left: 1.2em; }
+.notes li { margin: 3px 0; }
+.notes a { color: var(--ink); }
+.notes code { font-size: 12px; background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 0 4px; }
+
+.empty { background: var(--surface); border: 1px solid var(--hair); padding: 28px; font-size: 13.5px; color: var(--ink-2); }
+.empty code { background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 1px 6px; }
+
+footer { border-top: 2px solid var(--rule); padding-top: 18px; margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-family: var(--font-en); font-size: 9px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
+footer a { color: var(--ink-2); }
+
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 980px) { .sm { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+  .shell { padding: 28px 16px 56px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 32px; }
+  .title-block { width: 100%; }
+  .ctrls { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  h1 { font-size: 21px; }
+  .lead { font-size: 14px; }
+  .tile .value { font-size: 24px; }
+  .tile .unit { display: block; margin: 2px 0 0; }
+  .tile { padding: 14px; }
+  .chip { padding: 8px 12px; }
+  .card { padding: 12px 6px 8px; }
+  .notes { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) { .pt { transition: opacity .15s; } }.s-sidewalk { fill: var(--c-sidewalk); } .s-car { fill: var(--c-car); } .s-moto { fill: var(--c-moto); }
+.s-median { fill: var(--c-median); } .s-lane { fill: var(--c-lane); }
+.seg-rect { stroke: var(--surface); stroke-width: 1; }
+.row-label { font-size: 12px; fill: var(--ink); }
+.row-label.all { font-weight: 700; }
+.row-val { font-size: 11.5px; fill: var(--ink-2); font-variant-numeric: tabular-nums; }
+.seg-val { font-size: 10.5px; font-weight: 700; fill: #fff; pointer-events: none; font-variant-numeric: tabular-nums; }
+.row-hit { fill: transparent; }
+.row-hit:hover, .row-hit.hot { fill: color-mix(in srgb, var(--ink) 5%, transparent); }
+.key { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink); }
+.key i { width: 12px; height: 12px; display: inline-block; }
+.unseen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.unseen .tile .value { font-size: 26px; }
+tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, transparent); }
+#dtable { min-width: 900px; }
+@media (max-width: 860px) { .unseen { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="page-header">
+  <div class="logo-mark">Taiwan<br>Mobility<br>Atlas</div>
+  <div class="title-block">
+    <div class="eyebrow">Taipei Street Space</div>
+    <h1 data-i18n="h1">臺北街道空間｜汽機車停車格佔了多少街道？</h1>
+    <div class="sub" id="subline"></div>
+  </div>
+  <div class="ctrls">
+    <div class="seg" id="langSeg" role="group" data-i18n-aria="langAria">
+      <button type="button" data-lang="zh">中</button><button type="button" data-lang="en">EN</button>
+    </div>
+    <div class="seg" id="themeSeg" role="group" data-i18n-aria="themeAria">
+      <button type="button" data-theme-opt="auto" data-i18n="thAuto">自動</button><button type="button" data-theme-opt="light" data-i18n="thLight">白底</button><button type="button" data-theme-opt="dark" data-i18n="thDark">深色</button>
+    </div>
+    <a class="back" href="road-safety.html" data-i18n="back">← 道路安全 × 國家所得</a>
+  </div>
+</header>
+
+<div id="app" hidden>
+
+<section class="section" aria-labelledby="s1">
+  <div class="section-label" id="s1" data-i18n="s1">01 — 先說結論</div>
+  <div class="tiles" id="tiles"></div>
+  <p class="lead" id="lead"></p>
+</section>
+
+<section class="section" aria-labelledby="s2">
+  <div class="section-label" id="s2" data-i18n="s2">02 — 8公尺以上道路的空間組成</div>
+  <p class="kicker" id="k2"></p>
+  <div class="card">
+    <div class="card-title" id="c1t"></div>
+    <div class="card-sub" id="c1s"></div>
+    <div class="legend" id="key1"></div>
+    <div class="chart" id="chart1"><div class="tip" role="status" aria-live="polite"></div></div>
+    <p class="caption" id="cap1"></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="s3">
+  <div class="section-label" id="s3" data-i18n="s3">03 — 各區路邊停車格面積</div>
+  <p class="kicker" id="k3"></p>
+  <div class="card">
+    <div class="card-title" id="c2t"></div>
+    <div class="card-sub" id="c2s"></div>
+    <div class="legend" id="key2"></div>
+    <div class="chart" id="chart2"><div class="tip" role="status" aria-live="polite"></div></div>
+    <p class="caption" id="cap2"></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="s4">
+  <div class="section-label" id="s4" data-i18n="s4">04 — 資料看不見的部分</div>
+  <p class="kicker" id="k4"></p>
+  <div class="unseen" id="unseen"></div>
+</section>
+
+<section class="section" aria-labelledby="s5">
+  <div class="section-label" id="s5" data-i18n="s5">05 — 各區數值</div>
+  <div class="twrap"><table id="dtable"></table></div>
+  <p class="caption" id="dcap"></p>
+</section>
+
+<section class="section" aria-labelledby="s6">
+  <div class="section-label" id="s6" data-i18n="s6">06 — 資料與方法</div>
+  <div class="notes" id="notes"></div>
+</section>
+
+</div>
+
+<div class="empty" id="empty" hidden></div>
+
+<footer>
+  <span>Taiwan Mobility Atlas · Taipei Street Space</span>
+  <span><a href="road-safety.html" data-i18n="footBack">道路安全 × 國家所得</a> · <a href="./" data-i18n="footHome">打造夢想街道</a></span>
+</footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const DAAN_HA = 25.9;                         // 大安森林公園面積（公頃），換算用
+
+  // ================================================================ 文字（中／英）
+  const I18N = {
+    zh: {
+      htmlLang: 'zh-Hant', locale: 'zh-Hant',
+      title: '臺北街道空間｜打造夢想街道',
+      desc: '以臺北市停管處的路邊停車格位圖資與工務局道路測繪資料，計算汽機車停車格佔用了多少街道空間。',
+      h1: '臺北街道空間｜汽機車停車格佔了多少街道？',
+      sub: (snap) => `路邊停車格圖資 ${snap}；8公尺以上道路測繪 103–105年`,
+      langAria: '語言', themeAria: '顏色主題', thAuto: '自動', thLight: '白底', thDark: '深色',
+      back: '← 道路安全 × 國家所得', footBack: '道路安全 × 國家所得', footHome: '打造夢想街道',
+      s1: '01 — 先說結論', s2: '02 — 8公尺以上道路的空間組成', s3: '03 — 各區路邊停車格面積',
+      s4: '04 — 資料看不見的部分', s5: '05 — 各區數值', s6: '06 — 資料與方法',
+      t1: '路邊汽機車停車格總面積', t1u: '公頃', t1n: n => `約${n}座大安森林公園`,
+      t2: '汽車格佔停車格面積', t2u: '', t2n: (cs, csh, ratio) => `汽車格只佔格數的${cs}，一格平均${csh} m²，可停約${ratio}台機車`,
+      t3: '8公尺以上道路：人行道', t3u: '的路面', t3n: v => `行車道與路邊停車共佔${v}`,
+      t4: '8公尺以上道路：停車格 ÷ 人行道', t4u: '', t4n: v => `同一批道路上，光是汽車格就相當於人行道面積的${v}`,
+      lead: (o) => `臺北市的路邊共劃設<strong>${o.car}個汽車格、${o.moto}個機車格</strong>，加總約${o.ha}公頃，相當於${o.daan}座大安森林公園。這些格位多半劃在道路上，是城市免費或低價出租給私人車輛的公共空間。<strong>汽車格的分配尤其失衡：格數不到兩成，卻佔了${o.carShare}的停車面積。</strong>放大到整條街道來看，8公尺以上的道路中，人行道只佔${o.sw}，行車道與路邊停車則佔${o.lanes}。換句話說，臺北街道的主角恐怕仍是車，而不是人。`,
+      k2: '工務局測繪了每一段8公尺以上道路的人行道、側溝與分隔島面積；把停車格多邊形疊上去，就能拆出路邊停車格佔了多少。其餘部分是行車道，包含公車與自行車也會使用的車道。',
+      c1t: '8公尺以上道路的空間組成', c1s: '全市與各行政區，依人行道比例由高到低排序',
+      cap1: '滑過或點選任一列看詳細數字。停車格依格位中心點是否落在道路範圍內判斷；少數劃在人行道上的機車格，會同時被算進人行道與機車格。',
+      parts: { sidewalk: '人行道', car: '汽車停車格', moto: '機車停車格（含機慢車停放區）', median: '分隔島與側溝', lane: '其餘車道' },
+      k3: '各區路邊停車格的面積，包含8公尺以下的巷道。汽車格平均一格約10平方公尺，機車格約1.5平方公尺。',
+      c2t: '各區路邊停車格面積（公頃）', c2s: '依總面積由高到低排序',
+      cap2: '滑過或點選任一列看格數與每人面積。',
+      keys2: { car: '汽車格', moto: '機車格（含機慢車停放區）' },
+      ha: '公頃', perPerson: '每人', m2: 'm²',
+      tipRoad: '8公尺以上道路面積', tipSlots: '格數', tipCharged: '其中收費格', tipPer: '每人路邊停車面積', tipPop: '人口',
+      all: '全市',
+      k4: '這一頁只算得到公有路邊停車格。下面三類空間同樣被汽機車佔用，但目前的公開資料無法換算成面積，接下來會用航照影像與機器學習補上其中一部分。',
+      u1: '路外停車場', u1u: '座', u1n: (c, m) => `汽車${c}格、機車${m}格；多在地下或建築內，只有格位數，沒有面積`,
+      u2: '建築物附設停車位', u2v: '無公開資料', u2n: '依建築技術規則設置的法定停車位，佔用的是建築樓地板，而非街道',
+      u3: '騎樓、人行道與巷道的違規停放', u3v: '無法統計', u3n: '從空中看不到騎樓下的機車；樹蔭下的汽車也會被遮住',
+      cols: { district: '行政區', car: '汽車格', moto: '機車格', carHa: '汽車格面積（公頃）', motoHa: '機車格面積（公頃）', ha: '合計（公頃）',
+        roadPct: '佔已開闢道路面積', sw: '人行道佔8m以上道路', per: '每人（m²）', off: '路外停車場汽車格' },
+      dcap: '機車格含機慢車停放區；不含欄位說明未列的格位代碼。已開闢道路面積包含8公尺以下的巷道。',
+      empty: '<p><strong>資料尚未建置。</strong>這一頁需要 <code>data/taipei_parking_space.json</code>，請在專案根目錄執行 <code>pip install pyshp shapely</code> 與 <code>python3 scripts/build_parking_space.py</code>，完成後重新整理即可。</p>',
+    },
+    en: {
+      htmlLang: 'en', locale: 'en',
+      title: 'Taipei Street Space | Dream Streets',
+      desc: 'How much of Taipei’s street space goes to car and motorcycle parking, measured from the city’s parking-space and road survey maps.',
+      h1: 'Taipei street space | How much goes to car and motorcycle parking?',
+      sub: (snap) => `Kerbside parking map ${snap}; survey of roads 8 m and wider, 2014–2016`,
+      langAria: 'Language', themeAria: 'Colour theme', thAuto: 'Auto', thLight: 'Light', thDark: 'Dark',
+      back: '← Road safety × national income', footBack: 'Road safety × national income', footHome: 'Dream Streets',
+      s1: '01 — The short version', s2: '02 — What roads 8 m and wider are made of', s3: '03 — Kerbside parking area by district',
+      s4: '04 — What the data cannot see', s5: '05 — District figures', s6: '06 — Data and method',
+      t1: 'Kerbside car and motorcycle spaces', t1u: 'ha', t1n: n => `About ${n} times Daan Forest Park`,
+      t2: 'Car spaces’ share of parking area', t2u: '', t2n: (cs, csh, ratio) => `Only ${cs} of spaces; at ${csh} m² each, one holds about ${ratio} motorcycles`,
+      t3: 'Roads 8 m+: sidewalks', t3u: 'of the surface', t3n: v => `Traffic lanes and kerbside parking take ${v}`,
+      t4: 'Roads 8 m+: parking ÷ sidewalks', t4u: '', t4n: v => `On the same roads, car spaces alone equal ${v} of sidewalk area`,
+      lead: (o) => `Taipei has marked <strong>${o.car} car spaces and ${o.moto} motorcycle spaces</strong> along its streets, about ${o.ha} hectares in total, or ${o.daan} times Daan Forest Park. Most of this is road surface that the city lends to private vehicles for free or at a low price. <strong>Car spaces are especially greedy: fewer than one in five spaces, but ${o.carShare} of the parking area.</strong> On roads 8 m and wider, sidewalks make up only ${o.sw} of the surface, while traffic lanes and kerbside parking take ${o.lanes}. Taipei’s streets are still built mainly for vehicles, not people.`,
+      k2: 'The Public Works Department surveyed sidewalk, gutter and median area on every road segment 8 m and wider. Overlaying the parking-space polygons separates kerbside parking; the remainder is traffic lanes, including lanes used by buses and bicycles.',
+      c1t: 'What roads 8 m and wider are made of', c1s: 'Whole city and each district, sorted by sidewalk share',
+      cap1: 'Hover or tap a row for details. A parking space counts as inside a road if its centre falls within the road outline; the few motorcycle spaces painted on sidewalks are counted both as sidewalk and as motorcycle parking.',
+      parts: { sidewalk: 'Sidewalk', car: 'Car parking', moto: 'Motorcycle parking (incl. two-wheeler zones)', median: 'Medians and gutters', lane: 'Other traffic lanes' },
+      k3: 'Kerbside parking area in each district, including lanes narrower than 8 m. A car space averages about 10 m², a motorcycle space about 1.5 m².',
+      c2t: 'Kerbside parking area by district (ha)', c2s: 'Sorted by total area',
+      cap2: 'Hover or tap a row for space counts and area per resident.',
+      keys2: { car: 'Car spaces', moto: 'Motorcycle spaces (incl. two-wheeler zones)' },
+      ha: 'ha', perPerson: 'per resident', m2: 'm²',
+      tipRoad: 'Area of roads 8 m+', tipSlots: 'Spaces', tipCharged: 'of which paid', tipPer: 'Kerbside parking per resident', tipPop: 'Population',
+      all: 'Taipei',
+      k4: 'This page only counts public kerbside spaces. Three other kinds of space are also taken by vehicles but cannot be converted to area from open data; the next step uses aerial imagery and machine learning to fill in part of this.',
+      u1: 'Off-street car parks', u1u: '', u1n: (c, m) => `${c} car and ${m} motorcycle spaces; mostly underground or in buildings, with counts but no area`,
+      u2: 'Parking inside buildings', u2v: 'No open data', u2n: 'Mandatory parking under the building code takes floor area, not street space',
+      u3: 'Illegal parking in arcades, sidewalks and lanes', u3v: 'Not counted', u3n: 'Motorcycles under arcades are invisible from above, and trees hide cars',
+      cols: { district: 'District', car: 'Car spaces', moto: 'Motorcycle spaces', carHa: 'Car area (ha)', motoHa: 'Motorcycle area (ha)', ha: 'Total (ha)',
+        roadPct: 'Share of all road area', sw: 'Sidewalk share, roads 8 m+', per: 'Per resident (m²)', off: 'Off-street car spaces' },
+      dcap: 'Motorcycle figures include two-wheeler zones; space codes not listed in the field description are excluded. All road area includes lanes narrower than 8 m.',
+      empty: '<p><strong>Data not built yet.</strong> This page needs <code>data/taipei_parking_space.json</code>. From the project root run <code>pip install pyshp shapely</code>, then <code>python3 scripts/build_parking_space.py</code>, and reload.</p>',
+    },
+  };
+
+  const state = { d: null, lang: window.__RS_LANG === 'en' ? 'en' : 'zh', theme: window.__RS_THEME || 'auto' };
+  const T = () => I18N[state.lang];
+  const $ = id => document.getElementById(id);
+  const fmtInt = v => Math.round(v).toLocaleString('en-US');
+  const fmt1 = v => Number(v).toFixed(1);
+  const pct = (v, d = 1) => (100 * v).toFixed(d) + '%';
+  const el = (tag, attrs, text) => {
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const NS = 'http://www.w3.org/2000/svg';
+  const sv = (tag, attrs) => { const e = document.createElementNS(NS, tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  const par = s => (state.lang === 'en' ? ` (${s})` : `（${s}）`);
+  const dName = r => (r.district === 'ALL' ? T().all : state.lang === 'en' ? r.en : r.district);
+
+  // ================================================================ 語言與主題
+  function applyStatic() {
+    const t = T();
+    document.documentElement.setAttribute('lang', t.htmlLang);
+    document.title = t.title;
+    const md = document.querySelector('meta[name=description]'); if (md) md.setAttribute('content', t.desc);
+    document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t[e.dataset.i18n]; });
+    document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
+    document.querySelectorAll('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
+    document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeOpt === state.theme)));
+    $('empty').innerHTML = t.empty;                               // 靜態字串，非資料內容
+  }
+  function setLang(l) {
+    state.lang = l;
+    try { localStorage.setItem('lang', l); } catch (e) {}
+    applyStatic();
+    if (state.d) renderAll();
+  }
+  function setTheme(th) {
+    state.theme = th;
+    try { localStorage.setItem('rs_theme', th); } catch (e) {}
+    if (th === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', th);
+    applyStatic();
+  }
+  document.querySelectorAll('#langSeg button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+  document.querySelectorAll('#themeSeg button').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeOpt)));
+  applyStatic();
+
+  // ================================================================ 載入
+  fetch('data/taipei_parking_space.json', { cache: 'no-cache' })
+    .then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))))
+    .then(init, () => { $('empty').hidden = false; });            // 只有下載失敗才顯示建置說明
+
+  // 每列（全市或一區）的衍生數值
+  function derive(r) {
+    const R = r.road8m, A = r.slot_m2, I = r.slot_m2_in8m;
+    const inCar = I.car, inMoto = I.moto + I.zone;
+    const parts = {
+      sidewalk: R.sidewalk, car: inCar, moto: inMoto, median: R.median + R.ditch,
+      lane: Math.max(0, R.area - R.sidewalk - R.median - R.ditch - inCar - inMoto),
+    };
+    const parkM2 = A.car + A.moto + A.zone;
+    return Object.assign({}, r, {
+      parts, share: k => parts[k] / R.area,
+      carM2: A.car, motoM2: A.moto + A.zone, parkM2,
+      motoN: r.slots.moto, carN: r.slots.car,
+      roadPct: parkM2 / r.road_m2, swPct: R.sidewalk / R.area, perPerson: parkM2 / r.population,
+    });
+  }
+  function init(d) {
+    const M = d.meta.totals;
+    const all = derive({ district: 'ALL', en: 'Taipei', population: M.population, land_km2: M.land_km2, road_m2: M.road_m2,
+      road8m: M.road8m, slots: M.slots, slot_m2: M.slot_m2, slot_m2_in8m: M.slot_m2_in8m, charged: M.charged, offstreet: M.offstreet });
+    state.d = { meta: d.meta, all, rows: d.districts.map(derive) };
+    $('app').hidden = false;
+    renderAll();
+    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(renderCharts, 120); });
+  }
+  function renderAll() {
+    const t = T(), { meta, all } = state.d;
+    $('subline').textContent = t.sub(meta.slots_snapshot);
+    renderTiles(all);
+    renderCharts();
+    renderUnseen(all);
+    renderTable();
+    renderNotes();
+  }
+
+  // ================================================================ 01 結論
+  function renderTiles(a) {
+    const t = T();
+    const ha = a.parkM2 / 1e4, carShare = a.carM2 / a.parkM2, cntShare = a.carN / (a.carN + a.motoN);
+    const carAvg = a.carM2 / a.carN, motoAvg = a.slot_m2.moto / a.slots.moto;
+    const lanes = 1 - a.share('sidewalk') - a.share('median');
+    const tiles = [
+      { label: t.t1, value: fmt1(ha), unit: t.t1u, note: t.t1n((ha / DAAN_HA).toFixed(1)), lead: true },
+      { label: t.t2, value: pct(carShare, 0), unit: t.t2u, note: t.t2n(pct(cntShare, 0), carAvg.toFixed(1), Math.round(carAvg / motoAvg)) },
+      { label: t.t3, value: pct(a.share('sidewalk')), unit: t.t3u, note: t.t3n(pct(lanes)) },
+      { label: t.t4, value: pct((a.parts.car + a.parts.moto) / a.road8m.sidewalk, 0), unit: t.t4u, note: t.t4n(pct(a.parts.car / a.road8m.sidewalk, 0)) },
+    ];
+    const box = $('tiles'); box.textContent = '';
+    tiles.forEach(x => {
+      const dv = el('div', { class: 'tile' + (x.lead ? ' lead-tile' : '') });
+      dv.appendChild(el('div', { class: 'label' }, x.label));
+      const v = el('div', { class: 'value' }, x.value);
+      if (x.unit) v.appendChild(el('span', { class: 'unit' }, x.unit));
+      dv.appendChild(v);
+      dv.appendChild(el('div', { class: 'note' }, x.note));
+      box.appendChild(dv);
+    });
+    $('lead').innerHTML = t.lead({                                 // 模板為靜態字串，插入的只有數字
+      car: fmtInt(a.carN), moto: fmtInt(a.motoN), ha: fmt1(ha), daan: (ha / DAAN_HA).toFixed(1),
+      carShare: pct(carShare, 0), sw: pct(a.share('sidewalk')), lanes: pct(lanes),
+    });
+  }
+
+  // ================================================================ 圖表
+  function renderCharts() {
+    const t = T(), { all, rows } = state.d;
+    $('k2').textContent = t.k2; $('c1t').textContent = t.c1t; $('c1s').textContent = t.c1s; $('cap1').textContent = t.cap1;
+    $('k3').textContent = t.k3; $('c2t').textContent = t.c2t; $('c2s').textContent = t.c2s; $('cap2').textContent = t.cap2;
+    const P = ['sidewalk', 'car', 'moto', 'median', 'lane'];
+    renderKey('key1', P.map(k => [k, t.parts[k]]));
+    const sorted1 = [all].concat(rows.slice().sort((p, q) => q.swPct - p.swPct));
+    bars($('chart1'), {
+      rows: sorted1, keys: P, max: 1, value: (r, k) => r.share(k),
+      inLabel: (r, k) => (k === 'sidewalk' || k === 'lane' ? pct(r.share(k), 0) : ''),
+      end: null, tip: (tip, r) => tipShares(tip, r, P),
+      aria: t.c1t,
+    });
+    renderKey('key2', [['car', t.keys2.car], ['moto', t.keys2.moto]]);
+    const sorted2 = rows.slice().sort((p, q) => q.parkM2 - p.parkM2);
+    const max2 = Math.ceil(Math.max(...sorted2.map(r => r.parkM2)) / 1e4 / 2) * 2;
+    bars($('chart2'), {
+      rows: sorted2, keys: ['car', 'moto'], max: max2, value: (r, k) => (k === 'car' ? r.carM2 : r.motoM2) / 1e4,
+      inLabel: () => '', end: r => fmt1(r.parkM2 / 1e4) + ' ' + t.ha, ticks: true, tip: tipArea, aria: t.c2t,
+    });
+  }
+  function renderKey(id, items) {
+    const box = $(id); box.textContent = '';
+    items.forEach(([k, s]) => {
+      const sp = el('span', { class: 'key' });
+      const i = el('i'); i.style.background = `var(--c-${k})`;
+      sp.appendChild(i); sp.appendChild(el('span', null, s)); box.appendChild(sp);
+    });
+  }
+
+  // 水平堆疊長條圖：每列一個行政區
+  function bars(host, o) {
+    host.querySelectorAll('svg').forEach(s => s.remove());
+    const tip = host.querySelector('.tip'); tip.style.display = 'none';
+    const W = Math.max(280, host.clientWidth), narrow = W < 560;
+    const rowH = narrow ? 26 : 28, gap = narrow ? 8 : 10;
+    const m = { l: narrow ? 62 : 84, r: o.end ? (narrow ? 62 : 76) : 8, t: o.ticks ? 22 : 4, b: 4 };
+    const iw = W - m.l - m.r, H = m.t + o.rows.length * (rowH + gap) + m.b;
+    const X = v => m.l + v / o.max * iw;
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.aria });
+    host.insertBefore(svg, tip);
+    if (o.ticks) {
+      const step = o.max <= 10 ? 2 : o.max <= 20 ? 4 : 5;
+      for (let v = 0; v <= o.max + 1e-9; v += step) {
+        svg.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t - 4, y2: H - m.b, class: 'gridline' }));
+        const tx = svg.appendChild(sv('g', { class: 'tick' })).appendChild(sv('text', { x: X(v), y: m.t - 8, 'text-anchor': 'middle' }));
+        tx.textContent = String(v);
+      }
+    }
+    let hot = null;
+    const show = (hit, r) => {
+      if (hot) hot.classList.remove('hot');
+      hot = hit;
+      if (!hit) { tip.style.display = 'none'; return; }
+      hit.classList.add('hot');
+      o.tip(tip, r);
+      tip.style.display = 'block';
+      const s = host.clientWidth / W, hw = host.clientWidth, tw = tip.offsetWidth;
+      const y = (+hit.getAttribute('y') + +hit.getAttribute('height')) * s + 6;
+      tip.style.left = Math.max(0, Math.min(hw - tw, m.l * s)) + 'px'; tip.style.top = y + 'px';
+    };
+    o.rows.forEach((r, i) => {
+      const y = m.t + i * (rowH + gap);
+      const lab = svg.appendChild(sv('text', { x: m.l - 8, y: y + rowH / 2 + 4, 'text-anchor': 'end', class: 'row-label' + (r.district === 'ALL' ? ' all' : '') }));
+      lab.textContent = dName(r);
+      let x0 = 0;
+      o.keys.forEach(k => {
+        const v = o.value(r, k), w = X(x0 + v) - X(x0);
+        if (w > 0) svg.appendChild(sv('rect', { x: X(x0), y, width: w, height: rowH, class: `seg-rect s-${k}` }));
+        const s = o.inLabel(r, k);
+        if (s && w > 34) {
+          const tx = svg.appendChild(sv('text', { x: X(x0) + 6, y: y + rowH / 2 + 4, class: 'seg-val' }));
+          tx.textContent = s;
+        }
+        x0 += v;
+      });
+      if (o.end) {
+        const tx = svg.appendChild(sv('text', { x: X(x0) + 6, y: y + rowH / 2 + 4, class: 'row-val' }));
+        tx.textContent = o.end(r);
+      }
+      const hit = svg.appendChild(sv('rect', { x: 0, y: y - gap / 2, width: W, height: rowH + gap, class: 'row-hit' }));
+      hit.addEventListener('pointerenter', () => show(hit, r));
+      hit.addEventListener('pointerdown', () => show(hit, r));
+      hit.addEventListener('pointerleave', () => show(null));
+    });
+  }
+  function tipHead(tip, r) {
+    tip.textContent = '';
+    const head = el('div', { class: 'tn' });
+    head.appendChild(el('span', null, dName(r)));
+    if (r.district !== 'ALL') head.appendChild(el('span', { class: 'ten' }, state.lang === 'en' ? r.district : r.en));
+    tip.appendChild(head);
+    const dl = el('dl'); tip.appendChild(dl);
+    return (k, v) => { dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, v)); };
+  }
+  function tipShares(tip, r, P) {
+    const t = T(), row = tipHead(tip, r);
+    P.forEach(k => row(t.parts[k], pct(r.share(k)) + par(fmt1(r.parts[k] / 1e4) + ' ' + t.ha)));
+    row(t.tipRoad, fmt1(r.road8m.area / 1e4) + ' ' + t.ha);
+  }
+  function tipArea(tip, r) {
+    const t = T(), row = tipHead(tip, r);
+    row(t.keys2.car, fmtInt(r.carN) + par(fmt1(r.carM2 / 1e4) + ' ' + t.ha));
+    row(t.tipCharged, fmtInt(r.charged.car));
+    row(t.keys2.moto, fmtInt(r.motoN) + par(fmt1(r.motoM2 / 1e4) + ' ' + t.ha));
+    row(t.tipCharged, fmtInt(r.charged.moto));
+    row(t.tipPer, r.perPerson.toFixed(2) + ' ' + t.m2);
+    row(t.tipPop, fmtInt(r.population));
+  }
+
+  // ================================================================ 04 看不見的部分
+  function renderUnseen(a) {
+    const t = T(), box = $('unseen'); box.textContent = '';
+    $('k4').textContent = t.k4;
+    [
+      { label: t.u1, value: fmtInt(a.offstreet.lots), unit: t.u1u, note: t.u1n(fmtInt(a.offstreet.car), fmtInt(a.offstreet.moto)) },
+      { label: t.u2, value: t.u2v, note: t.u2n },
+      { label: t.u3, value: t.u3v, note: t.u3n },
+    ].forEach(x => {
+      const dv = el('div', { class: 'tile' });
+      dv.appendChild(el('div', { class: 'label' }, x.label));
+      const v = el('div', { class: 'value' }, x.value);
+      if (x.unit) v.appendChild(el('span', { class: 'unit' }, x.unit));
+      dv.appendChild(v);
+      dv.appendChild(el('div', { class: 'note' }, x.note));
+      box.appendChild(dv);
+    });
+  }
+
+  // ================================================================ 05 表格
+  function renderTable() {
+    const t = T(), { all, rows } = state.d, tb = $('dtable'); tb.textContent = '';
+    const C = t.cols, keys = ['district', 'car', 'moto', 'carHa', 'motoHa', 'ha', 'roadPct', 'sw', 'per', 'off'];
+    const head = tb.appendChild(el('thead')).appendChild(el('tr'));
+    keys.forEach((k, i) => head.appendChild(el('th', { class: i ? 'num' : '', scope: 'col' }, C[k])));
+    const body = tb.appendChild(el('tbody'));
+    [all].concat(rows).forEach(r => {
+      const tr = body.appendChild(el('tr', r.district === 'ALL' ? { class: 'all' } : null));
+      [dName(r), fmtInt(r.carN), fmtInt(r.motoN), fmt1(r.carM2 / 1e4), fmt1(r.motoM2 / 1e4), fmt1(r.parkM2 / 1e4),
+        pct(r.roadPct), pct(r.swPct), r.perPerson.toFixed(2), fmtInt(r.offstreet.car)]
+        .forEach((v, i) => tr.appendChild(el('td', i ? { class: 'num' } : null, v)));
+    });
+    $('dcap').textContent = t.dcap;
+  }
+
+  // ================================================================ 06 資料與方法
+  function renderNotes() {
+    const m = state.d.meta, en = state.lang === 'en', S = m.sources;
+    const other = Object.entries(m.other_codes).map(([k, v]) => `${k}（${fmtInt(v)}）`).join('、');
+    const link = (u, s) => `<a href="${u}" rel="noopener">${s}</a>`;
+    const L = en ? {
+      h1: 'Data', data: [
+        `Kerbside parking: ${link(S.slots, 'Taipei Parking Management and Development Office, kerbside parking spaces (SHP)')}, snapshot ${m.slots_snapshot}. Each space is a polygon; area is measured from the polygon (TWD97 TM2), not from standard dimensions.`,
+        `Roads 8 m and wider: ${link(S.road8m, 'Public Works Department road survey (SHP)')}, surveyed ${m.road8m_survey}, with sidewalk, gutter and median area per segment. All road area: ${link(S.roadplan, 'opened roads within urban planning areas')}.`,
+        `Paid spaces: ${link(S.pubspace, 'Department of Transportation, public paid parking statistics')}. Off-street car parks: ${link(S.lots, 'parking lot information')} (updated ${m.lots_updated}). Population and land area: Ministry of the Interior, end of 2023.`,
+      ], h2: 'Method', method: [
+        `Space types follow the office’s field description. Cars: codes ${m.classes.car.join(', ')}. Motorcycles: ${m.classes.moto.join(', ')} (22 is car–motorcycle flexible, drawn at motorcycle size). Two-wheeler zones (${m.classes.zone.join(', ')}) include bicycles and are counted only by area. Codes not in the field description are excluded: ${other}.`,
+        `A space counts as inside a road 8 m+ when its centre falls within the road polygon. “Other traffic lanes” = road area − sidewalk − medians and gutters − parking inside that road; it includes bus and bicycle lanes.`,
+        `The road survey dates from ${m.road8m_survey}, while the parking map is current; sidewalks widened since then are not reflected. Arcades are on private land and are not part of the sidewalk figure.`,
+        `Daan Forest Park is taken as about ${DAAN_HA} ha.`,
+      ], h3: 'Rebuild',
+    } : {
+      h1: '資料', data: [
+        `路邊停車格：${link(S.slots, '臺北市停車管理工程處〈臺北市路邊停車格位〉SHP')}，資料時間${m.slots_snapshot}。每一格是一個多邊形，面積直接由多邊形計算（TWD97 TM2），不是用標準尺寸換算。`,
+        `8公尺以上道路：${link(S.road8m, '臺北市工務局新建工程處〈臺北市寬度超過8公尺道路GIS圖資〉')}，${m.road8m_survey}測繪，含各路段的人行道、側溝與分隔島面積。全部道路面積：${link(S.roadplan, '工務局〈臺北市都市計畫區域內現有已開闢道路長度及面積〉')}。`,
+        `收費格位：${link(S.pubspace, '交通局〈臺北市公有收費停車位統計表〉')}。路外停車場：${link(S.lots, '停管處〈臺北市停車場資訊〉')}（更新時間${m.lots_updated}）。人口與土地面積：內政部112年底資料。`,
+      ], h2: '方法', method: [
+        `格位種類依停管處的欄位說明歸類。汽車：代碼${m.classes.car.join('、')}。機車：${m.classes.moto.join('、')}（22為汽機車彈性共用，圖資以機車格大小繪製）。機慢車停放區（${m.classes.zone.join('、')}）含自行車，只計面積。欄位說明未列的代碼不計入：${other}。`,
+        '停車格的中心點落在8公尺以上道路的多邊形內，就算作該道路上的停車格。「其餘車道」＝道路面積－人行道－分隔島與側溝－落在該道路內的停車格，包含公車專用道與自行車道。',
+        `道路測繪為${m.road8m_survey}的資料，停車格圖資則是最新版本，之後拓寬的人行道不會反映在這裡。騎樓屬私有土地，不算在人行道面積內。`,
+        `大安森林公園以約${DAAN_HA}公頃換算。`,
+      ], h3: '重新建置',
+    };
+    const ul = items => `<ul>${items.map(s => `<li>${s}</li>`).join('')}</ul>`;
+    $('notes').innerHTML = `<h3>${L.h1}</h3>${ul(L.data)}<h3>${L.h2}</h3>${ul(L.method)}` +
+      `<h3>${L.h3}</h3><p><code>pip install pyshp shapely</code> → <code>python3 scripts/build_parking_space.py</code>` +
+      (en ? ` (generated ${m.generated.slice(0, 10)}).` : `（${m.generated.slice(0, 10)} 產生）。`) + '</p>';
+  }
+})();
+</script>
+</body>
+</html>

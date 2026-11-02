@@ -42,3 +42,15 @@ node tests/inequality.spec.js               # 頁面端對端測試（讀 data/r
 （財政部綜所稅鄉鎮統計、內政部鄉鎮人口、道安資訊查詢網30日死亡；約需3–4分鐘，`--cache` 可重用下載）。
 端對端測試也檢查這份資料缺少時，第03節會隱藏而國際比較照常顯示。
 縣市依國發會區域（北、中、南、東、離島）上色並配不同形狀；測試檢查五組數量、圖例隱藏時三張圖同步，以及縣市表的區域欄。
+
+## 臺北街道空間
+
+```bash
+pip install pyshp shapely
+python3 tests/test_build_parking.py         # 格位種類分類的單元測試
+node tests/parking.spec.js                  # 頁面端對端測試（讀 data/taipei_parking_space.json）
+```
+
+資料由 `scripts/build_parking_space.py` 產生：停管處路邊停車格位 SHP（每一格的多邊形）、工務局8公尺以上道路測繪、
+已開闢道路面積、公有收費格位統計與路外停車場資訊（約30秒，`--cache` 可重用下載）。
+端對端測試檢查頁面數字與資料檔一致、空間組成每列堆疊到100%、各區排序、tooltip、中英文與深色主題，以及320／390px手機版不出界。

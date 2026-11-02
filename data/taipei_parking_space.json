@@ -1,0 +1,578 @@
+{
+ "meta": {
+  "generated": "2026-11-02T08:39:42+00:00",
+  "slots_file": "park01_202610021742",
+  "slots_snapshot": "2026-10-02",
+  "lots_updated": "Mon Oct 19 10:26:00 CST 2026",
+  "road8m_survey": "103–105年（2014–2016）",
+  "other_codes": {
+   "60": 3477,
+   "50": 3378,
+   "71": 761,
+   "70": 248,
+   "55": 156,
+   "（空白）": 107,
+   "47": 5
+  },
+  "classes": {
+   "car": [
+    "01",
+    "03",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "12",
+    "15",
+    "17",
+    "21",
+    "23",
+    "121"
+   ],
+   "moto": [
+    "02",
+    "04",
+    "13",
+    "14",
+    "19",
+    "20",
+    "22",
+    "131"
+   ],
+   "zone": [
+    "11",
+    "16",
+    "18"
+   ]
+  },
+  "totals": {
+   "land_km2": 271.7997,
+   "population": 2511886,
+   "road_m2": 22271256.0,
+   "road8m": {
+    "area": 17287846,
+    "sidewalk": 2387474,
+    "median": 1462361,
+    "ditch": 987176
+   },
+   "slots": {
+    "car": 61597,
+    "moto": 258447,
+    "zone": 6040,
+    "other": 8132
+   },
+   "slot_m2": {
+    "car": 658331,
+    "moto": 390536,
+    "zone": 42989,
+    "other": 72211
+   },
+   "slot_m2_in8m": {
+    "car": 382066,
+    "moto": 212816,
+    "zone": 26118,
+    "other": 51387
+   },
+   "charged": {
+    "car": 47084,
+    "moto": 63243
+   },
+   "offstreet": {
+    "lots": 1767,
+    "car": 179751,
+    "moto": 93595
+   }
+  },
+  "sources": {
+   "slots": "https://data.taipei/dataset/detail?id=5a911ea5-1694-4301-808e-e1780d971611",
+   "road8m": "https://data.taipei/dataset/detail?id=ee2e4015-8844-48fb-aa57-31209909b0fc",
+   "roadplan": "https://data.taipei/dataset/detail?id=caeceb7e-5991-488c-becd-382ffc3015f5",
+   "pubspace": "https://data.taipei/dataset/detail?id=435deea7-eee3-4429-bb36-9a105cda0967",
+   "lots": "https://data.taipei/dataset/detail?id=d5c0656b-5250-4179-a491-c94daa56ef2c"
+  }
+ },
+ "districts": [
+  {
+   "district": "中正區",
+   "en": "Zhongzheng",
+   "population": 150155,
+   "land_km2": 7.6071,
+   "road_m2": 2017888.0,
+   "road8m": {
+    "area": 1699446,
+    "sidewalk": 244716,
+    "median": 129856,
+    "ditch": 81066
+   },
+   "slots": {
+    "car": 3153,
+    "moto": 17153,
+    "zone": 1197,
+    "other": 1056
+   },
+   "slot_m2": {
+    "car": 37048,
+    "moto": 24524,
+    "zone": 7156,
+    "other": 8631
+   },
+   "slot_m2_in8m": {
+    "car": 29562,
+    "moto": 17040,
+    "zone": 2442,
+    "other": 6163
+   },
+   "charged": {
+    "car": 2839,
+    "moto": 13473
+   },
+   "offstreet": {
+    "lots": 159,
+    "car": 10426,
+    "moto": 5759
+   }
+  },
+  {
+   "district": "大同區",
+   "en": "Datong",
+   "population": 119930,
+   "land_km2": 5.6815,
+   "road_m2": 1008978.0,
+   "road8m": {
+    "area": 784747,
+    "sidewalk": 116750,
+    "median": 52609,
+    "ditch": 44350
+   },
+   "slots": {
+    "car": 2448,
+    "moto": 11334,
+    "zone": 637,
+    "other": 480
+   },
+   "slot_m2": {
+    "car": 28062,
+    "moto": 16449,
+    "zone": 3598,
+    "other": 3786
+   },
+   "slot_m2_in8m": {
+    "car": 15232,
+    "moto": 7796,
+    "zone": 2915,
+    "other": 2724
+   },
+   "charged": {
+    "car": 1578,
+    "moto": 5140
+   },
+   "offstreet": {
+    "lots": 92,
+    "car": 6934,
+    "moto": 5079
+   }
+  },
+  {
+   "district": "中山區",
+   "en": "Zhongshan",
+   "population": 216346,
+   "land_km2": 13.6821,
+   "road_m2": 2536794.0,
+   "road8m": {
+    "area": 2027655,
+    "sidewalk": 305345,
+    "median": 232548,
+    "ditch": 98888
+   },
+   "slots": {
+    "car": 6325,
+    "moto": 38794,
+    "zone": 874,
+    "other": 798
+   },
+   "slot_m2": {
+    "car": 70606,
+    "moto": 57774,
+    "zone": 6716,
+    "other": 7540
+   },
+   "slot_m2_in8m": {
+    "car": 45176,
+    "moto": 30979,
+    "zone": 5315,
+    "other": 6424
+   },
+   "charged": {
+    "car": 4124,
+    "moto": 14207
+   },
+   "offstreet": {
+    "lots": 260,
+    "car": 23631,
+    "moto": 4496
+   }
+  },
+  {
+   "district": "松山區",
+   "en": "Songshan",
+   "population": 193399,
+   "land_km2": 9.2878,
+   "road_m2": 1537388.0,
+   "road8m": {
+    "area": 1187184,
+    "sidewalk": 159749,
+    "median": 109884,
+    "ditch": 62809
+   },
+   "slots": {
+    "car": 6126,
+    "moto": 23830,
+    "zone": 442,
+    "other": 808
+   },
+   "slot_m2": {
+    "car": 65137,
+    "moto": 37951,
+    "zone": 3056,
+    "other": 6636
+   },
+   "slot_m2_in8m": {
+    "car": 27543,
+    "moto": 15471,
+    "zone": 1807,
+    "other": 4984
+   },
+   "charged": {
+    "car": 4596,
+    "moto": 3155
+   },
+   "offstreet": {
+    "lots": 135,
+    "car": 14675,
+    "moto": 4989
+   }
+  },
+  {
+   "district": "大安區",
+   "en": "Da'an",
+   "population": 291732,
+   "land_km2": 11.3614,
+   "road_m2": 2575622.0,
+   "road8m": {
+    "area": 1927933,
+    "sidewalk": 301240,
+    "median": 365895,
+    "ditch": 81870
+   },
+   "slots": {
+    "car": 4785,
+    "moto": 31385,
+    "zone": 547,
+    "other": 2256
+   },
+   "slot_m2": {
+    "car": 47270,
+    "moto": 47554,
+    "zone": 4644,
+    "other": 22331
+   },
+   "slot_m2_in8m": {
+    "car": 24291,
+    "moto": 17950,
+    "zone": 4058,
+    "other": 17683
+   },
+   "charged": {
+    "car": 3909,
+    "moto": 10376
+   },
+   "offstreet": {
+    "lots": 247,
+    "car": 17355,
+    "moto": 6451
+   }
+  },
+  {
+   "district": "萬華區",
+   "en": "Wanhua",
+   "population": 173652,
+   "land_km2": 8.8522,
+   "road_m2": 1299135.0,
+   "road8m": {
+    "area": 805402,
+    "sidewalk": 117452,
+    "median": 51560,
+    "ditch": 43430
+   },
+   "slots": {
+    "car": 3801,
+    "moto": 15835,
+    "zone": 189,
+    "other": 221
+   },
+   "slot_m2": {
+    "car": 44765,
+    "moto": 24117,
+    "zone": 1559,
+    "other": 1772
+   },
+   "slot_m2_in8m": {
+    "car": 15783,
+    "moto": 15533,
+    "zone": 882,
+    "other": 1180
+   },
+   "charged": {
+    "car": 2086,
+    "moto": 3848
+   },
+   "offstreet": {
+    "lots": 82,
+    "car": 14514,
+    "moto": 8851
+   }
+  },
+  {
+   "district": "信義區",
+   "en": "Xinyi",
+   "population": 206759,
+   "land_km2": 11.2077,
+   "road_m2": 1755760.0,
+   "road8m": {
+    "area": 1226217,
+    "sidewalk": 167064,
+    "median": 105833,
+    "ditch": 63253
+   },
+   "slots": {
+    "car": 2260,
+    "moto": 20147,
+    "zone": 466,
+    "other": 568
+   },
+   "slot_m2": {
+    "car": 23178,
+    "moto": 29196,
+    "zone": 3209,
+    "other": 5459
+   },
+   "slot_m2_in8m": {
+    "car": 10795,
+    "moto": 12141,
+    "zone": 2483,
+    "other": 3144
+   },
+   "charged": {
+    "car": 1794,
+    "moto": 4467
+   },
+   "offstreet": {
+    "lots": 132,
+    "car": 21798,
+    "moto": 21356
+   }
+  },
+  {
+   "district": "士林區",
+   "en": "Shilin",
+   "population": 266951,
+   "land_km2": 62.3682,
+   "road_m2": 2606466.0,
+   "road8m": {
+    "area": 2066837,
+    "sidewalk": 279544,
+    "median": 149845,
+    "ditch": 102132
+   },
+   "slots": {
+    "car": 7525,
+    "moto": 20959,
+    "zone": 438,
+    "other": 691
+   },
+   "slot_m2": {
+    "car": 87079,
+    "moto": 33278,
+    "zone": 3569,
+    "other": 6867
+   },
+   "slot_m2_in8m": {
+    "car": 43715,
+    "moto": 21119,
+    "zone": 2494,
+    "other": 4177
+   },
+   "charged": {
+    "car": 5061,
+    "moto": 1352
+   },
+   "offstreet": {
+    "lots": 145,
+    "car": 14108,
+    "moto": 7172
+   }
+  },
+  {
+   "district": "北投區",
+   "en": "Beitou",
+   "population": 242510,
+   "land_km2": 56.8216,
+   "road_m2": 1789522.0,
+   "road8m": {
+    "area": 1271736,
+    "sidewalk": 132059,
+    "median": 57436,
+    "ditch": 90570
+   },
+   "slots": {
+    "car": 5413,
+    "moto": 18028,
+    "zone": 450,
+    "other": 316
+   },
+   "slot_m2": {
+    "car": 53079,
+    "moto": 27656,
+    "zone": 3895,
+    "other": 2832
+   },
+   "slot_m2_in8m": {
+    "car": 30263,
+    "moto": 16578,
+    "zone": 1394,
+    "other": 1202
+   },
+   "charged": {
+    "car": 4108,
+    "moto": 100
+   },
+   "offstreet": {
+    "lots": 134,
+    "car": 11378,
+    "moto": 3838
+   }
+  },
+  {
+   "district": "內湖區",
+   "en": "Neihu",
+   "population": 276180,
+   "land_km2": 31.5787,
+   "road_m2": 2296134.0,
+   "road8m": {
+    "area": 1885208,
+    "sidewalk": 245868,
+    "median": 118963,
+    "ditch": 135086
+   },
+   "slots": {
+    "car": 8116,
+    "moto": 27101,
+    "zone": 144,
+    "other": 352
+   },
+   "slot_m2": {
+    "car": 83753,
+    "moto": 41322,
+    "zone": 1400,
+    "other": 2373
+   },
+   "slot_m2_in8m": {
+    "car": 54876,
+    "moto": 25184,
+    "zone": 584,
+    "other": 1542
+   },
+   "charged": {
+    "car": 6802,
+    "moto": 3243
+   },
+   "offstreet": {
+    "lots": 196,
+    "car": 19732,
+    "moto": 5887
+   }
+  },
+  {
+   "district": "南港區",
+   "en": "Nangang",
+   "population": 113959,
+   "land_km2": 21.8424,
+   "road_m2": 1161501.0,
+   "road8m": {
+    "area": 1012442,
+    "sidewalk": 143824,
+    "median": 32166,
+    "ditch": 77722
+   },
+   "slots": {
+    "car": 4461,
+    "moto": 12405,
+    "zone": 407,
+    "other": 274
+   },
+   "slot_m2": {
+    "car": 46042,
+    "moto": 18415,
+    "zone": 3001,
+    "other": 2189
+   },
+   "slot_m2_in8m": {
+    "car": 36939,
+    "moto": 13326,
+    "zone": 1323,
+    "other": 1247
+   },
+   "charged": {
+    "car": 4023,
+    "moto": 2995
+   },
+   "offstreet": {
+    "lots": 82,
+    "car": 15653,
+    "moto": 15325
+   }
+  },
+  {
+   "district": "文山區",
+   "en": "Wenshan",
+   "population": 260313,
+   "land_km2": 31.509,
+   "road_m2": 1686068.0,
+   "road8m": {
+    "area": 1393039,
+    "sidewalk": 173863,
+    "median": 55766,
+    "ditch": 106000
+   },
+   "slots": {
+    "car": 7184,
+    "moto": 21476,
+    "zone": 249,
+    "other": 312
+   },
+   "slot_m2": {
+    "car": 72312,
+    "moto": 32300,
+    "zone": 1186,
+    "other": 1795
+   },
+   "slot_m2_in8m": {
+    "car": 47891,
+    "moto": 19699,
+    "zone": 421,
+    "other": 917
+   },
+   "charged": {
+    "car": 6164,
+    "moto": 887
+   },
+   "offstreet": {
+    "lots": 103,
+    "car": 9547,
+    "moto": 4392
+   }
+  }
+ ]
+}
