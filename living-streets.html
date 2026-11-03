@@ -41,7 +41,9 @@
 <style>
 /* ------------------------------------------------------------------ tokens
    與 road-safety.html 同一套：品牌色（lime／黑）用於版面。
-   路寬分級沿用主地圖（index.html）生活街道圖層的配色，讓兩頁一致。 */
+   版面框架沿用打造夢想街道；資料色與點綴改用 Taiwanwonnerf 原設計的色票：
+   朱（≤8 m、集散道路）、常盤（8–12 m、進出道路）、金茶（12–15 m）、霧藍灰（底）。
+   朱與常盤的明度略為拉開，色盲模擬下仍分得出來；介面點綴（--accent）用原本較深的常盤。 */
 :root {
   color-scheme: light;
   --lime: #C8D400; --lime-dk: #A8B200;
@@ -50,7 +52,8 @@
   --grid: #e1e0d9; --axis: #c3c2b7; --rule: #1A1A1A;
   --hair: rgba(11,11,11,0.10);
   --c-asia: #2a78d6; --c-europe: #eda100; --c-americas: #e87ba4; --c-africa: #008300;
-  --c-a: #0F766E; --c-b: #2DD4BF; --c-c: #B9B9B9; --c-t: #1A1A1A; --c-d: #3A7CC3; --c-acc: #5EEAD4;
+  --c-a: #9A2F23; --c-b: #4A9A75; --c-c: #B8A98C; --c-t: #000000; --c-d: #9A2F23; --c-acc: #4A9A75;
+  --accent: #2E6B4E; --gold: #8C7B5B; --bluegrey: #D6DCE0; --ground: #F2F2F2;
   --font-zh: 'Noto Sans TC', system-ui, sans-serif;
   --font-en: 'Space Grotesk', system-ui, sans-serif;
 }
@@ -62,7 +65,8 @@
     --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
     --hair: rgba(255,255,255,0.10);
     --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
-    --c-a: #14a090; --c-b: #5eead4; --c-c: #8a8983; --c-t: #f0efec; --c-d: #5b9be0; --c-acc: #2f9e91;
+    --c-a: #C25446; --c-b: #7CC4A0; --c-c: #A89878; --c-t: #F2F2F2; --c-d: #C25446; --c-acc: #7CC4A0;
+    --accent: #7CC4A0; --gold: #B8A98C; --bluegrey: #3a3f42; --ground: #141414;
   }
 }
 :root[data-theme="dark"] {
@@ -72,7 +76,8 @@
   --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
   --hair: rgba(255,255,255,0.10);
   --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
-  --c-a: #14a090; --c-b: #5eead4; --c-c: #8a8983; --c-t: #f0efec; --c-d: #5b9be0; --c-acc: #2f9e91;
+  --c-a: #C25446; --c-b: #7CC4A0; --c-c: #A89878; --c-t: #F2F2F2; --c-d: #C25446; --c-acc: #7CC4A0;
+  --accent: #7CC4A0; --gold: #B8A98C; --bluegrey: #3a3f42; --ground: #141414;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -216,9 +221,17 @@ footer a { color: var(--ink-2); }
 }
 @media (prefers-reduced-motion: no-preference) { .pt { transition: opacity .15s; } }
 .mapwrap { position: relative; border: 1px solid var(--hair); background: var(--surface); }
+/* 原設計的點綴：金茶小標、常盤強調、霧藍灰分隔線 */
+.eyebrow, .section-label { color: var(--gold); }
+.section-label::after { background: var(--bluegrey); }
+.tile.lead-tile { border-left-color: var(--accent); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--page); }
+.matrix td.hl { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.lead strong { color: var(--accent); }
+#map { background: var(--ground); }
 #map { height: 600px; background: var(--page); }
 .leaflet-container { font-family: var(--font-zh); background: var(--page); }
-.leaflet-tile-pane { filter: grayscale(1) contrast(.85) opacity(.6); }
+.leaflet-tile-pane { filter: grayscale(1) contrast(.8) opacity(.55); }
 :root[data-theme="dark"] .leaflet-tile-pane { filter: invert(1) grayscale(1) brightness(.75) opacity(.75); }
 @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .leaflet-tile-pane { filter: invert(1) grayscale(1) brightness(.75) opacity(.75); } }
 .maptools { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-bottom: 12px; }
