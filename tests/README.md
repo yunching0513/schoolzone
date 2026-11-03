@@ -54,3 +54,15 @@ node tests/parking.spec.js                  # 頁面端對端測試（讀 data/t
 資料由 `scripts/build_parking_space.py` 產生：停管處路邊停車格位 SHP（每一格的多邊形）、工務局8公尺以上道路測繪、
 已開闢道路面積、公有收費格位統計、路外停車場資訊與各區機動車輛登記數（約30秒，`--cache` 可重用下載）。
 端對端測試檢查頁面數字與資料檔一致、空間組成每列堆疊到100%、各區排序、tooltip、中英文與深色主題，以及320／390px手機版不出界。
+
+## 生活街道
+
+```bash
+pip install pmtiles mapbox-vector-tile shapely pyshp pyproj
+python3 scripts/validate_living_streets_taipei.py --cache DIR   # 以臺北官方測繪檢核 OSM 路寬推估
+node tests/living-streets.spec.js                               # 頁面端對端測試
+```
+
+`living-streets.html` 讀 `data/tiles/` 的 Taiwanwonnerf 圖磚（PMTiles），本機測試需要支援 HTTP Range 的靜態伺服器
+（`python3 -m http.server` 不支援，地圖會畫不出來；GitHub Pages 支援）。端對端測試檢查結論數字與資料一致、
+縣市排序、兩種地圖模式與圖例、點選路段的資訊框、檢核表、中英文與深色主題、返回連結，以及320／390px手機版不出界。

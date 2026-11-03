@@ -1,0 +1,125 @@
+{
+ "meta": {
+  "generated": "2026-11-03T13:35:56+00:00",
+  "zoom": 13,
+  "ways": 26476,
+  "km_all": 3600.6,
+  "km_compared": 1601.4,
+  "km_junction": 58.9,
+  "km_divided_oneway": 419.9,
+  "tolerance_m": 3.0,
+  "km_excluded": {
+   "service": 1223.0,
+   "trunk": 104.3,
+   "motorway": 86.6,
+   "trunk_link": 44.7,
+   "motorway_link": 30.9,
+   "pedestrian": 30.8
+  },
+  "classes": [
+   "le8",
+   "w8_12",
+   "w12_15",
+   "gt15"
+  ],
+  "sources": {
+   "osm": "https://github.com/yunching0513/202609---Taiwanwonnerf",
+   "road8m": "https://data.taipei/dataset/detail?id=ee2e4015-8844-48fb-aa57-31209909b0fc",
+   "districts": "https://yunching0513.github.io/taiwan-mobility-atlas/districts.geojson"
+  }
+ },
+ "confusion_km": {
+  "gt15|gt15": 190.8,
+  "gt15|le8": 16.1,
+  "gt15|w12_15": 4.0,
+  "gt15|w8_12": 0.6,
+  "le8|gt15": 27.8,
+  "le8|le8": 576.1,
+  "le8|w12_15": 32.9,
+  "le8|w8_12": 96.7,
+  "w12_15|gt15": 55.4,
+  "w12_15|le8": 45.4,
+  "w12_15|w12_15": 12.6,
+  "w12_15|w8_12": 14.1,
+  "w8_12|gt15": 70.0,
+  "w8_12|le8": 267.5,
+  "w8_12|w12_15": 75.9,
+  "w8_12|w8_12": 115.6
+ },
+ "agreement": 0.559,
+ "by_suffix_km": {
+  "路": {
+   "le8": 166.2,
+   "w8_12": 40.1,
+   "w12_15": 34.3,
+   "gt15": 280.7
+  },
+  "巷": {
+   "le8": 390.0,
+   "w8_12": 84.4,
+   "w12_15": 34.5,
+   "gt15": 17.7
+  },
+  "（無名或其他）": {
+   "le8": 152.5,
+   "w8_12": 19.6,
+   "w12_15": 4.4,
+   "gt15": 19.9
+  },
+  "弄": {
+   "le8": 118.8,
+   "w8_12": 15.8,
+   "w12_15": 4.1,
+   "gt15": 1.3
+  },
+  "大道": {
+   "le8": 1.7,
+   "w8_12": 0.0,
+   "w12_15": 0.0,
+   "gt15": 1.1
+  },
+  "街": {
+   "le8": 75.8,
+   "w8_12": 67.1,
+   "w12_15": 48.0,
+   "gt15": 23.4
+  }
+ },
+ "le12": {
+  "precision": 0.836,
+  "recall": 0.933
+ },
+ "width_error_8m_plus": {
+  "all": {
+   "km": 519.5,
+   "median_error_m": -3.5,
+   "median_abs_error_m": 3.8
+  },
+  "by_src": {
+   "name_suffix": {
+    "km": 243.7,
+    "median_error_m": -4.0,
+    "median_abs_error_m": 4.1,
+    "underestimate_share": 0.887
+   },
+   "class_default": {
+    "km": 107.2,
+    "median_error_m": -1.9,
+    "median_abs_error_m": 4.0,
+    "underestimate_share": 0.652
+   },
+   "osm_lanes": {
+    "km": 166.4,
+    "median_error_m": -3.3,
+    "median_abs_error_m": 3.3,
+    "underestimate_share": 0.926
+   },
+   "osm_width": {
+    "km": 2.3,
+    "median_error_m": 0.1,
+    "median_abs_error_m": 0.2,
+    "underestimate_share": 0.398
+   }
+  }
+ }
+}

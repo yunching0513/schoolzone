@@ -1,5 +1,5 @@
 /* Taiwan Street Vision Project — service worker (PWA installability + light offline) */
-const VERSION = 'vzt-atlas-v14';   // bump to invalidate installed-app caches after each release
+const VERSION = 'vzt-atlas-v15';   // bump to invalidate installed-app caches after each release
 const CORE = [
   './',
   './index.html',

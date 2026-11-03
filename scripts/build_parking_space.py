@@ -21,6 +21,8 @@
     欄位說明未列的代碼（50、60、70、71等）另列「代碼未說明」，不計入汽機車。
   · 以格位多邊形的中心點判斷是否落在8公尺以上道路的範圍內，用來拆解這些道路的空間組成：
     人行道、分隔島與側溝、路邊停車格、其餘車道。
+  · 停車格所在街道的路寬：格位中心點落在（或距離1公尺內）某段8公尺以上道路，就取該段的路寬（ROADWIDTH）；
+    都不在8公尺以上道路圖資內者，歸為8公尺以下的巷道。分級與「生活街道」專案一致：≤8、8–12、12–15、>15公尺。
   · 路外停車場多在地下室或建築內，資料只有格位數、沒有面積，因此只列格位數，不換算面積。
   · 車輛的停放面積：以路邊格的實測平均面積（汽車約10.7 m²、機車約1.5 m²）乘以登記數。這只是畫線格位
     本身的大小，不含車道與進出空間，是保守的下限。
@@ -80,6 +82,13 @@ CAR = {'01', '03', '05', '06', '07', '08', '09', '10', '12', '121', '15', '17', 
 MOTO = {'02', '04', '13', '131', '14', '19', '20', '22'}
 ZONE = {'11', '16', '18'}                                   # 機慢車停放區：含自行車，只計面積
 CLASSES = ('car', 'moto', 'zone', 'other')
+WIDTHS = ('lt8', 'w8_12', 'w12_15', 'gt15', 'junction')     # junction：路口等未標路寬的路段
+
+
+def width_class(w):
+    if w is None:
+        return 'lt8'
+    return 'junction' if w <= 0 else 'w8_12' if w <= 12 else 'w12_15' if w <= 15 else 'gt15'
 
 
 def klass(code):
@@ -128,7 +137,7 @@ def main():
     # 8公尺以上道路：面積組成
     print('讀取8公尺以上道路…', file=sys.stderr)
     rr, _ = shp_from_zip(fetch('road8m', args.cache), 'Road')
-    roads, road_dist = [], []
+    roads, road_dist, road_w = [], [], []
     comp = collections.defaultdict(collections.Counter)
     for sr in rr.iterShapeRecords():
         d = sr.record.as_dict()
@@ -136,7 +145,7 @@ def main():
         if dist not in DISTRICT_EN:
             continue
         g = shape(sr.shape.__geo_interface__)
-        roads.append(g); road_dist.append(dist)
+        roads.append(g); road_dist.append(dist); road_w.append(d['ROADWIDTH'] or 0)
         c = comp[dist]
         c['area'] += g.area
         c['sidewalk'] += d['SWALK_AREA']
@@ -147,7 +156,7 @@ def main():
     # 路邊停車格
     print('讀取路邊停車格（約30萬筆）…', file=sys.stderr)
     sr_, slot_stem = shp_from_zip(fetch('slots', args.cache), 'park01')
-    agg = collections.defaultdict(lambda: {k: collections.Counter() for k in ('n', 'area', 'area_in8m')})
+    agg = collections.defaultdict(lambda: {k: collections.Counter() for k in ('n', 'area', 'area_in8m', 'by_width')})
     other_codes = collections.Counter()
     cents, metas = [], []
     for s in sr_.iterShapeRecords(fields=['pktype', 'area_name']):
@@ -166,6 +175,16 @@ def main():
     for i in inside:
         dist, k, a = metas[i]
         agg[dist]['area_in8m'][k] += a
+    # 路寬：中心點1公尺內的8公尺以上道路取最寬者；都沒有就是8公尺以下巷道
+    width_of = {}
+    near_p, near_r = tree.query(points([(c.x, c.y) for c in cents]), predicate='dwithin', distance=1.0)
+    for i, j in zip(near_p.tolist(), near_r.tolist()):
+        width_of[i] = max(width_of.get(i, 0), road_w[j])
+    for i, (dist, k, a) in enumerate(metas):
+        if k in ('car', 'moto', 'zone'):
+            wc = width_class(width_of.get(i))
+            two = 'car' if k == 'car' else 'moto'               # 機慢車停放區併入機車
+            agg[dist]['by_width'][f'{two}:{wc}'] += a
 
     # 其他統計
     roadplan = {r['行政區']: float(r['面積_平方公尺']) for r in read_csv(fetch('roadplan', args.cache))}
@@ -206,6 +225,7 @@ def main():
             'slots': {k: a['n'][k] for k in CLASSES},
             'slot_m2': {k: round(a['area'][k]) for k in CLASSES},
             'slot_m2_in8m': {k: round(a['area_in8m'][k]) for k in CLASSES},
+            'slot_m2_by_width': {t: {w: round(a['by_width'][f'{t}:{w}']) for w in WIDTHS} for t in ('car', 'moto')},
             'charged': {'car': int(pub[dist]['汽車路邊總數值（格）']), 'moto': int(pub[dist]['機車路邊總數值（格）'])},
             'offstreet': dict(lot_agg[dist]),
             'vehicles': vehicles[dist],
@@ -229,6 +249,7 @@ def main():
                 'slots': {k: tot(lambda r: r['slots'][k]) for k in CLASSES},
                 'slot_m2': {k: tot(lambda r: r['slot_m2'][k]) for k in CLASSES},
                 'slot_m2_in8m': {k: tot(lambda r: r['slot_m2_in8m'][k]) for k in CLASSES},
+                'slot_m2_by_width': {t: {w: tot(lambda r: r['slot_m2_by_width'][t][w]) for w in WIDTHS} for t in ('car', 'moto')},
                 'charged': {k: tot(lambda r: r['charged'][k]) for k in ('car', 'moto')},
                 'offstreet': {k: tot(lambda r: r['offstreet'].get(k, 0)) for k in ('lots', 'car', 'moto')},
                 'vehicles': vehicles['總計'],

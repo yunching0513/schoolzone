@@ -62,6 +62,11 @@ async function open(browser, opts = {}) {
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.waitForTimeout(80);
     const tip = await page.locator('#chart2 .tip').textContent();
     check('圖2 tooltip：格數與收費格', tip.includes(top.slots.car.toLocaleString('en-US')) && tip.includes(top.charged.car.toLocaleString('en-US')), tip.slice(0, 40));
+    const BW = M.slot_m2_by_width.car, bwTot = BW.lt8 + BW.w8_12 + BW.w12_15 + BW.gt15;
+    check('路寬圖：汽車、機車兩列', (await page.locator('#chart5 .row-hit').count()) === 2);
+    check('路寬圖：12m以下比例寫在說明', (await page.locator('#cap5').textContent()).includes(Math.round(100 * (BW.lt8 + BW.w8_12) / bwTot) + '%'));
+    check('路寬圖：連到生活街道頁', (await page.locator('a#lsLink').getAttribute('href')) === 'living-streets.html');
+    check('資料檔：各路寬加總等於汽車格面積', Math.abs(Object.values(BW).reduce((x, y) => x + y, 0) - M.slot_m2.car) < 13);
     check('表格：全市＋12區', (await page.locator('#dtable tbody tr').count()) === NDIST + 1);
     check('表格：含登記汽車欄', (await page.locator('#dtable tbody tr:first-child td:nth-child(2)').textContent()) === M.vehicles.car.toLocaleString('en-US'));
     check('看不見的部分：路外停車場數', (await page.locator('#unseen .tile .value').first().textContent()).startsWith(M.offstreet.lots.toLocaleString('en-US')));

@@ -51,6 +51,7 @@
   --hair: rgba(11,11,11,0.10);
   --c-asia: #2a78d6; --c-europe: #eda100; --c-americas: #e87ba4; --c-africa: #008300;
   --c-sidewalk: #1baf7a; --c-car: #eb6834; --c-moto: #2a78d6; --c-median: #dcdbd3; --c-lane: #a3a29a;
+  --c-lt8: #0F766E; --c-w8_12: #2DD4BF; --c-w12_15: #dcdbd3; --c-gt15: #a3a29a;
   --font-zh: 'Noto Sans TC', system-ui, sans-serif;
   --font-en: 'Space Grotesk', system-ui, sans-serif;
 }
@@ -63,6 +64,7 @@
     --hair: rgba(255,255,255,0.10);
     --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
     --c-sidewalk: #199e70; --c-car: #d95926; --c-moto: #3987e5; --c-median: #33332f; --c-lane: #5c5b56;
+    --c-lt8: #14a090; --c-w8_12: #5eead4; --c-w12_15: #b5b4ad; --c-gt15: #6b6a64;
   }
 }
 :root[data-theme="dark"] {
@@ -73,6 +75,7 @@
   --hair: rgba(255,255,255,0.10);
   --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
   --c-sidewalk: #199e70; --c-car: #d95926; --c-moto: #3987e5; --c-median: #33332f; --c-lane: #5c5b56;
+  --c-lt8: #14a090; --c-w8_12: #5eead4; --c-w12_15: #b5b4ad; --c-gt15: #6b6a64;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -216,6 +219,9 @@ footer a { color: var(--ink-2); }
 }
 @media (prefers-reduced-motion: no-preference) { .pt { transition: opacity .15s; } }.s-sidewalk { fill: var(--c-sidewalk); } .s-car { fill: var(--c-car); } .s-moto { fill: var(--c-moto); }
 .s-median { fill: var(--c-median); } .s-lane { fill: var(--c-lane); }
+.s-lt8 { fill: var(--c-lt8); } .s-w8_12 { fill: var(--c-w8_12); } .s-w12_15 { fill: var(--c-w12_15); } .s-gt15 { fill: var(--c-gt15); }
+.seg-val.dark { fill: #0b0b0b; }
+.caption a { color: var(--ink); }
 .seg-rect { stroke: var(--surface); stroke-width: 1; }
 .row-label { font-size: 12px; fill: var(--ink); }
 .row-label.all { font-weight: 700; }
@@ -294,6 +300,13 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     <div class="chart" id="chart2"><div class="tip" role="status" aria-live="polite"></div></div>
     <p class="caption" id="cap2"></p>
   </div>
+  <div class="card">
+    <div class="card-title" id="c5t"></div>
+    <div class="card-sub" id="c5s"></div>
+    <div class="legend" id="key5"></div>
+    <div class="chart" id="chart5"><div class="tip" role="status" aria-live="polite"></div></div>
+    <p class="caption"><span id="cap5"></span> <a href="living-streets.html" id="lsLink"></a></p>
+  </div>
 </section>
 
 <section class="section" aria-labelledby="s4">
@@ -362,7 +375,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       langAria: '語言', themeAria: '顏色主題', thAuto: '自動', thLight: '白底', thDark: '深色',
       back: '← 打造夢想街道', footBack: '打造夢想街道',
       backAtlas: '← 全國交通安全地圖', footBackAtlas: '全國交通安全地圖',
-      s1: '01 — 先說結論', s2: '02 — 8公尺以上道路的空間組成', s3: '03 — 各區路邊停車格面積',
+      s1: '01 — 先說結論', s2: '02 — 8公尺以上道路的空間組成', s3: '03 — 路邊停車格在哪裡',
       s4: '04 — 車輛總數與停車空間', s5: '05 — 資料看不見的部分', s6: '06 — 各區數值', s7: '07 — 資料與方法',
       kv: (p) => `路邊停車格只是一部分。把臺北市登記的汽機車（${p}）全部停好需要多少空間？以路邊格的實測平均面積計算（汽車約10.7 m²、機車約1.5 m²），這只是格位本身的大小，不含車道與進出空間，是保守的下限。`,
       v1: '登記汽機車', v1u: '輛', v1n: (c, m) => `汽車${c}輛、機車${m}輛`,
@@ -388,6 +401,11 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       k3: '各區路邊停車格的面積，包含8公尺以下的巷道。汽車格平均一格約10平方公尺，機車格約1.5平方公尺。',
       c2t: '各區路邊停車格面積（公頃）', c2s: '依總面積由高到低排序',
       cap2: '滑過或點選任一列看格數與每人面積。',
+      c5t: '停車格劃在多寬的街道上', c5s: '路邊停車格面積依所在街道路寬分級（分級同「生活街道」）',
+      widths: { lt8: '8公尺以下巷道', w8_12: '8–12公尺', w12_15: '12–15公尺', gt15: '15公尺以上' },
+      rowCar: '汽車格', rowMoto: '機車格', le12: '12公尺以下合計', junction: '路口等未標路寬（不列入）',
+      cap5: v => `12公尺以下的街道，是最適合成為「生活街道」、讓行人優先的地方；臺北有${v}的路邊汽車格面積劃在這些街道上。8公尺以下為「不在8公尺以上道路圖資內」推定。`,
+      lsLink: '看生活街道專頁 →',
       keys2: { car: '汽車格', moto: '機車格（含機慢車停放區）' },
       ha: '公頃', perPerson: '每人', m2: 'm²',
       tipRoad: '8公尺以上道路面積', tipSlots: '格數', tipCharged: '其中收費格', tipPer: '每人路邊停車面積', tipPop: '人口',
@@ -410,7 +428,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       langAria: 'Language', themeAria: 'Colour theme', thAuto: 'Auto', thLight: 'Light', thDark: 'Dark',
       back: '← Build Dream Streets', footBack: 'Build Dream Streets',
       backAtlas: '← Taiwan Mobility Atlas', footBackAtlas: 'Taiwan Mobility Atlas',
-      s1: '01 — The short version', s2: '02 — What roads 8 m and wider are made of', s3: '03 — Kerbside parking area by district',
+      s1: '01 — The short version', s2: '02 — What roads 8 m and wider are made of', s3: '03 — Where kerbside parking is',
       s4: '04 — Vehicle numbers and parking space', s5: '05 — What the data cannot see', s6: '06 — District figures', s7: '07 — Data and method',
       kv: (p) => `Kerbside spaces are only part of the story. How much space would it take to park every car and motorcycle registered in Taipei (${p})? Using the measured average kerbside space (about 10.7 m² per car, 1.5 m² per motorcycle), this counts only the painted space itself, without aisles or access, so it is a conservative lower bound.`,
       v1: 'Registered cars and motorcycles', v1u: '', v1n: (c, m) => `${c} cars and ${m} motorcycles`,
@@ -436,6 +454,11 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       k3: 'Kerbside parking area in each district, including lanes narrower than 8 m. A car space averages about 10 m², a motorcycle space about 1.5 m².',
       c2t: 'Kerbside parking area by district (ha)', c2s: 'Sorted by total area',
       cap2: 'Hover or tap a row for space counts and area per resident.',
+      c5t: 'How wide are the streets where parking is painted?', c5s: 'Kerbside parking area by the width of its street (same classes as the living-streets page)',
+      widths: { lt8: 'Under 8 m', w8_12: '8–12 m', w12_15: '12–15 m', gt15: 'Over 15 m' },
+      rowCar: 'Cars', rowMoto: 'Motorcycles', le12: '12 m or narrower', junction: 'Junctions without a width (excluded)',
+      cap5: v => `Streets 12 m or narrower are the best candidates for living streets, where people come first; ${v} of Taipei\u2019s kerbside car-space area is painted on them. “Under 8 m” means outside the survey of roads 8 m and wider.`,
+      lsLink: 'See the living-streets page →',
       keys2: { car: 'Car spaces', moto: 'Motorcycle spaces (incl. two-wheeler zones)' },
       ha: 'ha', perPerson: 'per resident', m2: 'm²',
       tipRoad: 'Area of roads 8 m+', tipSlots: 'Spaces', tipCharged: 'of which paid', tipPer: 'Kerbside parking per resident', tipPop: 'Population',
@@ -593,7 +616,35 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
       rows: sorted2, keys: ['car', 'moto'], max: max2, value: (r, k) => (k === 'car' ? r.carM2 : r.motoM2) / 1e4,
       inLabel: () => '', end: r => fmt1(r.parkM2 / 1e4) + ' ' + t.ha, ticks: true, tip: tipArea, aria: t.c2t,
     });
+    renderWidthChart();
     renderVehicleCharts();
+  }
+  const WIDTHS = ['lt8', 'w8_12', 'w12_15', 'gt15'];
+  function widthShares(t) {                                       // 路口（未標路寬）不列入分母
+    const B = state.d.meta.totals.slot_m2_by_width[t], tot = WIDTHS.reduce((s, k) => s + B[k], 0);
+    return Object.fromEntries(WIDTHS.map(k => [k, B[k] / tot]));
+  }
+  function renderWidthChart() {
+    const t = T();
+    ['c5t', 'c5s', 'lsLink'].forEach(k => { $(k).textContent = t[k]; });
+    const car = widthShares('car');
+    $('cap5').textContent = t.cap5(pct(car.lt8 + car.w8_12, 0));
+    renderKey('key5', WIDTHS.map(k => [k, t.widths[k]]));
+    const rows = ['car', 'moto'].map(k => ({ district: k, kind: k, sh: widthShares(k), B: state.d.meta.totals.slot_m2_by_width[k] }));
+    bars($('chart5'), {
+      rows, keys: WIDTHS, max: 1, value: (r, k) => r.sh[k], label: r => (r.kind === 'car' ? t.rowCar : t.rowMoto),
+      ml: narrow => (narrow && state.lang === 'en' ? 92 : narrow ? 62 : 84),
+      inLabel: (r, k) => pct(r.sh[k], 0), darkText: ['w8_12', 'w12_15'], end: null, aria: t.c5t,
+      tip: (tip, r) => {
+        tip.textContent = '';
+        tip.appendChild(el('div', { class: 'tn' }, r.kind === 'car' ? t.rowCar : t.rowMoto));
+        const dl = tip.appendChild(el('dl'));
+        const row = (k, v) => { dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, v)); };
+        WIDTHS.forEach(k => row(t.widths[k], pct(r.sh[k]) + par(fmt1(r.B[k] / 1e4) + ' ' + t.ha)));
+        row(t.le12, pct(r.sh.lt8 + r.sh.w8_12));
+        row(t.junction, fmt1(r.B.junction / 1e4) + ' ' + t.ha);
+      },
+    });
   }
   function renderKey(id, items) {
     const box = $(id); box.textContent = '';
@@ -610,7 +661,7 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     const tip = host.querySelector('.tip'); tip.style.display = 'none';
     const W = Math.max(280, host.clientWidth), narrow = W < 560;
     const rowH = narrow ? 26 : 28, gap = narrow ? 8 : 10;
-    const m = { l: narrow ? 62 : 84, r: o.end ? (narrow ? 62 : 76) : 8, t: o.ticks ? 22 : 4, b: 4 };
+    const m = { l: o.ml ? o.ml(narrow) : (narrow ? 62 : 84), r: o.end ? (narrow ? 62 : 76) : 8, t: o.ticks ? 22 : 4, b: 4 };
     const iw = W - m.l - m.r, H = m.t + o.rows.length * (rowH + gap) + m.b;
     const X = v => m.l + v / o.max * iw;
     const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': o.aria });
@@ -638,14 +689,14 @@ tr.all td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, tr
     o.rows.forEach((r, i) => {
       const y = m.t + i * (rowH + gap);
       const lab = svg.appendChild(sv('text', { x: m.l - 8, y: y + rowH / 2 + 4, 'text-anchor': 'end', class: 'row-label' + (r.district === 'ALL' ? ' all' : '') }));
-      lab.textContent = dName(r);
+      lab.textContent = o.label ? o.label(r) : dName(r);
       let x0 = 0;
       o.keys.forEach(k => {
         const v = o.value(r, k), w = X(x0 + v) - X(x0);
         if (w > 0) svg.appendChild(sv('rect', { x: X(x0), y, width: w, height: rowH, class: `seg-rect s-${k}` }));
         const s = o.inLabel(r, k);
         if (s && w > 34) {
-          const tx = svg.appendChild(sv('text', { x: X(x0) + 6, y: y + rowH / 2 + 4, class: 'seg-val' }));
+          const tx = svg.appendChild(sv('text', { x: X(x0) + 6, y: y + rowH / 2 + 4, class: 'seg-val' + ((o.darkText || []).includes(k) ? ' dark' : '') }));
           tx.textContent = s;
         }
         x0 += v;

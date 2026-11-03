@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生活街道｜打造夢想街道</title>
+<meta name="description" content="全台生活街道指認地圖：以OpenStreetMap估算路寬，指認12公尺以下、可成為生活街道的道路，並以荷蘭Sustainable Safety分級道路功能；附臺北官方測繪檢核。">
+<meta name="theme-color" content="#1A1A1A">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<script>
+  // 在畫面繪製前套用主題與語言（與道路安全頁共用設定），避免先閃一下另一種樣式。
+  (function () {
+    var q = new URLSearchParams(location.search), d = document.documentElement;
+    function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+    var th = q.get('theme'), lg = q.get('lang');
+    if (th && /^(auto|light|dark)$/.test(th)) set('rs_theme', th); else th = get('rs_theme') || 'auto';
+    if (lg && /^(zh|en)$/.test(lg)) set('lang', lg); else lg = get('lang') === 'en' ? 'en' : 'zh';
+    if (th !== 'auto') d.setAttribute('data-theme', th);
+    d.setAttribute('lang', lg === 'en' ? 'en' : 'zh-Hant');
+    window.__RS_LANG = lg; window.__RS_THEME = th;
+
+    // 返回連結看來源：從 Taiwan Mobility Atlas 點進來就回 atlas，其餘回打造夢想街道（同 road-safety.html）。
+    var ATLAS = '/taiwan-mobility-atlas/', back = null;
+    function sget(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+    function sset(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+    try {
+      var r = document.referrer ? new URL(document.referrer) : null;
+      if (r && r.origin === location.origin && r.pathname !== location.pathname) {
+        back = r.pathname.indexOf(ATLAS) === 0 ? r.pathname + r.search : '';
+      }
+    } catch (e) {}
+    if (back === null && q.get('from') === 'atlas') back = ATLAS;
+    if (back === null) back = sget('ls_back');
+    else sset('ls_back', back);
+    window.__RS_BACK = back || '';                                   // '' ＝ 回打造夢想街道
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ------------------------------------------------------------------ tokens
+   與 road-safety.html 同一套：品牌色（lime／黑）用於版面。
+   路寬分級沿用主地圖（index.html）生活街道圖層的配色，讓兩頁一致。 */
+:root {
+  color-scheme: light;
+  --lime: #C8D400; --lime-dk: #A8B200;
+  --page: #ffffff; --surface: #ffffff;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --rule: #1A1A1A;
+  --hair: rgba(11,11,11,0.10);
+  --c-asia: #2a78d6; --c-europe: #eda100; --c-americas: #e87ba4; --c-africa: #008300;
+  --c-a: #0F766E; --c-b: #2DD4BF; --c-c: #B9B9B9; --c-t: #1A1A1A; --c-d: #3A7CC3; --c-acc: #5EEAD4;
+  --font-zh: 'Noto Sans TC', system-ui, sans-serif;
+  --font-en: 'Space Grotesk', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19;
+    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+    --hair: rgba(255,255,255,0.10);
+    --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+    --c-a: #14a090; --c-b: #5eead4; --c-c: #8a8983; --c-t: #f0efec; --c-d: #5b9be0; --c-acc: #2f9e91;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19;
+  --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --rule: #e8e8e4;
+  --hair: rgba(255,255,255,0.10);
+  --c-asia: #3987e5; --c-europe: #c98500; --c-americas: #d55181; --c-africa: #008300;
+  --c-a: #14a090; --c-b: #5eead4; --c-c: #8a8983; --c-t: #f0efec; --c-d: #5b9be0; --c-acc: #2f9e91;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--page); color: var(--ink); font-family: var(--font-zh); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.shell { max-width: 1240px; margin: 0 auto; padding: 48px 40px 80px; }
+
+.page-header { display: flex; align-items: flex-end; gap: 24px; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 2px solid var(--rule); }
+.logo-mark { font-family: var(--font-en); font-size: 9px; font-weight: 600; letter-spacing: .18em; border: 1.5px solid var(--rule); padding: 5px 10px; text-transform: uppercase; line-height: 1.5; white-space: nowrap; }
+.title-block { flex: 1; min-width: 0; }
+.eyebrow { font-family: var(--font-en); font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+h1 { font-weight: 700; font-size: 26px; letter-spacing: .04em; margin-top: 4px; line-height: 1.35; }
+.sub { margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
+.back { font-family: var(--font-en); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--axis); white-space: nowrap; padding-bottom: 1px; }
+.back:hover { color: var(--ink); border-color: var(--ink); }
+.ctrls { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.seg { display: inline-flex; border: 1.5px solid var(--rule); }
+.seg button { font-family: var(--font-en); font-size: 10.5px; font-weight: 600; letter-spacing: .08em; padding: 5px 10px;
+  background: var(--surface); color: var(--muted); border: 0; cursor: pointer; line-height: 1.4; }
+.seg button + button { border-left: 1px solid var(--axis); }
+.seg button[aria-pressed="true"] { background: var(--rule); color: var(--page); }
+.seg button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.section { margin-bottom: 44px; }
+.section-label { font-family: var(--font-en); font-size: 10px; font-weight: 600; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--grid); }
+.lead { font-size: 15px; line-height: 1.9; max-width: 860px; margin: 18px 0 0; }
+.lead strong { font-weight: 700; }
+.kicker { font-size: 13px; color: var(--ink-2); max-width: 860px; margin: -4px 0 16px; line-height: 1.8; }
+
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--hair); padding: 16px 18px; }
+.tile .label { font-size: 12px; color: var(--ink-2); }
+.tile .value { font-size: 30px; font-weight: 700; line-height: 1.15; margin-top: 6px; letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+.tile .unit { font-size: 12px; font-weight: 400; color: var(--ink-2); margin-left: 4px; }
+.tile .note { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.tile.lead-tile { border-left: 3px solid var(--lime); }
+.badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 6px; margin-left: 6px; border: 1px solid var(--ink-2); color: var(--ink-2); vertical-align: middle; letter-spacing: .04em; line-height: 1.5; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-bottom: 14px; }
+.fgroup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.flabel { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--muted); margin-right: 4px; }
+.chip { font-family: var(--font-zh); font-size: 12px; padding: 6px 11px; border: 1px solid var(--axis); background: var(--surface); color: var(--ink); cursor: pointer; line-height: 1.3; }
+.chip:hover { border-color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: #111; font-weight: 700; }
+.chip:focus-visible, .lg-item:focus-visible, th button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.card { background: var(--surface); border: 1px solid var(--hair); padding: 16px 16px 10px; position: relative; }
+.card + .card { margin-top: 16px; }
+.card-title { font-size: 14px; font-weight: 700; margin: 0 4px 2px; }
+.card-sub { font-size: 12px; color: var(--ink-2); margin: 0 4px 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; margin: 0 4px 6px; }
+.lg-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink); background: none; border: 0; cursor: pointer; padding: 3px 2px; font-family: inherit; }
+.lg-item[aria-pressed="false"] { color: var(--muted); text-decoration: line-through; }
+.lg-item[aria-pressed="false"] svg { opacity: .3; }
+.lg-item .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.lg-note { font-size: 11.5px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--font-zh); }
+.tick text { font-family: var(--font-en); font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.axisline { stroke: var(--axis); stroke-width: 1; }
+.refline { stroke: var(--ink-2); stroke-width: 1.5; }
+.reflabel { font-size: 11.5px; fill: var(--ink-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.trend { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 5; fill: none; opacity: .55; }
+.zone { font-size: 11.5px; font-weight: 700; fill: var(--muted); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.axis-title { font-size: 11.5px; fill: var(--ink-2); }
+.pt { stroke: var(--surface); stroke-width: 2; }
+.pt.bg { opacity: .55; }
+@media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .pt.bg { opacity: .75; } }
+:root[data-theme="dark"] .pt.bg { opacity: .75; }
+.pt.hot { stroke: var(--ink); opacity: 1; }
+.g-asia { fill: var(--c-asia); } .g-europe { fill: var(--c-europe); }
+.g-americas { fill: var(--c-americas); } .g-africa { fill: var(--c-africa); }
+.g-north { fill: var(--c-north); } .g-central { fill: var(--c-central); } .g-south { fill: var(--c-south); }
+.g-east { fill: var(--c-east); } .g-island { fill: var(--c-island); }
+.tw-ring { fill: none; stroke: var(--ink); stroke-width: 2; }
+.plabel { font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.plabel.tw { font-size: 13px; font-weight: 900; }
+.hit { fill: transparent; }
+.leader { stroke: var(--muted); stroke-width: 1; pointer-events: none; }
+
+.tip { position: absolute; z-index: 5; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--hair); box-shadow: 0 6px 24px rgba(0,0,0,.14); padding: 10px 12px; min-width: 200px; max-width: 270px; font-size: 12px; line-height: 1.5; display: none; }
+.tip .tn { font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.tip .ten { color: var(--muted); font-weight: 400; font-family: var(--font-en); }
+.tip dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin-top: 6px; color: var(--ink-2); }
+.tip dd { color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.tip .tsrc { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--grid); font-size: 11px; color: var(--muted); }
+.caption { font-size: 11.5px; color: var(--muted); margin: 8px 4px 2px; }
+.tw-legend { margin-top: 18px; }
+.sm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 4px; }
+.sm .card + .card { margin-top: 0; }
+.subhead { font-size: 13px; font-weight: 700; color: var(--ink); margin: 26px 0 10px; }
+#twMtable { min-width: 760px; } #twCtable { min-width: 760px; }
+
+.twrap { overflow: auto; border: 1px solid var(--hair); background: var(--surface); -webkit-overflow-scrolling: touch; }
+.twrap.tall { max-height: 520px; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+#mtable { min-width: 640px; } #ctable { min-width: 760px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-weight: 700; color: var(--ink-2); font-size: 11.5px; position: sticky; top: 0; background: var(--surface); z-index: 1; }
+th button { all: unset; cursor: pointer; }
+th button::after { content: ' ↕'; color: var(--axis); }
+th[aria-sort="ascending"] button::after { content: ' ↑'; color: var(--ink); }
+th[aria-sort="descending"] button::after { content: ' ↓'; color: var(--ink); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.wrap { white-space: normal; min-width: 220px; color: var(--ink-2); }
+tr.tw td { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, transparent); }
+.swatch { display: inline-flex; align-items: center; gap: 6px; }
+.sig { font-size: 10.5px; font-weight: 700; border: 1px solid var(--axis); padding: 0 5px; margin-left: 6px; color: var(--ink-2); }
+
+.notes { background: var(--surface); border: 1px solid var(--hair); padding: 18px 22px; font-size: 13px; color: var(--ink-2); }
+.notes h3 { font-size: 13px; color: var(--ink); margin: 14px 0 4px; }
+.notes h3:first-child { margin-top: 0; }
+.notes ul { padding-left: 1.2em; }
+.notes li { margin: 3px 0; }
+.notes a { color: var(--ink); }
+.notes code { font-size: 12px; background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 0 4px; }
+
+.empty { background: var(--surface); border: 1px solid var(--hair); padding: 28px; font-size: 13.5px; color: var(--ink-2); }
+.empty code { background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 1px 6px; }
+
+footer { border-top: 2px solid var(--rule); padding-top: 18px; margin-top: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-family: var(--font-en); font-size: 9px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
+footer a { color: var(--ink-2); }
+
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 980px) { .sm { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+  .shell { padding: 28px 16px 56px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 32px; }
+  .title-block { width: 100%; }
+  .ctrls { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  h1 { font-size: 21px; }
+  .lead { font-size: 14px; }
+  .tile .value { font-size: 24px; }
+  .tile .unit { display: block; margin: 2px 0 0; }
+  .tile { padding: 14px; }
+  .chip { padding: 8px 12px; }
+  .card { padding: 12px 6px 8px; }
+  .notes { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) { .pt { transition: opacity .15s; } }
+.mapwrap { position: relative; border: 1px solid var(--hair); background: var(--surface); }
+#map { height: 600px; background: var(--page); }
+.leaflet-container { font-family: var(--font-zh); background: var(--page); }
+.leaflet-tile-pane { filter: grayscale(1) contrast(.85) opacity(.6); }
+:root[data-theme="dark"] .leaflet-tile-pane { filter: invert(1) grayscale(1) brightness(.75) opacity(.75); }
+@media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .leaflet-tile-pane { filter: invert(1) grayscale(1) brightness(.75) opacity(.75); } }
+.maptools { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin-bottom: 12px; }
+.maptools select { font-family: var(--font-zh); font-size: 12px; padding: 6px 8px; border: 1px solid var(--axis); background: var(--surface); color: var(--ink); }
+.mkey { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 10px 4px 0; font-size: 12px; }
+.mkey span { display: inline-flex; align-items: center; gap: 6px; }
+.mkey i { width: 18px; height: 0; border-top: 3px solid; display: inline-block; }
+.mkey .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.info { position: absolute; left: 12px; bottom: 12px; z-index: 500; max-width: 320px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--hair); box-shadow: 0 6px 24px rgba(0,0,0,.14); padding: 10px 12px; font-size: 12px; line-height: 1.6; display: none; }
+.info .tn { font-weight: 700; }
+.info .meta { color: var(--muted); font-size: 11px; }
+.info a { color: var(--ink-2); }
+.info button { all: unset; position: absolute; top: 4px; right: 6px; cursor: pointer; color: var(--muted); padding: 2px 6px; }
+.s-a { fill: var(--c-a); } .s-b { fill: var(--c-b); } .s-c { fill: var(--c-c); }
+.seg-rect { stroke: var(--surface); stroke-width: 1; }
+.row-label { font-size: 12px; fill: var(--ink); }
+.row-val { font-size: 11.5px; fill: var(--ink-2); font-variant-numeric: tabular-nums; }
+.row-hit { fill: transparent; cursor: pointer; }
+.row-hit:hover, .row-hit.hot { fill: color-mix(in srgb, var(--ink) 5%, transparent); }
+.key { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink); }
+.key i { width: 12px; height: 12px; display: inline-block; }
+.matrix td.hl { font-weight: 700; background: color-mix(in srgb, var(--lime) 18%, transparent); }
+.matrix th:first-child, .matrix td:first-child { text-align: left; }
+#cmTable, #sfxTable { min-width: 640px; }
+#c15wrap[hidden] { display: none; }
+.caption a, .kicker a, .lead a { color: var(--ink); }
+@media (max-width: 700px) { #map { height: 460px; } }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body>
+<div class="shell">
+
+<header class="page-header">
+  <div class="logo-mark">Taiwan<br>Mobility<br>Atlas</div>
+  <div class="title-block">
+    <div class="eyebrow">Living Streets · Taiwanwonnerf</div>
+    <h1 data-i18n="h1">生活街道｜把巷弄還給人</h1>
+    <div class="sub" data-i18n="sub">全台路網路寬推估與道路功能分級；臺北以官方測繪檢核</div>
+  </div>
+  <div class="ctrls">
+    <div class="seg" id="langSeg" role="group" data-i18n-aria="langAria">
+      <button type="button" data-lang="zh">中</button><button type="button" data-lang="en">EN</button>
+    </div>
+    <div class="seg" id="themeSeg" role="group" data-i18n-aria="themeAria">
+      <button type="button" data-theme-opt="auto" data-i18n="thAuto">自動</button><button type="button" data-theme-opt="light" data-i18n="thLight">白底</button><button type="button" data-theme-opt="dark" data-i18n="thDark">深色</button>
+    </div>
+    <a class="back" href="./" data-i18n="back">← 打造夢想街道</a>
+  </div>
+</header>
+
+<div id="app" hidden>
+
+<section class="section" aria-labelledby="s1">
+  <div class="section-label" id="s1" data-i18n="s1">01 — 先說結論</div>
+  <div class="tiles" id="tiles"></div>
+  <p class="lead" id="lead"></p>
+</section>
+
+<section class="section" aria-labelledby="s2">
+  <div class="section-label" id="s2" data-i18n="s2">02 — 地圖</div>
+  <p class="kicker" id="k2"></p>
+  <div class="maptools">
+    <div class="fgroup" id="modeSeg" role="group" data-i18n-aria="modeAria">
+      <button type="button" class="chip" data-mode="width" data-i18n="modeWidth">路寬分級</button>
+      <button type="button" class="chip" data-mode="ss" data-i18n="modeSS">道路功能層級</button>
+    </div>
+    <label class="fgroup" id="c15wrap"><input type="checkbox" id="show15"> <span data-i18n="show15">加上12–15公尺邊界案例</span></label>
+    <label class="fgroup"><span class="flabel" data-i18n="goLabel">前往</span><select id="goCounty"></select></label>
+  </div>
+  <div class="mapwrap">
+    <div id="map" role="region" data-i18n-aria="mapAria"></div>
+    <div class="info" id="info" role="status" aria-live="polite"></div>
+  </div>
+  <div class="mkey" id="mkey"></div>
+  <p class="caption" id="cap2"></p>
+</section>
+
+<section class="section" aria-labelledby="s3">
+  <div class="section-label" id="s3" data-i18n="s3">03 — 各縣市的生活街道候選</div>
+  <p class="kicker" id="k3"></p>
+  <div class="card">
+    <div class="card-title" id="c3t"></div>
+    <div class="card-sub" id="c3s"></div>
+    <div class="legend" id="key3"></div>
+    <div class="chart" id="chart3"><div class="tip" role="status" aria-live="polite"></div></div>
+    <p class="caption" id="cap3"></p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="s4">
+  <div class="section-label" id="s4" data-i18n="s4">04 — 臺北：生活街道被停車佔了多少</div>
+  <p class="lead" id="park"></p>
+</section>
+
+<section class="section" aria-labelledby="s5">
+  <div class="section-label" id="s5" data-i18n="s5">05 — 方法檢核：OSM路寬推估準不準</div>
+  <p class="kicker" id="k5"></p>
+  <div class="tiles" id="vtiles"></div>
+  <div class="subhead" data-i18n="cmTitle">分級對照（公里）：列＝OSM推估，欄＝臺北官方測繪</div>
+  <div class="twrap"><table id="cmTable" class="matrix"></table></div>
+  <p class="caption" id="cmCap"></p>
+  <div class="subhead" data-i18n="sfxTitle">依路名後綴：官方路寬的分布</div>
+  <div class="twrap"><table id="sfxTable" class="matrix"></table></div>
+  <p class="caption" id="sfxCap"></p>
+</section>
+
+<section class="section" aria-labelledby="s6">
+  <div class="section-label" id="s6" data-i18n="s6">06 — 資料與方法</div>
+  <div class="notes" id="notes"></div>
+</section>
+
+</div>
+
+<div class="empty" id="empty" hidden></div>
+
+<footer>
+  <span>Taiwan Mobility Atlas · Living Streets</span>
+  <span><a href="./" data-i18n="footBack">打造夢想街道</a></span>
+</footer>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="assets/protomaps-leaflet.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const TILES = 'data/tiles/';
+  const CLS = ['le8', 'w8_12', 'w12_15', 'gt15'];
+  const COUNTY_EN = {
+    臺北市: 'Taipei', 新北市: 'New Taipei', 桃園市: 'Taoyuan', 臺中市: 'Taichung', 臺南市: 'Tainan', 高雄市: 'Kaohsiung',
+    基隆市: 'Keelung', 新竹市: 'Hsinchu City', 嘉義市: 'Chiayi City', 新竹縣: 'Hsinchu County', 苗栗縣: 'Miaoli',
+    彰化縣: 'Changhua', 南投縣: 'Nantou', 雲林縣: 'Yunlin', 嘉義縣: 'Chiayi County', 屏東縣: 'Pingtung', 宜蘭縣: 'Yilan',
+    花蓮縣: 'Hualien', 臺東縣: 'Taitung', 澎湖縣: 'Penghu', 金門縣: 'Kinmen', 連江縣: 'Lienchiang',
+  };
+
+  // ================================================================ 文字（中／英）
+  const I18N = {
+    zh: {
+      htmlLang: 'zh-Hant', title: '生活街道｜打造夢想街道',
+      desc: '全台生活街道指認地圖：以OpenStreetMap估算路寬，指認12公尺以下、可成為生活街道的道路，並以荷蘭Sustainable Safety分級道路功能；附臺北官方測繪檢核。',
+      h1: '生活街道｜把巷弄還給人', sub: '全台路網路寬推估與道路功能分級；臺北以官方測繪檢核',
+      langAria: '語言', themeAria: '顏色主題', thAuto: '自動', thLight: '白底', thDark: '深色',
+      back: '← 打造夢想街道', footBack: '打造夢想街道', backAtlas: '← 全國交通安全地圖', footBackAtlas: '全國交通安全地圖',
+      s1: '01 — 先說結論', s2: '02 — 地圖', s3: '03 — 各縣市的生活街道候選', s4: '04 — 臺北：生活街道被停車佔了多少',
+      s5: '05 — 方法檢核：OSM路寬推估準不準', s6: '06 — 資料與方法',
+      t1: '全台12公尺以下道路', t1u: '公里', t1n: p => `佔OpenStreetMap路網長度的${p}`,
+      t2: '屬於「進出道路」的路網', t2u: '', t2n: '依荷蘭Sustainable Safety分級，應以低車速、行人優先設計',
+      t3: '臺北路邊汽車格在12公尺以下街道', t3u: '的面積', t3n: '這些街道最適合成為生活街道，卻被拿來停車',
+      t4: 'OSM「12公尺以下」判定的召回率', t4u: '', t4n: p => `臺北官方測繪檢核；精確率${p}`,
+      lead: o => `生活街道（woonerf）是荷蘭在1970年代發展出的街道型態：住宅區的巷弄不再是車道，而是人行走、停留、孩子遊戲的地方，車輛只能以步行速度通過。荷蘭之後提出的Sustainable Safety（Duurzaam Veilig）把道路分成三種功能：負責長程移動的<strong>通過性道路</strong>、連接各區的<strong>集散道路</strong>，以及通往住家門口的<strong>進出道路</strong>，主張道路的設計必須與功能一致。<strong>臺灣的路網其實大多是窄街：</strong>全台12公尺以下的道路約${o.km}公里，佔路網長度的${o.pct}，依功能屬於進出道路的也有${o.acc}。問題恐怕不是沒有生活街道，而是這些街道仍被當成車道與停車場使用。`,
+      k2: '路寬由OpenStreetMap推估：優先採用width標籤，其次以車道數推算，再依路名慣例（弄、巷、街、路）與道路等級給預設值。放大後點選任一路段，可看推估值與依據。',
+      modeAria: '地圖模式', modeWidth: '路寬分級', modeSS: '道路功能層級', show15: '加上12–15公尺邊界案例', goLabel: '前往', mapAria: '生活街道地圖',
+      allTw: '全臺灣',
+      keyW: { A: '8公尺以下巷弄', B: '8–12公尺社區街道', C: '12–15公尺邊界案例' },
+      keySS: { T: '通過性道路（國道、快速公路）', D: '集散道路（省縣鄉道、市區幹道）', ACC: '進出道路（其餘市區道路與巷弄）' },
+      cap2: '底圖：內政部國土測繪中心通用版電子地圖。路網：© OpenStreetMap contributors（ODbL）。',
+      infoW: '估算路寬', infoBasis: '依據', infoLen: '路段長度', infoClass: '分級', infoLevel: '層級', infoType: '類型',
+      unnamed: '（未命名道路）', close: '關閉',
+      src: { osm_width: 'OSM width標籤', osm_lanes: 'OSM車道數推估', name_suffix: '路名慣例（弄／巷／街／路）', class_default: '道路等級預設值' },
+      lvl: { T: '通過性道路', D: '集散道路' },
+      k3: '各縣市12公尺以下道路佔路網長度的比例。點選任一列，地圖會移到該縣市。',
+      c3t: '12公尺以下道路佔路網長度', c3s: '依比例由高到低排序', cap3: '比例越高，代表該縣市越多道路適合以生活街道的方式設計。',
+      keys3: { a: '8公尺以下', b: '8–12公尺' }, km: '公里',
+      park: o => `臺北市的路邊停車格中，有<strong>${o.car}的汽車格面積</strong>與${o.moto}的機車格面積，劃在12公尺以下的街道上；其中8公尺以下的巷道就佔了汽車格面積的${o.lt8}。最該讓給人的街道，正被拿來停放私人車輛。詳見<a href="parking-space.html">臺北街道空間</a>頁。`,
+      k5: '臺北市工務局測繪了每一段8公尺以上道路的實際寬度。把OSM路段的中點疊上去：落在8公尺以上道路內，就取官方路寬；不在其中，視為8公尺以下。只比較公共道路，車道、停車場通道等service路段與分隔道路的單一方向另列。',
+      v1: '「12公尺以下」召回率', v1n: '官方12公尺以下的街道，被OSM推估正確指認的比例（以長度計）',
+      v2: '「12公尺以下」精確率', v2n: '被OSM指認為12公尺以下的街道，官方也在12公尺以下的比例',
+      v3: '四級分級一致率', v3n: '≤8、8–12、12–15、>15公尺四級完全一致的長度比例',
+      v4: '8公尺以上道路的路寬誤差', v4u: '公尺', v4n: m => `中位數，負值代表低估；絕對誤差中位數${m}公尺`,
+      cmTitle: '分級對照（公里）：列＝OSM推估，欄＝臺北官方測繪', sfxTitle: '依路名後綴：官方路寬的分布',
+      cls: { le8: '≤8公尺', w8_12: '8–12公尺', w12_15: '12–15公尺', gt15: '>15公尺' }, total: '合計', osmEst: 'OSM推估',
+      cmCap: o => `比較的公共道路共${o.km}公里；另有service路段${o.svc}公里、分隔道路的單一方向${o.div}公里、路口${o.jct}公里未列入。官方「≤8公尺」是以「不在8公尺以上道路圖資內」推定。`,
+      sfxCap: '依OSM路名的最後一字分組（「…路三段」歸「路」）。各列為官方路寬的長度比例；可以用來調整各後綴的預設路寬。',
+      sfx: { 路: '路', 街: '街', 巷: '巷', 弄: '弄', 大道: '大道', '（無名或其他）': '（無名或其他）' },
+      empty: '<p><strong>資料尚未建置。</strong>這一頁需要 <code>data/tiles/</code> 內的生活街道資料，以及 <code>data/living_streets_taipei_check.json</code>（<code>python3 scripts/validate_living_streets_taipei.py --cache DIR</code>）。</p>',
+    },
+    en: {
+      htmlLang: 'en', title: 'Living Streets | Dream Streets',
+      desc: 'Living-street map of Taiwan: road widths estimated from OpenStreetMap identify streets 12 m or narrower that could become living streets, with the Dutch Sustainable Safety road hierarchy and a check against Taipei’s official survey.',
+      h1: 'Living streets | Giving lanes back to people', sub: 'Estimated widths and road functions across Taiwan, checked against Taipei’s official survey',
+      langAria: 'Language', themeAria: 'Colour theme', thAuto: 'Auto', thLight: 'Light', thDark: 'Dark',
+      back: '← Build Dream Streets', footBack: 'Build Dream Streets', backAtlas: '← Taiwan Mobility Atlas', footBackAtlas: 'Taiwan Mobility Atlas',
+      s1: '01 — The short version', s2: '02 — Map', s3: '03 — Living-street candidates by county', s4: '04 — Taipei: how much of its living streets goes to parking',
+      s5: '05 — Method check: how accurate are the OSM widths?', s6: '06 — Data and method',
+      t1: 'Roads 12 m or narrower in Taiwan', t1u: 'km', t1n: p => `${p} of the OpenStreetMap network length`,
+      t2: 'Network that is access roads', t2u: '', t2n: 'Under Dutch Sustainable Safety these should be low-speed and pedestrian-first',
+      t3: 'Taipei kerbside car parking on streets ≤12 m', t3u: 'of area', t3n: 'The streets best suited to become living streets are used for parking',
+      t4: 'Recall of the OSM “≤12 m” screen', t4u: '', t4n: p => `Checked against Taipei’s survey; precision ${p}`,
+      lead: o => `The living street (woonerf) emerged in the Netherlands in the 1970s: residential lanes stop being carriageways and become places to walk, linger and play, with vehicles passing at walking pace. The later Dutch Sustainable Safety (Duurzaam Veilig) approach sorts roads by function into <strong>through roads</strong> for long trips, <strong>distributor roads</strong> linking districts, and <strong>access roads</strong> leading to front doors, and insists that design match function. <strong>Most of Taiwan’s network is already narrow:</strong> about ${o.km} km of roads are 12 m or narrower, ${o.pct} of network length, and ${o.acc} are access roads by function. The problem is probably not a lack of living streets but that these streets are still treated as traffic lanes and car parks.`,
+      k2: 'Widths are estimated from OpenStreetMap: the width tag where present, then lane counts, then Taiwanese road-name conventions (弄, 巷, 街, 路) and road-class defaults. Zoom in and tap any segment to see the estimate and its basis.',
+      modeAria: 'Map mode', modeWidth: 'Width classes', modeSS: 'Road function', show15: 'Add 12–15 m borderline streets', goLabel: 'Go to', mapAria: 'Living-streets map',
+      allTw: 'All of Taiwan',
+      keyW: { A: 'Under 8 m lanes', B: '8–12 m local streets', C: '12–15 m borderline' },
+      keySS: { T: 'Through roads (freeways, expressways)', D: 'Distributor roads (provincial/county/township, urban arterials)', ACC: 'Access roads (other local streets)' },
+      cap2: 'Basemap: NLSC general electronic map. Road network © OpenStreetMap contributors (ODbL).',
+      infoW: 'Estimated width', infoBasis: 'Basis', infoLen: 'Segment length', infoClass: 'Class', infoLevel: 'Level', infoType: 'Type',
+      unnamed: '(unnamed road)', close: 'Close',
+      src: { osm_width: 'OSM width tag', osm_lanes: 'from OSM lane count', name_suffix: 'road-name convention', class_default: 'road-class default' },
+      lvl: { T: 'Through road', D: 'Distributor road' },
+      k3: 'Share of each county’s network length that is 12 m or narrower. Tap a row to move the map there.',
+      c3t: 'Roads 12 m or narrower, share of network length', c3s: 'Sorted by share', cap3: 'The higher the share, the more of the county’s streets suit living-street design.',
+      keys3: { a: 'Under 8 m', b: '8–12 m' }, km: 'km',
+      park: o => `In Taipei, <strong>${o.car} of kerbside car-space area</strong> and ${o.moto} of motorcycle-space area is painted on streets 12 m or narrower; lanes under 8 m alone hold ${o.lt8} of the car-space area. The streets that should belong to people are used to store private vehicles. See <a href="parking-space.html">Taipei street space</a>.`,
+      k5: 'Taipei’s Public Works Department surveyed the actual width of every road 8 m and wider. Each OSM segment’s midpoint is overlaid: inside a surveyed road it takes the official width, otherwise it is treated as under 8 m. Only public streets are compared; service ways and single carriageways of divided roads are listed separately.',
+      v1: 'Recall of “≤12 m”', v1n: 'Share of officially ≤12 m street length that OSM correctly flags',
+      v2: 'Precision of “≤12 m”', v2n: 'Share of OSM-flagged ≤12 m length that is officially ≤12 m',
+      v3: 'Four-class agreement', v3n: 'Length share where ≤8, 8–12, 12–15 and >15 m classes match exactly',
+      v4: 'Width error, roads 8 m+', v4u: 'm', v4n: m => `Median; negative means underestimated. Median absolute error ${m} m`,
+      cmTitle: 'Class comparison (km): rows = OSM estimate, columns = Taipei survey', sfxTitle: 'By road-name suffix: distribution of official widths',
+      cls: { le8: '≤8 m', w8_12: '8–12 m', w12_15: '12–15 m', gt15: '>15 m' }, total: 'Total', osmEst: 'OSM estimate',
+      cmCap: o => `${o.km} km of public streets compared; ${o.svc} km of service ways, ${o.div} km of single carriageways of divided roads and ${o.jct} km of junctions are excluded. Official “≤8 m” means outside the survey of roads 8 m and wider.`,
+      sfxCap: 'Grouped by the last character of the OSM name (“…路三段” counts as 路). Each row shows the length shares of official widths, which can be used to recalibrate default widths per suffix.',
+      sfx: { 路: 'Road 路', 街: 'Street 街', 巷: 'Lane 巷', 弄: 'Alley 弄', 大道: 'Boulevard 大道', '（無名或其他）': '(unnamed or other)' },
+      empty: '<p><strong>Data not built yet.</strong> This page needs the living-street files in <code>data/tiles/</code> and <code>data/living_streets_taipei_check.json</code> (<code>python3 scripts/validate_living_streets_taipei.py --cache DIR</code>).</p>',
+    },
+  };
+
+  const state = { lang: window.__RS_LANG === 'en' ? 'en' : 'zh', theme: window.__RS_THEME || 'auto', mode: 'width', show15: false, d: null };
+  const T = () => I18N[state.lang];
+  const $ = id => document.getElementById(id);
+  const fmtInt = v => Math.round(v).toLocaleString('en-US');
+  const pct = (v, d = 0) => (100 * v).toFixed(d) + '%';
+  const el = (tag, attrs, text) => {                              // 道路名稱來自 OSM，一律走 textContent
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const NS = 'http://www.w3.org/2000/svg';
+  const sv = (tag, attrs) => { const e = document.createElementNS(NS, tag);
+    if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  const cName = c => (state.lang === 'en' ? COUNTY_EN[c] || c : c);
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  // ================================================================ 語言與主題
+  function applyStatic() {
+    const t = T();
+    document.documentElement.setAttribute('lang', t.htmlLang);
+    document.title = t.title;
+    const md = document.querySelector('meta[name=description]'); if (md) md.setAttribute('content', t.desc);
+    const src = window.__RS_BACK ? 'Atlas' : '';
+    document.querySelectorAll('[data-i18n]').forEach(e => { const k = e.dataset.i18n; e.textContent = t[k + src] || t[k]; });
+    document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
+    document.querySelectorAll('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
+    document.querySelectorAll('#themeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeOpt === state.theme)));
+    document.querySelectorAll('#modeSeg .chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)));
+    $('empty').innerHTML = t.empty;                                 // 靜態字串，非資料內容
+    if (window.__RS_BACK) document.querySelectorAll('a[data-i18n="back"], a[data-i18n="footBack"]').forEach(a => { a.href = window.__RS_BACK; });
+  }
+  function setLang(l) {
+    state.lang = l;
+    try { localStorage.setItem('lang', l); } catch (e) {}
+    applyStatic();
+    if (state.d) renderAll();
+  }
+  function setTheme(th) {
+    state.theme = th;
+    try { localStorage.setItem('rs_theme', th); } catch (e) {}
+    if (th === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', th);
+    applyStatic();
+    if (state.d) { buildLayers(); renderKey(); renderCounties(); }  // 線色取自主題變數，切換後重畫
+  }
+  document.querySelectorAll('#langSeg button').forEach(b => b.addEventListener('click', () => setLang(b.dataset.lang)));
+  document.querySelectorAll('#themeSeg button').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeOpt)));
+  applyStatic();
+
+  // ================================================================ 載入
+  const getJSON = u => fetch(u, { cache: 'no-cache' }).then(r => (r.ok ? r.json() : Promise.reject(new Error('http ' + r.status))));
+  Promise.all([getJSON(TILES + 'living_streets_summary.json'), getJSON(TILES + 'hierarchy_stats.json'), getJSON(TILES + 'county_stats.json'),
+    getJSON('data/living_streets_taipei_check.json'), getJSON('data/taipei_parking_space.json').catch(() => null)])
+    .then(([sum, hier, county, check, park]) => init({ sum, hier, county, check, park }), () => { $('empty').hidden = false; });
+
+  let map = null, lsLayer = null, hierLayer = null;
+  function init(d) {
+    state.d = d;
+    $('app').hidden = false;
+    map = L.map('map', { zoomControl: true, minZoom: 7, maxZoom: 18, attributionControl: true }).fitBounds([[21.9, 119.9], [25.35, 122.05]]);
+    L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP5/default/GoogleMapsCompatible/{z}/{y}/{x}', {
+      maxZoom: 18, maxNativeZoom: 18, attribution: '© 內政部國土測繪中心',
+    }).addTo(map);
+    map.createPane('roads'); map.getPane('roads').style.zIndex = 350;
+    buildLayers();
+    map.on('click', e => pick(e.latlng));
+    document.querySelectorAll('#modeSeg .chip').forEach(b => b.addEventListener('click', () => {
+      state.mode = b.dataset.mode; applyStatic(); buildLayers(); renderKey(); $('info').style.display = 'none';
+    }));
+    $('show15').addEventListener('change', e => { state.show15 = e.target.checked; buildLayers(); renderKey(); });
+    $('goCounty').addEventListener('change', e => { if (e.target.value) flyTo(e.target.value); });
+    renderAll();
+    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { map.invalidateSize(); renderCounties(); }, 120); });
+  }
+  function renderAll() {
+    renderTiles(); renderKey(); renderGo(); renderCounties(); renderPark(); renderCheck(); renderNotes();
+    $('k2').textContent = T().k2; $('cap2').textContent = T().cap2;
+  }
+
+  // ================================================================ 01 結論
+  function renderTiles() {
+    const t = T(), S = state.d.sum, H = state.d.hier, C = state.d.check;
+    const le12 = S.by_class.A.km + S.by_class.B.km, accShare = H.A.km / (H.T.km + H.D.km + H.A.km);
+    const p = state.d.park && state.d.park.meta.totals.slot_m2_by_width;
+    const share = (k, w) => { const B = p[k], tot = B.lt8 + B.w8_12 + B.w12_15 + B.gt15; return (w.reduce((s, x) => s + B[x], 0)) / tot; };
+    const tiles = [
+      { label: t.t1, value: fmtInt(le12), unit: t.t1u, note: t.t1n(pct(le12 / S.total_km)), lead: true },
+      { label: t.t2, value: pct(accShare), unit: t.t2u, note: t.t2n },
+      p ? { label: t.t3, value: pct(share('car', ['lt8', 'w8_12'])), unit: t.t3u, note: t.t3n } : null,
+      { label: t.t4, value: pct(C.le12.recall), unit: t.t4u, note: t.t4n(pct(C.le12.precision)) },
+    ].filter(Boolean);
+    const box = $('tiles'); box.textContent = '';
+    tiles.forEach(x => {
+      const dv = el('div', { class: 'tile' + (x.lead ? ' lead-tile' : '') });
+      dv.appendChild(el('div', { class: 'label' }, x.label));
+      const v = el('div', { class: 'value' }, x.value);
+      if (x.unit) v.appendChild(el('span', { class: 'unit' }, x.unit));
+      dv.appendChild(v); dv.appendChild(el('div', { class: 'note' }, x.note));
+      box.appendChild(dv);
+    });
+    $('lead').innerHTML = t.lead({ km: fmtInt(le12), pct: pct(le12 / S.total_km), acc: pct(accShare) });   // 模板為靜態字串，插入的只有數字
+  }
+
+  // ================================================================ 02 地圖
+  const lw = (z, a, b, c) => (z <= 10 ? a : z >= 16 ? c : a + (b - a) * Math.min(1, (z - 10) / 6) + (z > 13 ? (c - b) * (z - 13) / 3 : 0));
+  function buildLayers() {
+    if (lsLayer) { map.removeLayer(lsLayer); lsLayer = null; }
+    if (hierLayer) { map.removeLayer(hierLayer); hierLayer = null; }
+    const col = { A: css('--c-a'), B: css('--c-b'), C: css('--c-c'), T: css('--c-t'), D: css('--c-d'), ACC: css('--c-acc'), bg: css('--page') };
+    const line = (color, w, opacity = 0.9) => new protomapsL.LineSymbolizer({ color, width: w, opacity, lineCap: 'round', lineJoin: 'round' });
+    if (state.mode === 'width') {
+      lsLayer = protomapsL.leafletLayer({
+        url: TILES + 'living_streets.pmtiles', maxDataZoom: 13, pane: 'roads',
+        attribution: '<a href="https://github.com/yunching0513/202609---Taiwanwonnerf">Taiwanwonnerf</a> © OpenStreetMap',
+        paintRules: [
+          { dataLayer: 'living_streets', filter: (z, f) => f.props.cls === 'C' && state.show15, symbolizer: line(col.C, z => lw(z, 0.5, 1.2, 3), 0.8) },
+          { dataLayer: 'living_streets', filter: (z, f) => f.props.cls === 'B', symbolizer: line(col.B, z => lw(z, 0.6, 1.4, 3.5)) },
+          { dataLayer: 'living_streets', filter: (z, f) => f.props.cls === 'A', symbolizer: line(col.A, z => lw(z, 0.5, 1.2, 3)) },
+        ], labelRules: [],
+      }).addTo(map);
+    } else {
+      const kD = f => (f.props.link ? 0.35 : f.props.sub === '省道' ? 1 : (f.props.sub === '縣道' || f.props.sub === '市區主要幹道') ? 0.8 : 0.6);
+      lsLayer = protomapsL.leafletLayer({
+        url: TILES + 'living_streets.pmtiles', maxDataZoom: 13, pane: 'roads',
+        attribution: '<a href="https://github.com/yunching0513/202609---Taiwanwonnerf">Taiwanwonnerf</a> © OpenStreetMap',
+        paintRules: [{ dataLayer: 'living_streets', symbolizer: line(col.ACC, z => lw(z, 0.25, 0.6, 2), 0.7) }], labelRules: [],
+      }).addTo(map);
+      hierLayer = protomapsL.leafletLayer({
+        url: TILES + 'hierarchy.pmtiles', maxDataZoom: 13, pane: 'roads',
+        paintRules: [
+          { dataLayer: 'hierarchy', filter: (z, f) => f.props.ss === 'D', symbolizer: line(col.D, (z, f) => lw(z, 1, 2, 4.5) * kD(f), 0.85) },
+          { dataLayer: 'hierarchy', filter: (z, f) => f.props.ss === 'T', symbolizer: line(col.bg, (z, f) => lw(z, 2.6, 4.2, 8.5) * (f.props.link ? 0.45 : 1), 1) },
+          { dataLayer: 'hierarchy', filter: (z, f) => f.props.ss === 'T', symbolizer: line(col.T, (z, f) => lw(z, 1.4, 2.4, 5.5) * (f.props.link ? 0.45 : 1), 0.95) },
+        ], labelRules: [],
+      }).addTo(map);
+    }
+    $('c15wrap').hidden = state.mode !== 'width';
+  }
+  function renderKey() {
+    const t = T(), S = state.d.sum.by_class, H = state.d.hier, box = $('mkey'); box.textContent = '';
+    const item = (color, label, n, w) => {
+      const sp = el('span'); const i = el('i'); i.style.borderTopColor = color; i.style.borderTopWidth = (w || 3) + 'px';
+      sp.appendChild(i); sp.appendChild(el('span', null, label));
+      if (n != null) sp.appendChild(el('span', { class: 'n' }, fmtInt(n) + ' ' + t.km));
+      box.appendChild(sp);
+    };
+    if (state.mode === 'width') {
+      item(css('--c-a'), t.keyW.A, S.A.km); item(css('--c-b'), t.keyW.B, S.B.km);
+      if (state.show15) item(css('--c-c'), t.keyW.C, S.C.km);
+    } else {
+      item(css('--c-t'), t.keySS.T, H.T.km, 4); item(css('--c-d'), t.keySS.D, H.D.km); item(css('--c-acc'), t.keySS.ACC, H.A.km, 1.5);
+    }
+  }
+  function renderGo() {
+    const t = T(), sel = $('goCounty'), cur = sel.value; sel.textContent = '';
+    sel.appendChild(el('option', { value: 'TW' }, t.allTw));
+    Object.keys(state.d.county).filter(k => COUNTY_EN[k]).forEach(k => sel.appendChild(el('option', { value: k }, cName(k))));
+    sel.value = cur || 'TW';
+  }
+  function flyTo(k) {
+    if (k === 'TW') { map.flyToBounds([[21.9, 119.9], [25.35, 122.05]], { duration: 1 }); return; }
+    const b = state.d.county[k].bbox;
+    map.flyToBounds([[b[1], b[0]], [b[3], b[2]]], { duration: 1.2, padding: [20, 20] });
+    $('goCounty').value = k;
+  }
+  function pick(latlng) {
+    const t = T(), info = $('info');
+    const layers = state.mode === 'width' ? [['ls', lsLayer]] : [['hier', hierLayer], ['ls', lsLayer]];
+    let hit = null;
+    for (const [kind, layer] of layers) {
+      if (!layer) continue;
+      try {
+        for (const [, feats] of layer.queryTileFeaturesDebug(latlng.lng, latlng.lat, 10)) {
+          for (const pf of feats) {
+            const p = pf.feature.props;
+            if (kind === 'ls' && state.mode === 'width' && p.cls === 'C' && !state.show15) continue;
+            if (kind === 'ls' && state.mode === 'width' && !['A', 'B', 'C'].includes(p.cls)) continue;
+            hit = { kind, p }; break;
+          }
+          if (hit) break;
+        }
+      } catch (e) {}
+      if (hit) break;
+    }
+    if (!hit) { info.style.display = 'none'; return; }
+    const p = hit.p; info.textContent = '';
+    const close = el('button', { type: 'button', 'aria-label': t.close }, '✕');
+    close.addEventListener('click', () => { info.style.display = 'none'; });
+    info.appendChild(close);
+    info.appendChild(el('div', { class: 'tn' }, (p.ref ? p.ref + ' ' : '') + (p.name || t.unnamed)));
+    const line = (k, v) => { const dv = el('div'); dv.appendChild(el('span', { class: 'meta' }, k + '　')); dv.appendChild(document.createTextNode(v)); info.appendChild(dv); };
+    if (hit.kind === 'hier') {
+      line(t.infoLevel, t.lvl[p.ss] || p.ss);
+      line(t.infoType, String(p.sub || '') + (p.link ? ' (link)' : ''));
+    } else {
+      line(t.infoW, p.w + ' m');
+      line(t.infoClass, t.keyW[p.cls] || p.cls);
+      line(t.infoBasis, t.src[p.src] || p.src);
+    }
+    line(t.infoLen, p.len + ' m');
+    const a = el('a', { href: 'https://www.openstreetmap.org/way/' + encodeURIComponent(p.id), target: '_blank', rel: 'noopener' }, 'OSM way/' + p.id);
+    const dv = el('div', { class: 'meta' }); dv.appendChild(a); info.appendChild(dv);
+    info.style.display = 'block';
+  }
+
+  // ================================================================ 03 各縣市
+  function renderKeyBox(id, items) {
+    const box = $(id); box.textContent = '';
+    items.forEach(([k, s]) => {
+      const sp = el('span', { class: 'key' }); const i = el('i'); i.style.background = `var(--c-${k})`;
+      sp.appendChild(i); sp.appendChild(el('span', null, s)); box.appendChild(sp);
+    });
+  }
+  function renderCounties() {
+    const t = T(), host = $('chart3');
+    ['k3', 'c3t', 'c3s', 'cap3'].forEach(k => { $(k).textContent = t[k]; });
+    renderKeyBox('key3', [['a', t.keys3.a], ['b', t.keys3.b]]);
+    const rows = Object.entries(state.d.county).filter(([k]) => COUNTY_EN[k])
+      .map(([k, v]) => ({ k, v, a: v.A / v.total_km, b: v.B / v.total_km })).sort((p, q) => (q.a + q.b) - (p.a + p.b));
+    host.querySelectorAll('svg').forEach(s => s.remove());
+    const tip = host.querySelector('.tip'); tip.style.display = 'none';
+    const W = Math.max(280, host.clientWidth), narrow = W < 560, rowH = narrow ? 20 : 22, gap = 6;
+    const m = { l: narrow ? 92 : 108, r: 48, t: 22, b: 4 }, H = m.t + rows.length * (rowH + gap) + m.b;
+    const X = v => m.l + v * (W - m.l - m.r);
+    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': t.c3t });
+    host.insertBefore(svg, tip);
+    [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+      svg.appendChild(sv('line', { x1: X(v), x2: X(v), y1: m.t - 4, y2: H - m.b, class: 'gridline' }));
+      const tx = svg.appendChild(sv('g', { class: 'tick' })).appendChild(sv('text', { x: X(v), y: m.t - 9, 'text-anchor': 'middle' }));
+      tx.textContent = Math.round(v * 100) + '%';
+    });
+    let hot = null;
+    rows.forEach((r, i) => {
+      const y = m.t + i * (rowH + gap);
+      svg.appendChild(sv('text', { x: m.l - 8, y: y + rowH / 2 + 4, 'text-anchor': 'end', class: 'row-label' })).textContent = cName(r.k);
+      svg.appendChild(sv('rect', { x: X(0), y, width: X(r.a) - X(0), height: rowH, class: 'seg-rect s-a' }));
+      svg.appendChild(sv('rect', { x: X(r.a), y, width: X(r.a + r.b) - X(r.a), height: rowH, class: 'seg-rect s-b' }));
+      svg.appendChild(sv('text', { x: X(r.a + r.b) + 6, y: y + rowH / 2 + 4, class: 'row-val' })).textContent = pct(r.a + r.b);
+      const hit = svg.appendChild(sv('rect', { x: 0, y: y - gap / 2, width: W, height: rowH + gap, class: 'row-hit' }));
+      const show = on => {
+        if (hot) hot.classList.remove('hot'); hot = on ? hit : null;
+        if (!on) { tip.style.display = 'none'; return; }
+        hit.classList.add('hot'); tip.textContent = '';
+        tip.appendChild(el('div', { class: 'tn' }, cName(r.k)));
+        const dl = tip.appendChild(el('dl'));
+        [[t.keys3.a, r.v.A], [t.keys3.b, r.v.B], [t.total, r.v.total_km]].forEach(([k, v]) => {
+          dl.appendChild(el('dt', null, k)); dl.appendChild(el('dd', null, fmtInt(v) + ' ' + t.km));
+        });
+        tip.style.display = 'block';
+        const s = host.clientWidth / W;
+        tip.style.left = Math.max(0, Math.min(host.clientWidth - tip.offsetWidth, m.l * s)) + 'px';
+        tip.style.top = ((y + rowH + 4) * s) + 'px';
+      };
+      hit.addEventListener('pointerenter', () => show(true));
+      hit.addEventListener('pointerleave', () => show(false));
+      hit.addEventListener('click', () => { flyTo(r.k); $('map').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    });
+  }
+
+  // ================================================================ 04 臺北停車
+  function renderPark() {
+    const t = T(), P = state.d.park;
+    if (!P) { $('park').closest('section').hidden = true; return; }
+    const sh = k => { const B = P.meta.totals.slot_m2_by_width[k], tot = B.lt8 + B.w8_12 + B.w12_15 + B.gt15; return { le12: (B.lt8 + B.w8_12) / tot, lt8: B.lt8 / tot }; };
+    $('park').innerHTML = t.park({ car: pct(sh('car').le12), moto: pct(sh('moto').le12), lt8: pct(sh('car').lt8) });   // 只插入數字
+  }
+
+  // ================================================================ 05 方法檢核
+  function renderCheck() {
+    const t = T(), C = state.d.check, M = C.meta;
+    $('k5').textContent = t.k5;
+    const E = C.width_error_8m_plus.all;
+    const tiles = [
+      { label: t.v1, value: pct(C.le12.recall), note: t.v1n, lead: true },
+      { label: t.v2, value: pct(C.le12.precision), note: t.v2n },
+      { label: t.v3, value: pct(C.agreement), note: t.v3n },
+      { label: t.v4, value: (E.median_error_m < 0 ? '−' : '+') + Math.abs(E.median_error_m).toFixed(1), unit: t.v4u, note: t.v4n(E.median_abs_error_m.toFixed(1)) },
+    ];
+    const box = $('vtiles'); box.textContent = '';
+    tiles.forEach(x => {
+      const dv = el('div', { class: 'tile' + (x.lead ? ' lead-tile' : '') });
+      dv.appendChild(el('div', { class: 'label' }, x.label));
+      const v = el('div', { class: 'value' }, x.value); if (x.unit) v.appendChild(el('span', { class: 'unit' }, x.unit));
+      dv.appendChild(v); dv.appendChild(el('div', { class: 'note' }, x.note)); box.appendChild(dv);
+    });
+    // 分級對照表
+    const cm = C.confusion_km, tb = $('cmTable'); tb.textContent = '';
+    const hr = tb.appendChild(el('thead')).appendChild(el('tr'));
+    hr.appendChild(el('th', { scope: 'col' }, t.osmEst));
+    CLS.forEach(c => hr.appendChild(el('th', { class: 'num', scope: 'col' }, t.cls[c])));
+    hr.appendChild(el('th', { class: 'num', scope: 'col' }, t.total));
+    const body = tb.appendChild(el('tbody'));
+    CLS.forEach(a => {
+      const tr = body.appendChild(el('tr'));
+      tr.appendChild(el('th', { scope: 'row' }, t.cls[a]));
+      let sum = 0;
+      CLS.forEach(b => { const v = cm[`${a}|${b}`] || 0; sum += v; tr.appendChild(el('td', { class: 'num' + (a === b ? ' hl' : '') }, v.toFixed(1))); });
+      tr.appendChild(el('td', { class: 'num' }, sum.toFixed(1)));
+    });
+    $('cmCap').textContent = t.cmCap({ km: fmtInt(M.km_compared), svc: fmtInt(M.km_excluded.service || 0), div: fmtInt(M.km_divided_oneway), jct: fmtInt(M.km_junction) });
+    // 路名後綴
+    const S = C.by_suffix_km, st = $('sfxTable'); st.textContent = '';
+    const h2 = st.appendChild(el('thead')).appendChild(el('tr'));
+    h2.appendChild(el('th', { scope: 'col' }, ''));
+    CLS.forEach(c => h2.appendChild(el('th', { class: 'num', scope: 'col' }, t.cls[c])));
+    h2.appendChild(el('th', { class: 'num', scope: 'col' }, t.total));
+    const b2 = st.appendChild(el('tbody'));
+    ['路', '街', '巷', '弄', '（無名或其他）'].filter(k => S[k]).forEach(k => {
+      const tot = CLS.reduce((s, c) => s + S[k][c], 0), tr = b2.appendChild(el('tr'));
+      tr.appendChild(el('th', { scope: 'row' }, t.sfx[k] || k));
+      CLS.forEach(c => tr.appendChild(el('td', { class: 'num' }, pct(S[k][c] / tot))));
+      tr.appendChild(el('td', { class: 'num' }, fmtInt(tot) + ' ' + t.km));
+    });
+    $('sfxCap').textContent = t.sfxCap;
+  }
+
+  // ================================================================ 06 資料與方法
+  function renderNotes() {
+    const en = state.lang === 'en', C = state.d.check, S = state.d.sum;
+    const link = (u, s) => `<a href="${u}" rel="noopener">${s}</a>`;
+    const W = S.by_width_src, tot = Object.values(W).reduce((a, b) => a + b, 0), sh = k => pct(W[k] / tot, k === 'osm_width' ? 2 : 0);
+    const L = en ? {
+      h1: 'Data', data: [
+        `Living-street candidates and road hierarchy: ${link('https://github.com/yunching0513/202609---Taiwanwonnerf', 'Taiwanwonnerf')} (OpenStreetMap, September 2026, ODbL), ${fmtInt(S.total_ways)} segments, ${fmtInt(S.total_km)} km.`,
+        `Width basis by segment: OSM width tag ${sh('osm_width')}, lane count ${sh('osm_lanes')}, road-name convention ${sh('name_suffix')}, road-class default ${sh('class_default')}. Most widths are therefore conventions, not measurements.`,
+        `Taipei check: ${link(C.meta.sources.road8m, 'Public Works Department survey of roads wider than 8 m')} (2014–2016) and Taiwan Mobility Atlas district boundaries.`,
+      ], h2: 'Method', method: [
+        'Width classes: under 8 m (alley-type living streets), 8–12 m (local streets), 12–15 m (borderline), over 15 m.',
+        'Road hierarchy follows Dutch Sustainable Safety: through roads (freeways, expressways), distributor roads (provincial, county and township roads, urban arterials and collectors), and access roads (all other streets). Taiwan’s tertiary roads often mix distributor and access roles and are provisionally treated as distributors.',
+        'The living-street tiles hold only segments estimated at 15 m or narrower; wider segments are taken from the road-hierarchy tiles (ways that appear only there are counted as over 15 m).',
+        `Taipei check uses z${C.meta.zoom} tiles; each OSM way is located by its midpoint and compared within ${C.meta.tolerance_m} m. Streets missing from the 8 m+ survey are assumed under 8 m; roads widened or built after 2016 are not reflected.`,
+      ],
+    } : {
+      h1: '資料', data: [
+        `生活街道候選與道路層級：${link('https://github.com/yunching0513/202609---Taiwanwonnerf', 'Taiwanwonnerf')}（OpenStreetMap，2026年9月，ODbL），共${fmtInt(S.total_ways)}條路段、${fmtInt(S.total_km)}公里。`,
+        `路寬推估依據的路段比例：OSM width標籤${sh('osm_width')}、車道數推估${sh('osm_lanes')}、路名慣例${sh('name_suffix')}、道路等級預設${sh('class_default')}。換句話說，大部分路寬是依慣例推定，不是實測值。`,
+        `臺北檢核：${link(C.meta.sources.road8m, '臺北市工務局〈臺北市寬度超過8公尺道路GIS圖資〉')}（103–105年測繪），行政區界取自Taiwan Mobility Atlas。`,
+      ], h2: '方法', method: [
+        '路寬分級：8公尺以下（巷弄型生活街道）、8–12公尺（社區街道）、12–15公尺（邊界案例）、15公尺以上。',
+        '道路層級依荷蘭Sustainable Safety：通過性道路（國道、快速公路）、集散道路（省道、縣道、鄉道、市區主次要幹道）、進出道路（其餘道路）。臺灣的tertiary道路常同時具有集散與進出功能，暫歸集散道路。',
+        '生活街道圖磚只收推估15公尺以下的路段；推估超過15公尺的路段，從道路層級圖磚補回（只出現在後者的路段即視為超過15公尺）。',
+        `臺北檢核使用z${C.meta.zoom}圖磚，以每條OSM路段的中點定位，容許${C.meta.tolerance_m}公尺的偏移。不在8公尺以上道路圖資內者視為8公尺以下；105年以後拓寬或新闢的道路不會反映。`,
+      ],
+    };
+    const ul = items => `<ul>${items.map(s => `<li>${s}</li>`).join('')}</ul>`;
+    $('notes').innerHTML = `<h3>${L.h1}</h3>${ul(L.data)}<h3>${L.h2}</h3>${ul(L.method)}`;
+  }
+})();
+</script>
+</body>
+</html>
