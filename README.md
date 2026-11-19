@@ -30,6 +30,7 @@
 | `assets/visits.js` | 頁尾造訪人次 |
 | `road-safety.html` | 國際比較：道路安全 × 人均 GDP 四象限 |
 | `scripts/build_road_safety.py` | 上一頁的資料建置（WHO／IMF／World Bank；僅用標準函式庫） |
+| `scripts/sync_tiles.py` | 檢查 `data/tiles/` 是否與 Taiwanwonnerf 的產出一致（僅用標準函式庫） |
 | `tests/*.spec.js` | 端對端測試（Playwright） |
 | `districts.geojson`, `populations.json` | 行政區界與人口 |
 | `assets/`, `manifest.webmanifest`, `sw.js` | 圖示、PWA manifest 與 service worker |
@@ -37,7 +38,19 @@
 ## 生活街道與道路層級圖層
 
 「Advocacy」列新增三個切換：**🛣 生活街道候選 ≤12 m**（≤8 m 巷弄、8–12 m 社區街道）、**＋12–15 m 邊界**、**🧭 道路層級 Sustainable Safety**（Through＝國道／快速公路、Distributor＝省／縣／鄉道與市區幹道、Access＝其餘市區道路）。
-路寬為 OSM 路網推估（width 標籤→lanes→路名慣例→道路等級預設），點擊路段可見估算值與依據。資料處理流程與各縣市 Shapefile 見 Taiwanwonnerf repo；更新圖磚時直接覆蓋 `data/tiles/*.pmtiles` 與統計 JSON 即可。
+路寬為 OSM 路網推估（width 標籤→lanes→路名慣例→道路等級預設），點擊路段可見估算值與依據。
+
+**這五個檔案（含 `county_stats.json`）不在本 repo 產生。** 處理流程只在 [Taiwanwonnerf](https://github.com/yunching0513/202609---Taiwanwonnerf) 維護（`01_extract_roads.py` → `02_build_tiles.sh` → `03_export_shp.py` → `04_county_split.py` → `05_hierarchy.py`），各縣市 Shapefile 也在那裡。本 repo 只放複製過來的產出物，不重做一份。
+
+複製是手動的，所以在 Taiwanwonnerf 重跑過圖磚之後，這裡的副本會悄悄過期。用這支腳本檢查：
+
+```bash
+python3 scripts/sync_tiles.py            # 只檢查（0＝一致，1＝有漂移，2＝找不到來源）
+python3 scripts/sync_tiles.py --apply    # 確認來源是要的版本後，複製過來
+python3 scripts/sync_tiles.py --source ~/path/to/Taiwanwonnerf
+```
+
+來源路徑會自動尋找，也可用環境變數 `TAIWANWONNERF` 指定。注意其中一個檔名兩邊不同——Taiwanwonnerf 的 `docs/summary.json` 對應這裡的 `data/tiles/living_streets_summary.json`，手動複製最容易弄錯這一項，腳本已經把對應關係寫死。
 
 ## 公民科學標註（PPGIS）
 
